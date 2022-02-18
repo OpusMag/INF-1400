@@ -199,9 +199,9 @@ def breakout():
 
     #defining paddle variables
     paddle_pos_x = pygame.mouse.get_pos()[0]
-    paddle_pos_y = 790
-    paddle_radius = 40
-    paddle_speed = 2
+    paddle_pos_y = 700
+    paddle_radius = 50
+    paddle_speed = Vector2(2,0)
 
     #defining ball variables
     ball_pos_x = 400
@@ -286,7 +286,7 @@ class Paddle():
         self.paddle_speed = paddle_speed
         
     def move(self):
-        self.paddle_speed += paddle_speed
+        self.paddle_speed += Vector2(2,-2)
 
     def draw(self):
         screen = pygame.display.set_mode()
@@ -302,7 +302,7 @@ class Ball():
         self.ball_speed = ball_speed
 
     def move(self):
-        self.ball_speed += ball_speed
+        self.ball_speed += Vector2(2, 0)
 
     def draw(self):
         screen = pygame.display.set_mode()
