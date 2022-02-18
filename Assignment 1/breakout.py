@@ -182,6 +182,12 @@ def breakout():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+
+    object.brick_red = Brick_red
+    object.brick_green = Brick_green
+    object.brick_blue = Brick_blue
+    object.paddle = Paddle
+    object.ball = Ball
     
 #class for the red bricks
 class Brick_red:
@@ -300,3 +306,5 @@ class Ball():
             del brick_blue
         
         pygame.display.update()
+
+breakout()
