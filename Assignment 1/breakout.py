@@ -123,53 +123,6 @@ def intersect_brick_blue_ball(brick_blue_position_x,
         return dp1p2.normalize()
     else:
         return None
-"""
-#tests and handles intersections between paddle and ball
-impulse = intersect_paddle_ball(paddle_pos_x, 
-                                paddle_pos_y, 
-                                paddle_radius,
-                                ball_pos,
-                                ball_radius,
-                                ball_speed)
-if impulse:
-    ball_speed = ball_speed * -1
-
-        #tests and handles intersections between red bricks and ball
-impulse = intersect_brick_red_ball(brick_red_pos_x,
-                                    brick_red_pos_y,
-                                    brick_red_size_x,
-                                    brick_red_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-if impulse:
-    ball_speed = ball_speed * -1
-    del brick_red
-
-        #tests and handles intersections between green bricks and ball
-impulse = intersect_brick_green_ball(brick_green_pos_x,
-                                    brick_green_pos_y,
-                                    brick_green_size_x,
-                                    brick_green_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-if impulse:
-    ball_speed = ball_speed * -1
-    del brick_green
-        
-        #tests and handles intersections between blue bricks and ball
-impulse = intersect_brick_blue_ball(brick_blue_pos_x,
-                                    brick_blue_pos_y,
-                                    brick_blue_size_x,
-                                    brick_blue_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-if impulse:
-    ball_speed = ball_speed * -1
-    del brick_blue
-"""
 
 def breakout():
     #my implementation of breakout
@@ -306,8 +259,53 @@ class Ball():
         #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
         pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
 
-    
         
+        #tests and handles intersections between paddle and ball
+        impulse = intersect_paddle_ball(paddle_pos_x, 
+                                paddle_pos_y, 
+                                paddle_radius,
+                                ball_pos,
+                                ball_radius,
+                                ball_speed)
+        if impulse:
+            ball_speed = ball_speed * -1
+
+        #tests and handles intersections between red bricks and ball
+        impulse = intersect_brick_red_ball(brick_red_pos_x,
+                                    brick_red_pos_y,
+                                    brick_red_size_x,
+                                    brick_red_size_y,
+                                    ball_pos,
+                                    ball_radius,
+                                    ball_speed)
+        if impulse:
+            ball_speed = ball_speed * -1
+            del brick_red
+
+        #tests and handles intersections between green bricks and ball
+        impulse = intersect_brick_green_ball(brick_green_pos_x,
+                                    brick_green_pos_y,
+                                    brick_green_size_x,
+                                    brick_green_size_y,
+                                    ball_pos,
+                                    ball_radius,
+                                    ball_speed)
+        if impulse:
+        ball_speed = ball_speed * -1
+        del brick_green
+        
+        #tests and handles intersections between blue bricks and ball
+        impulse = intersect_brick_blue_ball(brick_blue_pos_x,
+                                    brick_blue_pos_y,
+                                    brick_blue_size_x,
+                                    brick_blue_size_y,
+                                    ball_pos,
+                                    ball_radius,
+                                    ball_speed)
+        if impulse:
+            ball_speed = ball_speed * -1
+            del brick_blue
+
         pygame.display.update()
 
 def example2():
