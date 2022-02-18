@@ -182,31 +182,31 @@ def breakout():
     #defining red brick variables
     brick_red_size_x = 40
     brick_red_size_y = 20
-    brick_red_pos_x = 20
-    brick_red_pos_y = 10
+    brick_red_pos_x = 0
+    brick_red_pos_y = 0
 
     #defining green brick variables
-    brick_green_size_x = 20
-    brick_green_size_y = 10
+    brick_green_size_x = 40
+    brick_green_size_y = 20
     brick_green_pos_x = 0
     brick_green_pos_y = 10
 
     #defining blue brick variables
-    brick_blue_size_x = 20
-    brick_blue_size_y = 10
+    brick_blue_size_x = 40
+    brick_blue_size_y = 20
     brick_blue_pos_x = 0
     brick_blue_pos_y = 20
 
     #defining paddle variables
     paddle_pos_x = pygame.mouse.get_pos()[0]
-    paddle_pos_y = 700
-    paddle_radius = 50
+    paddle_pos_y = 590
+    paddle_radius = 20
     paddle_speed = Vector2(2,0)
 
     #defining ball variables
     ball_pos_x = 400
     ball_pos_y = 300
-    ball_radius = 20
+    ball_radius = 5
     ball_speed = Vector2(2, -2)
 
     brick_red_ob = Brick_red(brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y)
@@ -225,11 +225,11 @@ def breakout():
         pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
         clock.tick(30)
         
-        brick_red_ob.draw()
-        brick_green_ob.draw()
-        brick_blue_ob.draw()
-        paddle_ob.draw()
-        ball_ob.draw()
+        brick_red_ob.draw(screen)
+        brick_green_ob.draw(screen)
+        brick_blue_ob.draw(screen)
+        paddle_ob.draw(screen)
+        ball_ob.draw(screen)
     
 #class for the red bricks
 class Brick_red:
@@ -240,12 +240,11 @@ class Brick_red:
         self.brick_red_pos_x = brick_red_pos_x
         self.brick_red_pos_y = brick_red_pos_y
         
-    def draw(self):
-        screen = pygame.display.set_mode()
-        rect = pygame.Rect(self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y)
-        #for brick_red in range(20):
-        pygame.draw.rect(screen, (255, 0, 0),
-            (self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y))
+    def draw(self,screen):
+            rect = pygame.Rect(self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y)
+            for brick_red in range(20):
+                pygame.draw.rect(screen, (255, 0, 0),
+                (self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y))
     
 #class for the green bricks
 class Brick_green:
@@ -255,8 +254,7 @@ class Brick_green:
         self.brick_green_pos_x = brick_green_pos_x
         self.brick_green_pos_y = brick_green_pos_y 
         
-    def draw(self):
-        screen = pygame.display.set_mode()
+    def draw(self, screen):
         rect = pygame.Rect(self.brick_green_pos_x, self.brick_green_pos_y, self.brick_green_size_x, self.brick_green_size_y)
         for brick_green in range(20):
             pygame.draw.rect(screen, (0, 255, 0),
@@ -270,8 +268,7 @@ class Brick_blue:
         self.brick_blue_pos_x = brick_blue_pos_x
         self.brick_blue_pos_y = brick_blue_pos_y 
     
-    def draw(self):
-        screen = pygame.display.set_mode()
+    def draw(self, screen):
         rect = pygame.Rect(self.brick_blue_pos_x, self.brick_blue_pos_y, self.brick_blue_size_x, self.brick_blue_size_y)
         for brick_blue in range(20):
             pygame.draw.rect(screen, (0, 0, 255),
@@ -279,17 +276,17 @@ class Brick_blue:
 
 #class and methods for the paddle
 class Paddle():
-    def __init__(self, paddle_radius, paddle_pos_x, paddle_pos_y, paddle_speed):
-        self.paddle_radius = paddle_radius 
+    def __init__(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed): 
         self.paddle_pos_x = paddle_pos_x
         self.paddle_pos_y = paddle_pos_y
-        self.paddle_speed = paddle_speed
+        self.paddle_radius = paddle_radius
+        self.paddle_speed = 10
         
     def move(self):
-        self.paddle_speed += Vector2(2,-2)
+        self.paddle_pos_x += pygame.mouse.get_pos(screen)[0]
+        self.paddle_pos_y += 590
 
-    def draw(self):
-        screen = pygame.display.set_mode()
+    def draw(self, screen):
         #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
         pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
 
@@ -299,13 +296,13 @@ class Ball():
         self.ball_pos_x = ball_pos_x
         self.ball_pos_y = ball_pos_y
         self.ball_radius = ball_radius
-        self.ball_speed = ball_speed
+        self.ball_speed = Vector2(2, -2)
 
     def move(self):
-        self.ball_speed += Vector2(2, 0)
+        self.ball_pos_x += 1
+        self.ball_pos_y += -1
 
-    def draw(self):
-        screen = pygame.display.set_mode()
+    def draw(self, screen):
         #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
         pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
 
@@ -324,3 +321,5 @@ def example2():
 
 if __name__ == '__main__':
     breakout()
+    paddle.move()
+    ball.move()
