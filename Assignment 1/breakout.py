@@ -133,9 +133,9 @@ def breakout():
     #defining variables
 
     #brick colors used
-    brick_red = (255, 0, 0)
-    brick_green = (0, 255, 0)
-    brick_blue = (0, 0, 255)
+    brick_red_col = (255, 0, 0)
+    brick_green_col = (0, 255, 0)
+    brick_blue_col = (0, 0, 255)
     
     #paddle color
     paddle_col = (255, 255, 255)
@@ -176,11 +176,11 @@ def breakout():
     ball_pos = Vector2(400, 300)
     ball_speed = Vector2(2, -2)
 
-    object.brick_red = Brick_red
-    object.brick_green = Brick_green
-    object.brick_blue = Brick_blue
-    object.paddle = Paddle
-    object.ball = Ball
+    brick_red = Brick_red(brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y, brick_red_col)
+    brick_green = Brick_green(brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y, brick_green_col)
+    brick_blue = Brick_blue(brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y, brick_blue_col)
+    paddle = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_col)
+    ball = Ball(ball_pos, ball_radius, ball_speed, ball_col)
 
     screen = pygame.display.set_mode(screen_res)
     clock = pygame.time.Clock()
@@ -192,11 +192,13 @@ def breakout():
     
 #class for the red bricks
 class Brick_red:
-    def __init__(self, brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y):
+    def __init__(self, brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y, brick_red_col):
         self.brick_red_size_x = brick_red_size_x
         self.brick_red_size_y = brick_red_size_y
         self.brick_red_pos_x = brick_red_pos_x
-        self.brick_red_pos_y = brick_red_pos_y  
+        self.brick_red_pos_y = brick_red_pos_y
+        self.brick_red_col = brick_red_col
+
         
 def draw(self):
     rect = pygame.rect(self, brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y)
@@ -206,11 +208,12 @@ def draw(self):
     
 #class for the green bricks
 class Brick_green:
-    def __init__(self, brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y):
+    def __init__(self, brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y, brick_green_col):
         self.brick_green_size_x = brick_green_size_x
         self.brick_green_size_y = brick_green_size_y
         self.brick_green_pos_x = brick_green_pos_x
         self.brick_green_pos_y = brick_green_pos_y 
+        self.brick_green_col = brick_green_col
         
     def draw(self):
         rect = pygame.rect(self, brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y)
@@ -220,11 +223,12 @@ class Brick_green:
 
 #class for the blue bricks
 class Brick_blue:
-    def __init__(self, brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y):
+    def __init__(self, brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y, brick_blue_col):
         self.brick_blue_size_x = brick_blue_size_x
         self.brick_blue_size_y = brick_blue_size_y
         self.brick_blue_pos_x = brick_blue_pos_x
-        self.brick_blue_pos_y = brick_blue_pos_y  
+        self.brick_blue_pos_y = brick_blue_pos_y 
+        self.brick_blue_col = brick_blue_col 
     
     def draw(self):
         rect = pygame.rect(self, brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y)
@@ -234,10 +238,11 @@ class Brick_blue:
 
 #class and methods for the paddle
 class Paddle():
-    def __init__(self):
+    def __init__(self,paddle_radius, paddle_pos_x, paddle_pos_y, paddle_col):
         self.paddle_radius = paddle_radius 
         self.paddle_pos_x = paddle_pos_x
-        self.paddle_pos_y = paddle_pos_y  
+        self.paddle_pos_y = paddle_pos_y
+        self.paddle_col = paddle_col
         
     def move(self):
         self.paddle_pos_x = paddle_pos_x
@@ -249,9 +254,11 @@ class Paddle():
 
 #class and methods for the ball
 class Ball():
-    def __init__(self):
+    def __init__(self, ball_radius, ball_pos, ball_speed, ball_col):
         self.ball_radius = ball_radius
         self.ball_pos = ball_pos 
+        self.ball_speed = ball_speed
+        self.ball_col = ball_col
 
     def move(self):
         self.ball_speed = ball_speed
