@@ -180,10 +180,10 @@ def breakout():
     #defining variables
 
     #defining red brick variables
-    brick_red_size_x = 20
-    brick_red_size_y = 10
-    brick_red_pos_x = 0
-    brick_red_pos_y = 0
+    brick_red_size_x = 40
+    brick_red_size_y = 20
+    brick_red_pos_x = 20
+    brick_red_pos_y = 10
 
     #defining green brick variables
     brick_green_size_x = 20
@@ -243,9 +243,9 @@ class Brick_red:
     def draw(self):
         screen = pygame.display.set_mode()
         rect = pygame.Rect(self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y)
-        for brick_red in range(20):
-            pygame.draw.rect(screen, (255, 0, 0),
-            (self.brick_red_pos_x * 2, self.brick_red_pos_y * 2, self.brick_red_size_x, self.brick_red_size_y))
+        #for brick_red in range(20):
+        pygame.draw.rect(screen, (255, 0, 0),
+            (self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y))
     
 #class for the green bricks
 class Brick_green:
