@@ -176,6 +176,12 @@ def breakout():
     ball_pos = Vector2(400, 300)
     ball_speed = Vector2(2, -2)
 
+    object.brick_red = Brick_red
+    object.brick_green = Brick_green
+    object.brick_blue = Brick_blue
+    object.paddle = Paddle
+    object.ball = Ball
+
     screen = pygame.display.set_mode(screen_res)
     clock = pygame.time.Clock()
     while True:
@@ -183,11 +189,6 @@ def breakout():
             if event.type == pygame.QUIT:
                 exit()
 
-    object.brick_red = Brick_red
-    object.brick_green = Brick_green
-    object.brick_blue = Brick_blue
-    object.paddle = Paddle
-    object.ball = Ball
     
 #class for the red bricks
 class Brick_red:
