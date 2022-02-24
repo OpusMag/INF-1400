@@ -46,17 +46,17 @@ def intersect_paddle_ball(rec_pos, sx, sy,
     return None
 
 
-def intersect_brick_red_ball(brick_red_position_x, 
-                            brick_red_position_y, 
-                            brick_red_size_x, 
-                            brick_red_size_y, 
+def intersect_brick_ball(brick_position_x, 
+                            brick_position_y, 
+                            brick_size_x, 
+                            brick_size_y, 
                             ball_pos, ball_radius):
     """ Determine if the red bricks and the ball intersects
     Parameters:
-    brick_red_position_x       - Red brick's position on the x axis
-    brick_red_position_y       - Red brick's position on the y axis
-    brick_red_size_x           - Red brick's size on the x axis
-    brick_red_size_y           - Red brick's size on the y axis
+    brick_position_x       - Brick's position on the x axis
+    brick_position_y       - Brick's position on the y axis
+    brick_size_x           - Brick's size on the x axis
+    brick_size_y           - Brick's size on the y axis
     ball_position              - A Vector2D representing the ball's position
     ball_radius                - Ball's radius
     Returns:
@@ -65,248 +65,144 @@ def intersect_brick_red_ball(brick_red_position_x,
     Vector2 pointing from brick_red to ball.
     """
     # vector from A to B
-    dp1p2 = ball_pos - (brick_red_position_x + brick_red_position_y)
+    dp1p2 = ball_pos - (brick_position_x + brick_position_y)
 
-    if brick_red_size_x + brick_red_size_y + ball_radius >= pygame.math.Vector2.length(dp1p2):
+    if brick_size_x + brick_size_y + ball_radius >= pygame.math.Vector2.length(dp1p2):
         return dp1p2.normalize()
     else:
         return None
 
-def intersect_brick_green_ball(brick_green_position_x, 
-                                brick_green_position_y, 
-                                brick_green_size_x, 
-                                brick_green_size_y, 
-                                ball_pos, ball_radius):
-    """ Determine if the red bricks and the ball intersects
-    Parameters:
-    brick_green_position_x       - Green brick's position on the x axis
-    brick_green_position_y       - Green brick's position on the y axis
-    brick_green_size_x           - Green brick's size on the x axis
-    brick_green_size_y           - Green brick's size on the y axis
-    ball_position                - A Vector2D representing the ball's position
-    ball_radius                  - Ball's radius
-    Returns:
-    None if no intersection.
-    If the ball intersects with a green brick, it returns a normalized
-    Vector2 pointing from brick_green to ball.
-    """
-    # vector from A to B
-    dp1p2 = ball_pos - (brick_green_position_x + brick_green_position_y)
-
-    if brick_green_size_x + brick_green_size_y + ball_radius >= pygame.math.Vector2.length(dp1p2):
-        return dp1p2.normalize()
-    else:
-        return None
-
-def intersect_brick_blue_ball(brick_blue_position_x, 
-                                brick_blue_position_y, 
-                                brick_blue_size_x, 
-                                brick_blue_size_y, 
-                                ball_pos, ball_radius):
-    """ Determine if the blue bricks and the ball intersects
-    Parameters:
-    brick_blue_position_x       - Blue brick's position on the x axis
-    brick_blue_position_y       - Blue brick's position on the y axis
-    brick_blue_size_x           - Blue brick's size on the x axis
-    brick_blue_size_y           - Blue brick's size on the y axis
-    ball_position               - A Vector2D representing the ball's position
-    ball_radius                 - Ball's radius
-    Returns:
-    None if no intersection.
-    If the ball intersects with a blue brick, it returns a normalized
-    Vector2 pointing from brick_blue to ball.
-    """
-    # vector from A to B
-    dp1p2 = ball_pos - (brick_blue_position_x + brick_blue_position_y)
-
-    if brick_blue_size_x + brick_blue_size_y + ball_radius >= pygame.math.Vector2.length(dp1p2):
-        return dp1p2.normalize()
-    else:
-        return None
-
-def breakout():
+class Game:
     #my implementation of breakout
 
-    screen_res = (800, 600)
-    pygame.init()
+       
+    def init(screen_res):
+        screen_res = (800, 600)
+        pygame.init()
     
-    #defining variables
+    def variables(brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
+        #defining variables
 
-    #defining red brick variables
-    brick_red_size_x = 40
-    brick_red_size_y = 20
-    brick_red_pos_x = 0
-    brick_red_pos_y = 0
+        #defining brick variables
+        brick_size_x = 40
+        brick_size_y = 20
+        brick_pos_x = 0
+        brick_pos_y = 0
+        brick_red_col = 255, 0, 0
+        brick_green_col = 0, 255, 0
+        brick_blue_col = 0, 0, 255
 
-    #defining green brick variables
-    brick_green_size_x = 40
-    brick_green_size_y = 20
-    brick_green_pos_x = 0
-    brick_green_pos_y = 10
+        #defining paddle variables
+        paddle_pos_x = pygame.mouse.get_pos()[0]
+        paddle_pos_y = 590
+        paddle_radius = 20
+        paddle_speed = Vector2(2,0)
 
-    #defining blue brick variables
-    brick_blue_size_x = 40
-    brick_blue_size_y = 20
-    brick_blue_pos_x = 0
-    brick_blue_pos_y = 20
+        #defining ball variables
+        ball_pos_x = 400
+        ball_pos_y = 300
+        ball_radius = 5
+        ball_speed = Vector2(2, -2)
 
-    #defining paddle variables
-    paddle_pos_x = pygame.mouse.get_pos()[0]
-    paddle_pos_y = 590
-    paddle_radius = 20
-    paddle_speed = Vector2(2,0)
+    def objects(brick_ob, paddle_ob, ball_ob):
+        brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
+        paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
+        ball_ob = Ball(ball_pos_x, ball_pos_y, ball_radius, ball_speed)
 
-    #defining ball variables
-    ball_pos_x = 400
-    ball_pos_y = 300
-    ball_radius = 5
-    ball_speed = Vector2(2, -2)
-
-    brick_red_ob = Brick_red(brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y)
-    brick_green_ob = Brick_green(brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y)
-    brick_blue_ob = Brick_blue(brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y)
-    paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
-    ball_ob = Ball(ball_pos_x, ball_pos_y, ball_radius, ball_speed)
-
-    screen = pygame.display.set_mode(screen_res)
-    clock = pygame.time.Clock()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
+    def game_init(screen, clock):
+        screen = pygame.display.set_mode(screen_res)
+        clock = pygame.time.Clock()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
         
+    def draw_screen(screen, screen_res):
         pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
         clock.tick(30)
         
-        brick_red_ob.draw(screen)
-        brick_green_ob.draw(screen)
-        brick_blue_ob.draw(screen)
+    def draw_objects(screen, brick_ob, paddle_ob, ball_ob):
+        brick_ob.draw(screen)
         paddle_ob.draw(screen)
         ball_ob.draw(screen)
     
-#class for the red bricks
-class Brick_red:
+#class for the bricks
+    class Brick:
 
-    def __init__(self, brick_red_pos_x, brick_red_pos_y, brick_red_size_x, brick_red_size_y):
-        self.brick_red_size_x = brick_red_size_x
-        self.brick_red_size_y = brick_red_size_y
-        self.brick_red_pos_x = brick_red_pos_x
-        self.brick_red_pos_y = brick_red_pos_y
+        def __init__(self, brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col):
+            self.brick_size_x = brick_size_x
+            self.brick_size_y = brick_size_y
+            self.brick_pos_x = brick_pos_x
+            self.brick_pos_y = brick_pos_y
+            self.brick_red_col = brick_red_col
+            self.brick_green_col = brick_green_col
+            self.brick_blue_col = brick_blue_col
         
-    def draw(self,screen):
-            rect = pygame.Rect(self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y)
-            for brick_red in range(20):
+        def draw(self,screen):
+            rect = pygame.Rect(self.brick_pos_x, self.brick_pos_y, self.brick_size_x, self.brick_size_y)
+            for Brick in range(20):
                 pygame.draw.rect(screen, (255, 0, 0),
-                (self.brick_red_pos_x, self.brick_red_pos_y, self.brick_red_size_x, self.brick_red_size_y))
+                (self.brick_pos_x, self.brick_pos_y, self.brick_size_x, self.brick_size_y))
     
-#class for the green bricks
-class Brick_green:
-    def __init__(self, brick_green_pos_x, brick_green_pos_y, brick_green_size_x, brick_green_size_y):
-        self.brick_green_size_x = brick_green_size_x
-        self.brick_green_size_y = brick_green_size_y
-        self.brick_green_pos_x = brick_green_pos_x
-        self.brick_green_pos_y = brick_green_pos_y 
-        
-    def draw(self, screen):
-        rect = pygame.Rect(self.brick_green_pos_x, self.brick_green_pos_y, self.brick_green_size_x, self.brick_green_size_y)
-        for brick_green in range(20):
-            pygame.draw.rect(screen, (0, 255, 0),
-            (self.brick_green_pos_x * 2, self.brick_green_pos_y * 2, self.brick_green_size_x, self.brick_green_size_y))
-
-#class for the blue bricks
-class Brick_blue:
-    def __init__(self, brick_blue_pos_x, brick_blue_pos_y, brick_blue_size_x, brick_blue_size_y):
-        self.brick_blue_size_x = brick_blue_size_x
-        self.brick_blue_size_y = brick_blue_size_y
-        self.brick_blue_pos_x = brick_blue_pos_x
-        self.brick_blue_pos_y = brick_blue_pos_y 
-    
-    def draw(self, screen):
-        rect = pygame.Rect(self.brick_blue_pos_x, self.brick_blue_pos_y, self.brick_blue_size_x, self.brick_blue_size_y)
-        for brick_blue in range(20):
-            pygame.draw.rect(screen, (0, 0, 255),
-            (self.brick_blue_pos_x * 2, self.brick_blue_pos_y * 2, self.brick_blue_size_x, self.brick_blue_size_y))
 
 #class and methods for the paddle
-class Paddle():
-    def __init__(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed): 
-        self.paddle_pos_x = paddle_pos_x
-        self.paddle_pos_y = paddle_pos_y
-        self.paddle_radius = paddle_radius
-        self.paddle_speed = 10
+    class Paddle():
+        def __init__(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed): 
+            self.paddle_pos_x = paddle_pos_x
+            self.paddle_pos_y = paddle_pos_y
+            self.paddle_radius = paddle_radius
+            self.paddle_speed = 10
         
-    def move(self):
-        self.paddle_pos_x += pygame.mouse.get_pos(screen)[0]
-        self.paddle_pos_y += 590
+        def move(self, screen):
+            self.paddle_pos_x += pygame.mouse.get_pos(screen)[0]
+            self.paddle_pos_y += 590
 
-    def draw(self, screen):
-        #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
-        pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
+        def draw(self, screen):
+            #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
+            pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
 
 #class and methods for the ball
-class Ball():
-    def __init__(self, ball_pos_x, ball_pos_y, ball_radius, ball_speed):
-        self.ball_pos_x = ball_pos_x
-        self.ball_pos_y = ball_pos_y
-        self.ball_radius = ball_radius
-        self.ball_speed = Vector2(2, -2)
+    class Ball():
+        def __init__(self, ball_pos_x, ball_pos_y, ball_radius, ball_speed):
+            self.ball_pos_x = ball_pos_x
+            self.ball_pos_y = ball_pos_y
+            self.ball_radius = ball_radius
+            self.ball_speed = Vector2(2, -2)
 
-    def move(self):
-        self.ball_pos_x += 1
-        self.ball_pos_y += -1
+        def move(self):
+            self.ball_pos_x += 1
+            self.ball_pos_y += -1
 
-    def draw(self, screen):
-        #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
-        pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
+        def draw(self, screen):
+            #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
+            pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
 
         
-        #tests and handles intersections between paddle and ball
-        impulse = intersect_paddle_ball(paddle_pos_x, 
-                                paddle_pos_y, 
-                                paddle_radius,
-                                ball_pos,
-                                ball_radius,
-                                ball_speed)
-        if impulse:
-            ball_speed = ball_speed * -1
+        def collision_paddle(impulse, paddle_pos_x, paddle_pos_y, paddle_radius, ball_pos, ball_radius, ball_speed):
+            #tests and handles intersections between paddle and ball
+            impulse = intersect_paddle_ball(paddle_pos_x, 
+                                        paddle_pos_y, 
+                                        paddle_radius,
+                                        ball_pos,
+                                        ball_radius,
+                                        ball_speed)
+            if impulse:
+                ball_speed = ball_speed * -1
 
-        #tests and handles intersections between red bricks and ball
-        impulse = intersect_brick_red_ball(brick_red_pos_x,
-                                    brick_red_pos_y,
-                                    brick_red_size_x,
-                                    brick_red_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-        if impulse:
-            ball_speed = ball_speed * -1
-            del brick_red
+        def collision_brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, ball_pos, ball_radius, ball_speed):
+            #tests and handles intersections between bricks and ball
+            impulse = intersect_brick_ball(brick_pos_x,
+                                            brick_pos_y,
+                                            brick_size_x,
+                                            brick_size_y,
+                                            ball_pos,
+                                            ball_radius,
+                                            ball_speed)
+            if impulse:
+                ball_speed = ball_speed * -1
+                del brick
 
-        #tests and handles intersections between green bricks and ball
-        impulse = intersect_brick_green_ball(brick_green_pos_x,
-                                    brick_green_pos_y,
-                                    brick_green_size_x,
-                                    brick_green_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-        if impulse:
-        ball_speed = ball_speed * -1
-        del brick_green
-        
-        #tests and handles intersections between blue bricks and ball
-        impulse = intersect_brick_blue_ball(brick_blue_pos_x,
-                                    brick_blue_pos_y,
-                                    brick_blue_size_x,
-                                    brick_blue_size_y,
-                                    ball_pos,
-                                    ball_radius,
-                                    ball_speed)
-        if impulse:
-            ball_speed = ball_speed * -1
-            del brick_blue
-
-        pygame.display.update()
+                pygame.display.update()
 
 def example2():
     V1 = Vector2(300, 300)
@@ -319,5 +215,5 @@ def example2():
 
 if __name__ == '__main__':
     breakout()
-    paddle.move()
-    ball.move()
+    paddle.move(1)
+    ball.move(1)
