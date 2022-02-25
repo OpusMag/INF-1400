@@ -163,16 +163,13 @@ class Breakout:
         def draw_bricks(self):
             screen_res = (800, 600)
             screen = pygame.display.set_mode(screen_res)
-            brick_red_col = brick_red_col
-            brick_green_col = brick_green_col
-            brick_blue_col = brick_blue_col
             for row in self.brick:
                 for brick in row:
                     if brick[1] == 1:
                         brick_col = brick_red_col
-                    if brick[1] == 2:
+                    elif brick[1] == 2:
                         brick_col = brick_green_col
-                    if brick[1] == 3:
+                    elif brick[1] == 3:
                         brick_col = brick_blue_col
                     pygame.draw.rect(screen, brick_col, brick[0])
 
