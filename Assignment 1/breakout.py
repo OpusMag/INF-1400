@@ -74,41 +74,15 @@ def intersect_brick_ball(brick_position_x,
 
 class Breakout:
     #my implementation of breakout
-
-       
-    def game_loop():
-        screen_res = (800, 600)
-        pygame.init()
-        clock = pygame.time.Clock()
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    exit()
-
-            pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
-            brick_ob.draw_bricks()
-            paddle_ob.draw_paddle()
-            ball_ob.draw_ball()
-            ball_ob.move_ball()
-            paddle_ob.move_paddle()
-
-            pygame.display.update()
-            clock.tick(60)
-
-
-    
-    #brick_variables(self, brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
-    #defining brick variables
-    class Test:
-        def __init__(self):
+    def __init__(self):
             
             self.screen_res = (800, 600)
-            self.screen = pygame.display.set_mode(screen_res)
+            self.screen = pygame.display.set_mode()
             self.columns = 20
             self.rows = 3
             self.brick_size_x = 40
             self.brick_size_y = 20
-            self.brick_pos_x = 20 * columns
+            self.brick_pos_x = 20 * self.columns
             self.brick_pos_y = 0
             self.brick_red_col = 255, 0, 0
             self.brick_green_col = 0, 255, 0
@@ -128,6 +102,32 @@ class Breakout:
             self.ball_pos_y = 300
             self.ball_radius = 5
             self.ball_speed = Vector2(2, -2)
+       
+    def game_loop(self):
+        screen_res = (800, 600)
+        screen = pygame.display.set_mode()
+        pygame.init()
+        clock = pygame.time.Clock()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+
+            pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
+            self.brick_ob.draw_bricks()
+            self.paddle_ob.draw_paddle()
+            self.ball_ob.draw_ball()
+            self.ball_ob.move_ball()
+            self.paddle_ob.move_paddle()
+
+            pygame.display.update()
+            clock.tick(60)
+
+
+    
+    #brick_variables(self, brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
+    #defining brick variables
+        
     
 #class for the bricks
     class Brick:
@@ -140,6 +140,12 @@ class Breakout:
             self.brick_red_col = brick_red_col
             self.brick_green_col = brick_green_col
             self.brick_blue_col = brick_blue_col
+            brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
+            brick_ob.create_bricks(columns, brick_size_x, rows, brick_size_y)
+            ball_ob = Ball(ball_pos_x, ball_pos_y, ball_radius, ball_speed)
+            ball_ob.draw_ball()
+            paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
+            paddle_ob.draw_paddle()
 
         def create_bricks(self, brick_size_x, brick_size_y, rows, columns):
             self.brick_size_x = 40
@@ -183,9 +189,6 @@ class Breakout:
                         brick_col = brick_blue_col """
                     pygame.draw.rect(screen, brick[1], brick[0])
 
-    brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
-    brick_ob.create_bricks(columns, brick_size_x, rows, brick_size_y)
-
 #class and methods for the paddle
     class Paddle():
         def __init__(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed): 
@@ -203,9 +206,6 @@ class Breakout:
             screen = pygame.display.set_mode(screen_res)
             #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
             pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
-    
-    paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
-    paddle_ob.draw_paddle()
 
 #class and methods for the ball
     class Ball():
@@ -248,9 +248,6 @@ class Breakout:
             screen = pygame.display.set_mode(screen_res)
             #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
             pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
-    
-    ball_ob = Ball(ball_pos_x, ball_pos_y, ball_radius, ball_speed)
-    ball_ob.draw_ball()
 
                 
 
@@ -264,4 +261,5 @@ def example2():
 
 
 if __name__ == '__main__':
-    Breakout()
+    br = Breakout()
+    br.game_loop()
