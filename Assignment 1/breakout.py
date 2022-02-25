@@ -76,75 +76,85 @@ class Breakout:
     #my implementation of breakout
 
        
-    def game_loop(screen, screen_res):
+    def game_loop(screen, screen_res, breakout_window):
         screen_res = (800, 600)
         pygame.init()
         clock = pygame.time.Clock()
         screen = pygame.display.set_mode(screen_res)
+        breakout_window = pygame.Surface((screen_res)).convert()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
         
             pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
-            brick_ob.draw_bricks(screen)
-            paddle_ob.draw_paddle(screen)
-            ball_ob.draw_ball(screen)
-            ball_move_ball(screen)
-            paddle_move_paddle(screen)
+            brick_ob.draw_bricks()
+            paddle_ob.draw_paddle()
+            ball_ob.draw_ball()
+            ball_move_ball()
+            paddle_move_paddle()
 
             pygame.display.update()
             clock.tick(60)
 
 
     
-    def brick_variables(self, brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
-        #defining brick variables
-        screen_res = 800, 600
-        self.brick_size_x = 40
-        self.brick_size_y = 20
-        self.brick_pos_x = screen_res//20
-        self.brick_pos_y = 0
-        self.brick_red_col = 255, 0, 0
-        self.brick_green_col = 0, 255, 0
-        self.brick_blue_col = 0, 0, 255
+    #brick_variables(self, brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
+    #defining brick variables
+    screen_res = (800, 600)
+    columns = 20
+    rows = 3
+    brick_size_x = 40
+    brick_size_y = 20
+    brick_pos_x = 20 * columns
+    brick_pos_y = 0
+    brick_red_col = 255, 0, 0
+    brick_green_col = 0, 255, 0
+    brick_blue_col = 0, 0, 255
 
-    def paddle_variable(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed):
-        #defining paddle variables
-        self.paddle_pos_x = pygame.mouse.get_pos()[0]
-        self.paddle_pos_y = 590
-        self.paddle_radius = 20
-        self.paddle_speed = Vector2(2,0)
+    #paddle_variable(self, paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed):
+    #defining paddle variables
+    pygame.init()
+    paddle_pos_x = pygame.mouse.get_pos()[0]
+    paddle_pos_y = 590
+    paddle_radius = 20
+    paddle_speed = Vector2(2,0)
 
-    def ball_variables(self, ball_pos_x, ball_pos_y, ball_radius, ball_speed):
-        #defining ball variables
-        self.ball_pos_x = 400
-        self.ball_pos_y = 300
-        self.ball_radius = 5
-        self.ball_speed = Vector2(2, -2)
+    #ball_variables(self, ball_pos_x, ball_pos_y, ball_radius, ball_speed):
+    #defining ball variables
+    ball_pos_x = 400
+    ball_pos_y = 300
+    ball_radius = 5
+    ball_speed = Vector2(2, -2)
     
 #class for the bricks
     class Brick:
 
         def __init__(self, brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col):
-            self.brick_size_x = brick_size_x
-            self.brick_size_y = brick_size_y
             self.brick_pos_x = brick_pos_x
             self.brick_pos_y = brick_pos_y
+            self.brick_size_x = brick_size_x
+            self.brick_size_y = brick_size_y
             self.brick_red_col = brick_red_col
             self.brick_green_col = brick_green_col
             self.brick_blue_col = brick_blue_col
 
-        def create_bricks(self, screen_res):
-            screen_res = (800, 600)
+        def create_bricks(self, brick_size_x, brick_size_y, rows, columns):
+            self.brick_size_x = 40
+            self.brick_size_y = 20
+            rows = 3
+            columns = 20
+            brick_red_col = (255, 0, 0)
+            brick_green_col = (0, 255, 0)
+            brick_blue_col = (0, 0, 255)
             self.brick = []
 
             single_brick = []
-            for row in range(3):
+            for row in range(rows):
                 brick_row = []
-            for col in range(20):
-                brick_pos_x = col * screen_res
-                brick_pos_y = row * screen_res
+            for cols in range(columns):
+                brick_pos_x = columns * brick_size_x
+                brick_pos_y = row * brick_size_y
                 rect = pygame.Rect(self.brick_pos_x, self.brick_pos_y, self.brick_size_x, self.brick_size_y)
                 if row == 1:
                     brick_col = brick_red_col
@@ -170,7 +180,7 @@ class Breakout:
                     pygame.draw.rect(screen, brick_col, brick[0])
 
     brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
-    brick_ob.create_bricks()
+    brick_ob.create_bricks(columns, brick_size_x, rows, brick_size_y)
 
 #class and methods for the paddle
     class Paddle():
@@ -178,18 +188,18 @@ class Breakout:
             self.paddle_pos_x = paddle_pos_x
             self.paddle_pos_y = paddle_pos_y
             self.paddle_radius = paddle_radius
-            self.paddle_speed = 10
+            self.paddle_speed = paddle_speed
             
         
         def move_paddle(self, paddle):
             self.paddle_pos_x = pygame.mouse.get_pos(paddle)[0]
 
-        def draw_paddle(self, screen):
+        #def draw_paddle(self, screen):
             #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
-            pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
+            #pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
     
-    paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
-    paddle_ob.draw_paddle()
+    #paddle_ob = Paddle(paddle_pos_x, paddle_pos_y, paddle_radius, paddle_speed)
+    #paddle_ob.draw_paddle(screen_res)
 
 #class and methods for the ball
     class Ball():
@@ -227,12 +237,13 @@ class Breakout:
                 ball_speed = ball_speed * -1
                 del brick
 
-        def draw_ball(self, screen):
+        #def draw_ball(self, breakout_window):
+            #breakout_window = pygame.Surface((screen_res)).convert()
             #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
-            pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
+            #pygame.draw.circle(breakout_window, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
     
-    ball_ob = Ball()
-    ball_ob.draw_ball()
+    #ball_ob = Ball()
+    #ball_ob.draw_ball()
 
         
         
