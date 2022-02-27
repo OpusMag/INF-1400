@@ -168,9 +168,9 @@ class Breakout:
             self.brick.append(brick_row)
 
         
-        def draw_bricks(self):
-            screen_res = (800, 600)
-            screen = pygame.display.set_mode(screen_res)
+        def draw_bricks(self, screen_res, screen):
+            self.screen_res = screen_res
+            self.screen = screen
             for row in self.brick:
                 for brick in row:
                     pygame.draw.rect(screen, brick[1], brick[0])
@@ -178,7 +178,7 @@ class Breakout:
     
     brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
     brick_ob.create_bricks(brick_size_x, brick_size_y, rows, columns)
-    brick_ob.draw_bricks()
+    brick_ob.draw_bricks(screen_res, screen)
 
 #class and methods for the paddle
     class Paddle:
@@ -191,9 +191,9 @@ class Breakout:
         def move_paddle(self):
             self.paddle_pos_x = pygame.mouse.get_pos()[0]
 
-        def draw_paddle(self):
-            screen_res = (800, 600)
-            screen = pygame.display.set_mode(screen_res)
+        def draw_paddle(self, screen_res, screen):
+            self.screen_res = screen_res
+            self.screen = screen
             #circle = pygame.circle(self.paddle_radius, self.paddle_pos_x, self.paddle_pos_y)
             pygame.draw.circle(screen, (255, 255, 255), (self.paddle_pos_x, self.paddle_pos_y), self.paddle_radius)
 
@@ -237,33 +237,32 @@ class Breakout:
                 ball_speed = ball_speed * -1
                 del brick
 
-        def draw_ball(self):
-            screen_res = (800, 600)
-            screen = pygame.display.set_mode(screen_res)
+        def draw_ball(self, screen, screen_res):
+            self.screen_res = screen_res
+            self.screen = screen
             #circle = pygame.Circle(self.ball_radius, self.ball_pos, self.ball_speed)
             pygame.draw.circle(screen, (192, 192, 192), (self.ball_pos_x, self.ball_pos_y), self.ball_radius)
 
     ball_ob = Ball(ball_pos_x, ball_pos_y, ball_radius, ball_speed)
-    ball_ob.draw_ball()
+    ball_ob.draw_ball(screen, screen_res)
     ball_ob.move_ball()
 
-    class Game_loop:
-        def __init__(self):
-            pygame.init()
-            screen_res = (800, 600)
-            screen = pygame.display.set_mode((800, 600))
-            pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
-            pygame.display.set_caption('Breakout')
-            clock = pygame.time.Clock()
-            running = True
-            while running:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
-                pygame.display.update()
-                clock.tick(60)
-            pygame.quit()
-            quit()    
+    def game_loop(self):
+        pygame.init()
+        screen_res = (800, 600)
+        screen = pygame.display.set_mode((800, 600))
+        pygame.draw.rect(screen, (0, 0, 0), ((0, 0), screen_res))
+        pygame.display.set_caption('Breakout')
+        clock = pygame.time.Clock()
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            pygame.display.update()
+            clock.tick(60)
+        pygame.quit()
+        quit()    
 
 
 if __name__ == '__main__':
