@@ -81,6 +81,8 @@ class Breakout:
     brick_red_col = 255, 0, 0
     brick_green_col = 0, 255, 0
     brick_blue_col = 0, 0, 255
+    rows = 3
+    columns = 20
     paddle_pos_x = 400
     paddle_pos_y = 590
     paddle_radius = 20
@@ -124,7 +126,6 @@ class Breakout:
             
     #brick_variables(self, brick_size_x, brick_size_y, brick_pos_x, brick_pos_y, brick_red_col, brick_green_col, brick_blue_col):
     #defining brick variables
-     
     
 #class for the bricks
     class Brick:
@@ -181,7 +182,8 @@ class Breakout:
                     pygame.draw.rect(screen, brick[1], brick[0])
 
     
-    brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col) 
+    brick_ob = Brick(brick_pos_x, brick_pos_y, brick_size_x, brick_size_y, brick_red_col, brick_green_col, brick_blue_col)
+    brick_ob.create_bricks(brick_size_x, brick_size_y, rows, columns)
 
 #class and methods for the paddle
     class Paddle:
