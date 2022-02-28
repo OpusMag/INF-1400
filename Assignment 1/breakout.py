@@ -87,18 +87,18 @@ class Breakout:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            #lag objekter
-            brick_ob = Brick()
-            ball_ob = Ball()
-            paddle_ob = Paddle()
-            #flytt objekter
-            paddle_ob.move_paddle()
-            ball_ob.move_ball()
-            #tegn objekter
-            brick_ob.create_bricks(rows, columns)
-            brick_ob.draw_bricks(screen)
-            ball_ob.draw_ball(screen)
-            paddle_ob.draw_paddle(screen)
+                #lag objekter
+                brick_ob = Brick()
+                ball_ob = Ball()
+                paddle_ob = Paddle()
+                #flytt objekter
+                paddle_ob.move_paddle()
+                ball_ob.move_ball()
+                #tegn objekter
+                brick_ob.create_bricks(rows, columns)
+                brick_ob.draw_bricks(screen)
+                ball_ob.draw_ball(screen)
+                paddle_ob.draw_paddle(screen)
             
             pygame.display.update()
             clock.tick(60)
@@ -147,7 +147,7 @@ class Brick:
         self.screen = screen
         for row in self.brick:
             for brick in row:
-                pygame.draw.rect(screen, brick[1], brick[0])
+                pygame.draw.rect(screen, brick[1], brick[0], 2)
 
 #class and methods for the paddle
 class Paddle:
