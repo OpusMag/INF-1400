@@ -154,15 +154,6 @@ class Ball:
     def move_ball(self, time_passed):
         self.ball_pos += self.ball_speed * time_passed
         
-        """if self.ball_pos.x < 0:
-            self.ball_speed = abs(Vector2(0, 30))
-        if self.ball_pos.y < 0:
-            self.ball_speed = abs(Vector2(30, 0))
-        if self.ball_pos.x > 800:
-            self.ball_speed = abs(Vector2(0, 30))
-        if self.ball_pos.y > 600:
-            self.ball_speed = abs(Vector2(30, 0))"""
-        
     def collision_paddle(impulse, paddle_pos_x, paddle_pos_y, paddle_radius, ball_pos, ball_radius, ball_speed):
         #tests and handles intersections between paddle and ball
         impulse = intersect_paddle_ball(paddle_pos_x, 
@@ -218,7 +209,6 @@ class Breakout:
             
             pygame.display.flip()
             pygame.display.update()
-            screen.fill((0,0,0))
             clock.tick(60)
         pygame.quit()
         quit()   
