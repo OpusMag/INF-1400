@@ -141,9 +141,9 @@ class Brick:
             self.ball_speed_x *= -1
         if self.ball_rect.bottom >= self.screen_y:
             print("Game over")
-            self.ball_speed_y *= -1
-            #pygame.quit()
-            #quit()
+            pygame.time.wait(2000)
+            pygame.quit()
+            quit()
         if self.ball_rect.top <= 0:
             self.ball_speed_y *= -1
             
@@ -184,6 +184,9 @@ class Brick:
             row_count += 1
         if bricks_destroyed == True:
             print("Victory!")
+            pygame.time.wait(2000)
+            pygame.quit()
+            quit()
 
 if __name__ == '__main__':
     br = Breakout()
