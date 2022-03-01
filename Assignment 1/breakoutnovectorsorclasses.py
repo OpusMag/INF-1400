@@ -176,7 +176,7 @@ class Brick:
                         self.ball_speed_x *= -1
                     if abs(self.ball_rect.right - item[0].left) < collide_value and self.ball_speed_x < 0:
                         self.ball_speed_x *= -1
-                        self.bricks[row_count][brick_count][0] = (0, 0, 0, 0) 
+                    self.brick[row_count][brick_count][0] = (0, 0, 0, 0) 
                 
                 if self.brick[row_count][brick_count][0] != (0, 0, 0, 0):
                     bricks_destroyed = False
