@@ -59,7 +59,7 @@ class Brick:
         self.paddle_pos = pygame.mouse.get_pos()
         self.paddle_pos_x = self.paddle_pos[0]
         self.paddle_pos_y = self.paddle_pos[1]
-        self.paddle_radius = 20
+        self.paddle_radius = 15
         self.paddle_speed_x = 0
         self.paddle_speed_y = 0
         self.paddle_rect = pygame.Rect(self.paddle_pos_x, self.paddle_pos_y, self.paddle_radius * 2, self.paddle_radius * 2)
