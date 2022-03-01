@@ -17,6 +17,7 @@ class Breakout:
         rows = 3
         columns = 22
         brick_ob = Brick()
+        brick_ob.create_bricks(rows, columns)
         #ball_ob = Ball()
         #paddle_ob = Paddle()
         
@@ -32,7 +33,6 @@ class Breakout:
             brick_ob.move_ball()
             #tegn objekter
             brick_ob.draw_paddle(self.screen)
-            brick_ob.create_bricks(rows, columns)
             brick_ob.draw_bricks(self.screen)
             brick_ob.draw_ball(self.screen)
               
@@ -150,28 +150,40 @@ class Brick:
         
         #collision detection between ball and paddle
         collide_value = 5
-        #if self.ball_rect.colliderect(self.paddle_rect):
-        if abs(self.paddle_rect.top - self.ball_rect.bottom) < collide_value and self.ball_speed_y > 0:
-            self.ball_speed_y *= -1
-        if abs(self.paddle_rect.bottom - self.ball_rect.top) < collide_value:
-            self.ball_speed_y *= -1
-        if abs(self.paddle_rect.right - self.ball_rect.left) < collide_value:
-            self.ball_speed_x *= -1
-        if abs(self.paddle_rect.left - self.ball_rect.right) < collide_value:
-            self.ball_speed_x *= -1
+        if pygame.Rect.colliderect(self.ball_rect, self.paddle_rect):
+            if abs(self.ball_rect.top - self.paddle_rect.bottom) < collide_value and self.ball_speed_y > 0:
+                self.ball_speed_y *= -1
+            if abs(self.ball_rect.bottom - self.paddle_rect.top) < collide_value and self.ball_speed_y < 0:
+                self.ball_speed_y *= -1
+            if abs(self.ball_rect.right - self.paddle_rect.left) < collide_value and self.ball_speed_x > 0:
+                self.ball_speed_x *= -1
+            if abs(self.ball_rect.left - self.paddle_rect.right) < collide_value and self.ball_speed_x < 0:
+                self.ball_speed_x *= -1
         
         #collision detection between ball and brick
         collide_value = 5
-        #if self.ball_rect.colliderect(self.brick_rect):
-        if abs(self.ball_rect.bottom - self.brick_rect.top) < collide_value and self.ball_speed_y > 0:
-            self.ball_speed_y *= -1
-        if abs(self.ball_rect.top - self.brick_rect.bottom) < collide_value and self.ball_speed_y < 0:
-            self.ball_speed_y *= -1
-        if abs(self.ball_rect.left - self.brick_rect.right) < collide_value and self.ball_speed_x > 0:
-            self.ball_speed_x *= -1
-        if abs(self.ball_rect.right - self.brick_rect.left) < collide_value and self.ball_speed_x < 0:
-            self.ball_speed_x *= -1
-            del(Brick)
+        bricks_destroyed = True
+        row_count = 0
+        for row in self.brick:
+            brick_count = 0
+            for item in row:
+                if pygame.Rect.colliderect(self.ball_rect, item[0]):
+                    if abs(self.ball_rect.bottom - item[0].top) < collide_value and self.ball_speed_y > 0:
+                        self.ball_speed_y *= -1
+                    if abs(self.ball_rect.top - item[0].bottom) < collide_value and self.ball_speed_y < 0:
+                        self.ball_speed_y *= -1
+                    if abs(self.ball_rect.left - item[0].right) < collide_value and self.ball_speed_x > 0:
+                        self.ball_speed_x *= -1
+                    if abs(self.ball_rect.right - item[0].left) < collide_value and self.ball_speed_x < 0:
+                        self.ball_speed_x *= -1
+                        self.bricks[row_count][brick_count][0] = (0, 0, 0, 0) 
+                
+                if self.brick[row_count][brick_count][0] != (0, 0, 0, 0):
+                    bricks_destroyed = False
+                brick_count += 1
+            row_count += 1
+        if bricks_destroyed == True:
+            print("Victory!")
 
 if __name__ == '__main__':
     br = Breakout()
