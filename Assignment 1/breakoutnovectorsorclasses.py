@@ -149,29 +149,29 @@ class Brick:
             
         
         #collision detection between ball and paddle
-        collide_value = 10
-        if self.ball_rect.colliderect(self.paddle_rect):
-            if abs(self.paddle_rect.top - self.ball_rect.bottom) < collide_value and self.ball_speed_y > 0:
-                self.ball_speed_y *= -1
-            if abs(self.paddle_rect.bottom - self.ball_rect.top) < collide_value:
-                self.ball_speed_y *= -1
-            if abs(self.paddle_rect.right - self.ball_rect.left) < collide_value:
-                self.ball_speed_x *= -1
-            if abs(self.paddle_rect.left - self.ball_rect.right) < collide_value:
-                self.ball_speed_x *= -1
+        collide_value = 5
+        #if self.ball_rect.colliderect(self.paddle_rect):
+        if abs(self.paddle_rect.top - self.ball_rect.bottom) < collide_value and self.ball_speed_y > 0:
+            self.ball_speed_y *= -1
+        if abs(self.paddle_rect.bottom - self.ball_rect.top) < collide_value:
+            self.ball_speed_y *= -1
+        if abs(self.paddle_rect.right - self.ball_rect.left) < collide_value:
+            self.ball_speed_x *= -1
+        if abs(self.paddle_rect.left - self.ball_rect.right) < collide_value:
+            self.ball_speed_x *= -1
         
         #collision detection between ball and brick
-        collide_value = 10
-        if self.ball_rect.colliderect(self.brick_rect):
-            if abs(self.ball_rect.bottom - self.brick_rect.top) < collide_value and self.ball_speed_y > 0:
-                self.ball_speed_y *= -1
-            if abs(self.ball_rect.top - self.brick_rect.bottom) < collide_value and self.ball_speed_y < 0:
-                self.ball_speed_y *= -1
-            if abs(self.ball_rect.left - self.brick_rect.right) < collide_value and self.ball_speed_x > 0:
-                self.ball_speed_x *= -1
-            if abs(self.ball_rect.right - self.brick_rect.left) < collide_value and self.ball_speed_x < 0:
-                self.ball_speed_x *= -1
-                del(Brick)
+        collide_value = 5
+        #if self.ball_rect.colliderect(self.brick_rect):
+        if abs(self.ball_rect.bottom - self.brick_rect.top) < collide_value and self.ball_speed_y > 0:
+            self.ball_speed_y *= -1
+        if abs(self.ball_rect.top - self.brick_rect.bottom) < collide_value and self.ball_speed_y < 0:
+            self.ball_speed_y *= -1
+        if abs(self.ball_rect.left - self.brick_rect.right) < collide_value and self.ball_speed_x > 0:
+            self.ball_speed_x *= -1
+        if abs(self.ball_rect.right - self.brick_rect.left) < collide_value and self.ball_speed_x < 0:
+            self.ball_speed_x *= -1
+            del(Brick)
 
 if __name__ == '__main__':
     br = Breakout()
