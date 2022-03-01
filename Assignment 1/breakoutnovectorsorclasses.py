@@ -59,7 +59,7 @@ class Brick:
         self.paddle_pos = pygame.mouse.get_pos()
         self.paddle_pos_x = self.paddle_pos[0]
         self.paddle_pos_y = self.paddle_pos[1]
-        self.paddle_radius = 20
+        self.paddle_radius = 40
         self.paddle_speed_x = 0
         self.paddle_speed_y = 0
         self.paddle_rect = pygame.Rect(self.paddle_pos_x, self.paddle_pos_y, self.paddle_radius * 2, self.paddle_radius * 2)
@@ -139,13 +139,19 @@ class Brick:
         #collision detection between ball and screen
         if self.ball_rect.right >= self.screen_x or self.ball_rect.left <= 0:
             self.ball_speed_x *= -1
-        if self.ball_rect.bottom >= self.screen_y or self.ball_rect.top <= 0:
+        if self.ball_rect.bottom >= self.screen_y:
+            print("Game over")
             self.ball_speed_y *= -1
+            #pygame.quit()
+            #quit()
+        if self.ball_rect.top <= 0:
+            self.ball_speed_y *= -1
+            
         
         #collision detection between ball and paddle
-        collide_value = 10
+        collide_value = 4
         if self.collide1:
-            if abs(self.paddle_rect.top + self.ball_rect.bottom) < collide_value and self.ball_speed_y > 0:
+            if abs(self.paddle_rect.top - self.ball_rect.bottom) < collide_value and self.ball_speed_y > 0:
                 self.ball_speed_y *= -1
             if abs(self.paddle_rect.bottom - self.ball_rect.top) < collide_value:
                 self.ball_speed_y *= -1
@@ -155,11 +161,11 @@ class Brick:
                 self.ball_speed_x *= -1
         
         #collision detection between ball and brick
-        collide_value = 10
+        collide_value = 4
         if self.collide2:
             if abs(self.brick_rect.bottom + self.ball_rect.top) < collide_value and self.ball_speed_y > 0:
                 self.ball_speed_y *= -1
-                kill(Brick)
+                del(Brick)
 
 if __name__ == '__main__':
     br = Breakout()
