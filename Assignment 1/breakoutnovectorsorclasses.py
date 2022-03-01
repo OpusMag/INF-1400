@@ -66,8 +66,8 @@ class Brick:
         self.ball_pos_x = 400
         self.ball_pos_y = 300
         self.ball_radius = 5
-        self.ball_speed_x = 2
-        self.ball_speed_y = 2
+        self.ball_speed_x = 3
+        self.ball_speed_y = 3
         self.ball_rect = pygame.Rect(self.ball_pos_x, self.ball_pos_y, self.ball_radius * 2, self.ball_radius * 2)
         self.collide = pygame.Rect.colliderect(self.ball_rect, self.paddle_rect)
         #self.collide2 = pygame.Rect.colliderect(self.ball_rect, self.brick_rect)
@@ -113,7 +113,7 @@ class Brick:
     def move_paddle(self):
         self.paddle_pos = pygame.mouse.get_pos()
         self.paddle_rect.x = self.paddle_pos[0]
-        self.paddle_rect.y = 580
+        self.paddle_rect.y = 590
         #self.paddle_pos.x = paddle_pos[0]
         #self.paddle_rect.y = 600
         #pygame.display.update()
