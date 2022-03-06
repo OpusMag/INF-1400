@@ -28,13 +28,19 @@ class Game_loop:
 #Here all the code for moving the boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
     def __init__(self):
+    
     def move():
+        boids_speed = Vector2(1, 1)
+        hoiks_speed = Vector2(1, 1)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects:
     def __init__(self):
     
         def draw():
+            pygame.Rect(rect_pos_x, rect_pos_y, rect_size_x, rect_size_y)
+            pygame.draw.circle(screen, (color), (circle pos x, circle pos y), circle radius, 0)
+            pygame.draw.polygon(game_window, (0,0,0), points)
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
@@ -52,6 +58,7 @@ class Hoiks(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
 class Skyscrapers(Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
     #draw method is inherited from Drawable_objects
     #rectangles
 
