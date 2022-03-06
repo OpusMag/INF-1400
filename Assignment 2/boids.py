@@ -28,30 +28,28 @@ class Game_loop:
 #Here all the code for moving the boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
     def __init__(self):
-    
-    def move():
+        def move():
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects:
     def __init__(self):
-        
-    def draw():
-
+    
+        def draw():
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
-    super().__init__()
+        super().__init__()
     #move is inherited from Moving_objects
     
-class Predators(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
+class Hoiks(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
-    super().__init__()
+        super().__init__()
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
 
 class Skyscrapers(Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
-    super().__init__()
+        super().__init__()
         
     #draw method is inherited from Drawable_objects
 
