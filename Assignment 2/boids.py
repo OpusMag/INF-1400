@@ -10,6 +10,9 @@ class Game_loop:
         clock = pygame.time.Clock()
         time_passed = clock.tick(30) / 1000.0
 
+        all_sprites_list = pygame.sprite.Group()
+        all_sprites_list.add(object_)
+
         running = True
         while running:
             for event in pygame.event.get():
@@ -24,10 +27,9 @@ class Game_loop:
 
 #Here all the code for moving the boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
-
     def __init__(self):
-        
-        def move():
+    
+    def move():
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects:
@@ -36,21 +38,21 @@ class Drawable_objects:
     def draw():
 
 
-class Boids(Moving_objects, Drawable_objects):
-    def __init__(Moving_objects, Drawable_objects):
+class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
+    def __init__(self):
+    super().__init__()
     #move is inherited from Moving_objects
     
-class Predators(Moving_objects, Drawable_objects):
-    def __init__(Moving_objects, Drawable_objects):
+class Predators(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
+    def __init__(self):
+    super().__init__()
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
 
-class Skyscrapers:
-    def __init__(Moving_objects, Drawable_objects):
-        self.x = 400
-        self.y = 300
-        self.size_x = 20
-        self.sixe_y = 20
+class Skyscrapers(Drawable_objects, pygame.sprite.Sprite):
+    def __init__(self):
+    super().__init__()
+        
     #draw method is inherited from Drawable_objects
 
     """Hva må lages? Enkleste først? Statiske objekter på skjermen som boidsene skal unngå. Nummer 2: lag predators som flyr på tvers av skjermen 
