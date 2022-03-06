@@ -1,9 +1,9 @@
-import pygame
 from pygame import Vector2
+import pygame
 
 class Game_loop:
 
-    def game_loop():
+    def game_loop(self):
         pygame.init()
         screen = pygame.display.set_mode((800, 600), 0, 32)
         pygame.display.set_caption('Boids')
@@ -28,7 +28,7 @@ class Game_loop:
 #Here all the code for moving the boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
     def __init__(self):
-        def move():
+    def move():
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects:
@@ -40,18 +40,20 @@ class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
     #move is inherited from Moving_objects
+    #circles
     
 class Hoiks(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
+    #triangles
 
 class Skyscrapers(Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        
     #draw method is inherited from Drawable_objects
+    #rectangles
 
     """Hva må lages? Enkleste først? Statiske objekter på skjermen som boidsene skal unngå. Nummer 2: lag predators som flyr på tvers av skjermen 
     for å prøve og spise boidsene. Kan bare gi dem en fart og en retning og når de kommer til enden av skjermen kan de snu eller dukke opp der de
