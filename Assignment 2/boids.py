@@ -37,21 +37,22 @@ class Moving_objects:
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self, screen):
+        self.all_sprite_list = pygame.sprite.Group()
         for h in range (50):
             self.boids_ob = Drawable_objects((255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
             self.boids_ob.rect.x = self.rect[0]
             self.boids_ob.rect.y = self.rect[1]
-            all_sprites_list.add(self.boids_ob)
+            self.all_sprites_list.add(self.boids_ob)
         for i in range (5):
             self.hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800)), 10, 0)
             self.hoiks_ob.rect.x = self.rect[0]
             self.hoiks_ob.rect.y = self.rect[1]
-            all_sprites_list.add(self.hoiks_ob)
+            self.all_sprites_list.add(self.hoiks_ob)
         for j in range (5):
             self.skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)), 50)
             self.skyscraper_ob.rect.x = self.rect[0]
             self.skyscraper_ob.rect.y = self.rect[1]
-            all_sprites_list.add(self.skyscraper_ob)
+            self.all_sprites_list.add(self.skyscraper_ob)
             
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
