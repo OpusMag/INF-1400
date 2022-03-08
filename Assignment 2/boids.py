@@ -1,5 +1,6 @@
 from pygame import Vector2
 import pygame
+import random
 
 class Game_loop:
 
@@ -11,13 +12,15 @@ class Game_loop:
         time_passed = clock.tick(30) / 1000.0
 
         all_sprites_list = pygame.sprite.Group()
-        all_sprites_list.add(object_)
+        #all_sprites_list.add(object_)
 
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    
+                    all_sprites_list.draw(screen)
 
                     pygame.display.flip()
             pygame.display.update()
@@ -29,28 +32,42 @@ class Game_loop:
 class Moving_objects:
     def __init__(self):
     
-    def move():
-        boids_speed = Vector2(1, 1)
-        hoiks_speed = Vector2(1, 1)
+        def move():
+            boids_speed = Vector2(1, 1)
+            hoiks_speed = Vector2(1, 1)
 
 #this is the class that holds the draw method that the other classes inherits from
-class Drawable_objects:
-    def __init__(self):
-    
-        def draw():
-            pygame.Rect(rect_pos_x, rect_pos_y, rect_size_x, rect_size_y)
-            pygame.draw.circle(screen, (color), (circle pos x, circle pos y), circle radius, 0)
-            pygame.draw.polygon(game_window, (0,0,0), points)
+class Drawable_objects(pygame.sprite.Sprite):
+    def __init__(self, screen):
+        for h in range (50):
+            boids_ob = Drawable_objects((255, 255, 255), rect[0]+ )
+            boids_ob.rect.x = rect[0]
+            boids_ob.rect.y = rect[1]
+            all_sprites_list.add(boids_ob)
+        for i in range (5):
+            hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800), 10, 0)
+            hoiks_ob.rect.x = rect[0]
+            hoiks_ob.rect.y = rect[1]
+            hoiks_ob.rect.size_x = 
+            all_sprites_list.add(hoiks_ob)
+        for j in range (5):
+            skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)) 50, 50)
+            skyscraper_ob.rect.x = rect[0]
+            skyscraper_ob.rect.y = rect[1]
+            all_sprites_list.add(skyscraper_ob)
+            
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
     #move is inherited from Moving_objects
     #circles
     
 class Hoiks(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
     #triangles
