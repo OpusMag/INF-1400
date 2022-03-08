@@ -31,30 +31,27 @@ class Game_loop:
 #Here all the code for moving the boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
     def __init__(self):
-    
-        def move():
-            boids_speed = Vector2(1, 1)
-            hoiks_speed = Vector2(1, 1)
+        boids_speed = Vector2(1, 1)
+        hoiks_speed = Vector2(1, 1)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self, screen):
         for h in range (50):
-            boids_ob = Drawable_objects((255, 255, 255), rect[0]+ )
-            boids_ob.rect.x = rect[0]
-            boids_ob.rect.y = rect[1]
-            all_sprites_list.add(boids_ob)
+            self.boids_ob = Drawable_objects((255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
+            self.boids_ob.rect.x = self.rect[0]
+            self.boids_ob.rect.y = self.rect[1]
+            all_sprites_list.add(self.boids_ob)
         for i in range (5):
-            hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800), 10, 0)
-            hoiks_ob.rect.x = rect[0]
-            hoiks_ob.rect.y = rect[1]
-            hoiks_ob.rect.size_x = 
-            all_sprites_list.add(hoiks_ob)
+            self.hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800)), 10, 0)
+            self.hoiks_ob.rect.x = self.rect[0]
+            self.hoiks_ob.rect.y = self.rect[1]
+            all_sprites_list.add(self.hoiks_ob)
         for j in range (5):
-            skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)) 50, 50)
-            skyscraper_ob.rect.x = rect[0]
-            skyscraper_ob.rect.y = rect[1]
-            all_sprites_list.add(skyscraper_ob)
+            self.skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)), 50)
+            self.skyscraper_ob.rect.x = self.rect[0]
+            self.skyscraper_ob.rect.y = self.rect[1]
+            all_sprites_list.add(self.skyscraper_ob)
             
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
