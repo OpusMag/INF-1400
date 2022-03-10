@@ -3,35 +3,6 @@ import pygame
 import random
 import math
 
-class Simulation_loop:
-
-    def game_loop(self):
-        pygame.init()
-        screen = pygame.display.set_mode((800, 600), 0, 32)
-        pygame.display.set_caption('self.boids')
-        clock = pygame.time.Clock()
-        time_passed = clock.tick(30) / 1000.0
-
-        all_sprites_list = pygame.sprite.Group()
-        self.self.boids_ob = Drawable_objects(screen, (255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
-        self.hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800)), 10, 0)
-        self.skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)), 50)
-        all_sprites_list.add(self.self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
-
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    
-                    all_sprites_list.draw(screen)
-
-                    pygame.display.flip()
-            pygame.display.update()
-            clock.tick(60)
-        pygame.quit()
-        quit() 
-
 #Here all the code for moving the self.boids and hoiks goes. Other classes inherits from this
 class Moving_objects:
     def __init__(self):
@@ -228,6 +199,35 @@ class Skyscrapers(Drawable_objects, pygame.sprite.Sprite):
         self.skyscraper.append(self.single_skyscraper)
     #draw method is inherited from Drawable_objects
     #rectangles
+    
+class Simulation_loop(Drawable_objects, Moving_objects):
+
+    def game_loop(self):
+        pygame.init()
+        screen = pygame.display.set_mode((800, 600), 0, 32)
+        pygame.display.set_caption('Boids')
+        clock = pygame.time.Clock()
+        time_passed = clock.tick(30) / 1000.0
+
+        all_sprites_list = pygame.sprite.Group()
+        self.self.boids_ob = Drawable_objects(screen, (255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
+        self.hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800)), 10, 0)
+        self.skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)), 50)
+        all_sprites_list.add(self.self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
+
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    
+                    all_sprites_list.draw(screen)
+
+                    pygame.display.flip()
+            pygame.display.update()
+            clock.tick(60)
+        pygame.quit()
+        quit() 
 
     """Hva må lages? Enkleste først? Statiske objekter på skjermen som self.boidsene skal unngå. Nummer 2: lag predators som flyr på tvers av skjermen 
     for å prøve og spise self.boidsene. Kan bare gi dem en fart og en retning og når de kommer til enden av skjermen kan de snu eller dukke opp der de
