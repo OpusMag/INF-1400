@@ -11,6 +11,7 @@ class Moving_objects:
         self.hoiks_rect[0] += self.self.boids_speed[0]
         self.hoiks_rect[1] += self.self.boids_speed[1]
         
+    def collision_screen(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
         if self.self.boids_rect.right >= self.screen_x or self.self.boids_rect.left <= 0:
             self.self.boids_speed_x *= -1
@@ -18,6 +19,8 @@ class Moving_objects:
             self.self.boids_speed_x *= -1
         if self.self.boids_rect.top <= 0:
             self.self.boids_speed_y *= -1
+    
+    def collision_hoiks(self):
         #collision control between hoiks and boids (taken and modified from breakoutnovectorsorclasses.py handed in for last work requirement)
         #boid count is reduced by one if a hoik hits a boid to simulate the hoik "eating" the boid
         #collision detection between ball and paddle
@@ -129,25 +132,25 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
-        self.self.boids_col = (255, 255, 255)
-        self.self.boids_pos = Vector2(0, 0)
-        self.self.boids_size_x = 10
-        self.self.boids_size_y = 10
-        self.self.boids_speed = Vector2(1, 1)
-        self.self.boids_rect = pygame.Rect(self.self.boids_pos[0], self.self.boids_pos[1], self.self.boids_size_x, self.self.boids_size_y)
-        pygame.draw.polygon(screen, (self.self.boids_col), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)))
+        self.boids_col = (255, 255, 255)
+        self.boids_pos = Vector2(0, 0)
+        self.boids_size_x = 10
+        self.boids_size_y = 10
+        self.boids_speed = Vector2(1, 1)
+        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
+        
         self.hoiks_col = (255, 0, 0)
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_radius = 10
         self.hoiks_speed = Vector2(1, 1)
         self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
-        pygame.draw.circle(screen, (self.hoiks_col), (self.hoiks_rect[0], self.hoiks_rect[1]), self.hoiks_radius)
+        
         self.skycraper_col = (192, 192, 192)
         self.skyscraper_pos = Vector2(20, 20)
         self.skyscraper_size_x = 40
         self.skyscraper_size_y = 40
         self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
-        pygame.draw.rect(screen, self.skyscraper_rect[0], self.skyscraper_rect[1], 1)
+        
         
 
 class Boids(Moving_objects, Drawable_objects, pygame.sprite.Sprite):
@@ -210,7 +213,7 @@ class Simulation_loop(Drawable_objects, Moving_objects):
         time_passed = clock.tick(30) / 1000.0
 
         all_sprites_list = pygame.sprite.Group()
-        self.self.boids_ob = Drawable_objects(screen, (255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
+        self.boids_ob = Drawable_objects(screen, (255, 255, 255), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)) )
         self.hoiks_ob = Drawable_objects(screen, (255, 0, 0),(random.randint(0, 800), random.randint(0, 800)), 10, 0)
         self.skyscraper_ob = Drawable_objects(screen, (192, 192, 192),(random.randint(0, 800), random.randint(0, 800)), 50)
         all_sprites_list.add(self.self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
@@ -222,7 +225,9 @@ class Simulation_loop(Drawable_objects, Moving_objects):
                     running = False
                     
                     all_sprites_list.draw(screen)
-
+                    pygame.draw.polygon(screen, (self.self.boids_col), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)))
+                    pygame.draw.circle(screen, (self.hoiks_col), (self.hoiks_rect[0], self.hoiks_rect[1]), self.hoiks_radius)
+                    pygame.draw.rect(screen, self.skyscraper_rect[0], self.skyscraper_rect[1], 1)
                     pygame.display.flip()
             pygame.display.update()
             clock.tick(60)
