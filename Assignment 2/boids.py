@@ -133,6 +133,7 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.max_length = 1
         self.angle = 0
     
+    #method for drawing boids
     def draw_boids(self):
         self.boids_col = (255, 255, 255)
         self.boids_pos = Vector2(0, 0)
@@ -140,12 +141,16 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.boids_size_y = 10
         self.boids_speed = Vector2(1, 1)
         self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
+    
+    #method for drawing hoiks
     def draw_hoiks(self):
         self.hoiks_col = (255, 0, 0)
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_radius = 10
         self.hoiks_speed = Vector2(1, 1)
         self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
+        
+    #method for drawing skyscrapers
     def draw_skyscraper(self):
         self.skycraper_col = (192, 192, 192)
         self.skyscraper_pos = Vector2(20, 20)
