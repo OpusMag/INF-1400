@@ -50,6 +50,10 @@ class Moving_objects(Drawable_objects):
         self.hoiks_size_y = self.hoiks_radius * 2
         self.hoiks_speed = Vector2(1, 1)
         self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
+        self.skyscraper_pos = Vector2(20, 20)
+        self.skyscraper_size_x = 40
+        self.skyscraper_size_y = 40
+        self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
         self.boids_rect[0] += self.boids_speed[0]
         self.boids_rect[1] += self.boids_speed[1]
         self.hoiks_rect[0] += self.hoiks_speed[0]
@@ -192,8 +196,9 @@ class Hoiks(Moving_objects, pygame.sprite.Sprite):
     #triangles
 
 class Skyscrapers(Moving_objects, pygame.sprite.Sprite):
-    pass
-        
+    def __init__(self, skyscraper_rect):
+        super().__init__(self, skyscraper_rect)
+        self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
     #draw method is inherited from Drawable_objects
     #rectangles
     
@@ -273,7 +278,7 @@ class Simulation_loop(Moving_objects):
             all_sprites_list.draw(screen)
             pygame.draw.polygon(screen, (self.boids_col), ((590, 600), (580, 570), (560, 550)))
             pygame.draw.circle(screen, (self.hoiks_col), (self.hoiks_rect[0], self.hoiks_rect[1]), self.hoiks_radius)
-            pygame.draw.rect(screen, (self.skyscraper_col), (self.skyscraper_rect[0], self.skyscraper_rect[1]), 1)
+            pygame.draw.rect(screen, (self.skyscraper_col), self.skyscraper_rect)
             clock.tick(60)
         pygame.quit()
         quit() 
