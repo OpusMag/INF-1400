@@ -21,7 +21,7 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.boids_pos = Vector2(0, 0)
         self.boids_size_x = 10
         self.boids_size_y = 10
-        self.boids_speed = Vector2(1, 1)
+        self.boids_speed = Vector2(10, 10)
         self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_size_x = self.hoiks_radius * 2
@@ -40,8 +40,9 @@ class Moving_objects(Drawable_objects):
         super().__init__(self, boids_rect, boids_speed)
         self.boids_rect[0] += self.boids_speed[0]
         self.boids_rect[1] += self.boids_speed[1]
-        self.hoiks_rect[0] += self.boids_speed[0]
-        self.hoiks_rect[1] += self.boids_speed[1]
+        self.hoiks_rect[0] += self.hoiks_speed[0]
+        self.hoiks_rect[1] += self.hoiks_speed[1]
+
 
 class Boids(Moving_objects, pygame.sprite.Sprite):
     def __init__(self):
@@ -164,9 +165,15 @@ class Boids(Moving_objects, pygame.sprite.Sprite):
     #circles
     
 class Hoiks(Moving_objects, pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        
+    def __init__(self, screen, hoiks_rect, hoiks_speed_x, hoiks_speed_y):
+        super().__init__(self, screen, hoiks_rect, hoiks_speed_x, hoiks_speed_y)
+        #collision control hoiks: keep hoiks from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        if self.hoiks_rect.right >= self.screen_x or self.hoiks_rect.left <= 0:
+            self.hoiks_speed_x *= -1
+        if self.hoiks_rect.bottom >= self.screen_y:
+            self.hoiks_speed_x *= -1
+        if self.hoiks_rect.top <= 0:
+            self.hoiks_speed_y *= -1
         
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -179,18 +186,8 @@ class Skyscrapers(Moving_objects, pygame.sprite.Sprite):
     #rectangles
     
 class Simulation_loop(Moving_objects):
-
-    def game_loop(self):
-        pygame.init()
-        screen = pygame.display.set_mode((800, 600), 0, 32)
-        pygame.display.set_caption('Boids')
-        clock = pygame.time.Clock()
-        time_passed = clock.tick(30) / 1000.0
-        all_sprites_list = pygame.sprite.Group()
-        self.boids_ob = Drawable_objects()
-        self.hoiks_ob = Drawable_objects()
-        self.skyscraper_ob = Drawable_objects()
-
+    
+    def create_boids(self):
         self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
         self.boids = []
         self.single_boid = []
@@ -202,6 +199,7 @@ class Simulation_loop(Moving_objects):
         self.boids.append(self.single_boid)
         self.boid_count += 1
         
+    def create_hoiks(self):
         self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
         self.hoiks = []
         self.single_hoik = []
@@ -212,7 +210,8 @@ class Simulation_loop(Moving_objects):
             self.all_sprites_list.add(self.hoiks_ob)
         self.hoiks.append(self.single_hoik)
         self.hoik_count += 1
-        
+    
+    def create_skyscrapers(self):
         self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
         self.skyscraper = []
         self.single_skyscraper = []
@@ -221,6 +220,23 @@ class Simulation_loop(Moving_objects):
             self.skyscraper_ob.rect.y = self.rect[1]
             self.all_sprites_list.add(self.skyscraper_ob)
         self.skyscraper.append(self.single_skyscraper)
+
+
+    def game_loop(self):
+        pygame.init()
+        screen = pygame.display.set_mode((800, 600), 0, 32)
+        pygame.display.set_caption('Boids')
+        clock = pygame.time.Clock()
+        time_passed = clock.tick(30) / 1000.0
+        all_sprites_list = pygame.sprite.Group()
+        self.boids_ob = Drawable_objects()
+        self.boids_ob.create_boids(self)
+        self.hoiks_ob = Drawable_objects()
+        self.hoiks_ob.create_hoiks(self)
+        self.skyscraper_ob = Drawable_objects()
+        self.skyscraper_ob.create_skyscraper(self)
+
+        
 
         all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
 
@@ -239,7 +255,7 @@ class Simulation_loop(Moving_objects):
             clock.tick(60)
         pygame.quit()
         quit() 
-
+        
     """Hva må lages? Enkleste først? Statiske objekter på skjermen som self.boidsene skal unngå. Nummer 2: lag predators som flyr på tvers av skjermen 
     for å prøve og spise self.boidsene. Kan bare gi dem en fart og en retning og når de kommer til enden av skjermen kan de snu eller dukke opp der de
     startet igjen. De statiske bbjektene kan være firkanter, predators kan være trekanter og self.boidsene kan være sirkler."""
