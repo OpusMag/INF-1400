@@ -210,8 +210,8 @@ class Simulation_loop(Moving_objects):
         self.single_boid = []
         self.boid_count = 0
         for h in range (50):
-            self.boids_ob.rect.x = self.boids.pos[0]
-            self.boids_ob.rect.y = self.boids.pos[1]
+            self.boids_ob.rect.x = self.boids.rect[0]
+            self.boids_ob.rect.y = self.boids.rect[1]
             self.all_sprites_list.add(self.boids_ob)
         self.boids.append(self.single_boid)
         self.boid_count += 1
