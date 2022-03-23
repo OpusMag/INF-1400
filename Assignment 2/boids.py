@@ -7,8 +7,8 @@ import math
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self):
         self.screen = (800, 600)
-        self.all_sprite_list = pygame.sprite.Group()
-        self.all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
+        #self.all_sprite_list = pygame.sprite.Group()
+        #self.all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
@@ -36,8 +36,19 @@ class Drawable_objects(pygame.sprite.Sprite):
 
 #Here all the code for moving the self.boids and hoiks goes. Other classes inherits from this
 class Moving_objects(Drawable_objects):
-    def __init__(self, boids_rect, boids_speed):
-        super().__init__(self, boids_rect, boids_speed)
+    def __init__(self):
+        super().__init__()
+        self.boids_pos = Vector2(0, 0)
+        self.boids_size_x = 10
+        self.boids_size_y = 10
+        self.boids_speed = Vector2(10, 10)
+        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
+        self.hoiks_pos = Vector2(10, 10)
+        self.hoiks_radius = 10
+        self.hoiks_size_x = self.hoiks_radius * 2
+        self.hoiks_size_y = self.hoiks_radius * 2
+        self.hoiks_speed = Vector2(1, 1)
+        self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
         self.boids_rect[0] += self.boids_speed[0]
         self.boids_rect[1] += self.boids_speed[1]
         self.hoiks_rect[0] += self.hoiks_speed[0]
@@ -238,7 +249,7 @@ class Simulation_loop(Moving_objects):
 
         
 
-        all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
+        #all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
 
         running = True
         while running:
