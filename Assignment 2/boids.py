@@ -35,11 +35,11 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
     
     def create_boids(self):
-        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
         self.boids_pos = Vector2(0, 0)
         self.boids_size_x = 10
         self.boids_size_y = 10
         self.boids_speed = Vector2(10, 10)
+        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
         self.boids = []
         self.single_boid = []
         self.boid_count = 0
@@ -51,12 +51,12 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.boid_count += 1
         
     def create_hoiks(self):
-        self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_radius = 10
         self.hoiks_size_x = self.hoiks_radius * 2
         self.hoiks_size_y = self.hoiks_radius * 2
         self.hoiks_speed = Vector2(1, 1)
+        self.hoiks_rect = pygame.Rect(self.hoiks_pos[0], self.hoiks_pos[1], self.hoiks_size_x, self.hoiks_size_y)
         self.hoiks = []
         self.single_hoik = []
         self.hoik_count = 0
@@ -68,10 +68,10 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.hoik_count += 1
     
     def create_skyscraper(self):
-        self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
         self.skyscraper_pos = Vector2(20, 20)
         self.skyscraper_size_x = 40
         self.skyscraper_size_y = 40
+        self.skyscraper_rect = pygame.Rect(self.skyscraper_pos[0], self.skyscraper_pos[1], self.skyscraper_size_x, self.skyscraper_size_y)
         self.skyscraper = []
         self.single_skyscraper = []
         for j in range (5):
@@ -84,11 +84,11 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self):
         super().__init__()
-        """self.boids_pos = Vector2(0, 0)
+        self.boids_pos = Vector2(0, 0)
         self.boids_size_x = 10
         self.boids_size_y = 10
         self.boids_speed = Vector2(10, 10)
-        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)"""
+        self.boids_rect = pygame.Rect(self.boids_pos[0], self.boids_pos[1], self.boids_size_x, self.boids_size_y)
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_radius = 10
         self.hoiks_size_x = self.hoiks_radius * 2
