@@ -201,6 +201,8 @@ class Simulation_loop(Moving_objects):
     
     
     def create_boids(self):
+        boids_ob = Simulation_loop()
+        boids_ob.create_boids()
         self.boids_pos = Vector2(0, 0)
         self.boids_size_x = 10
         self.boids_size_y = 10
@@ -210,13 +212,15 @@ class Simulation_loop(Moving_objects):
         self.single_boid = []
         self.boid_count = 0
         for h in range (50):
-            self.boids_ob.rect.x = self.boids.rect[0]
-            self.boids_ob.rect.y = self.boids.rect[1]
+            self.boids_ob.rect.x = self.boids_rect[0]
+            self.boids_ob.rect.y = self.boids_rect[1]
             self.all_sprites_list.add(self.boids_ob)
         self.boids.append(self.single_boid)
         self.boid_count += 1
         
     def create_hoiks(self):
+        hoiks_ob = Simulation_loop()
+        hoiks_ob.create_hoiks()
         self.hoiks_pos = Vector2(10, 10)
         self.hoiks_radius = 10
         self.hoiks_size_x = self.hoiks_radius * 2
@@ -227,13 +231,15 @@ class Simulation_loop(Moving_objects):
         self.single_hoik = []
         self.hoik_count = 0
         for i in range (5):
-            self.hoiks_ob.rect.x = self.hoiks.rect[0]
-            self.hoiks_ob.rect.y = self.hoiks.rect[1]
+            self.hoiks_ob.rect.x = self.hoiks_rect[0]
+            self.hoiks_ob.rect.y = self.hoiks_rect[1]
             self.all_sprites_list.add(self.hoiks_ob)
         self.hoiks.append(self.single_hoik)
         self.hoik_count += 1
     
     def create_skyscraper(self):
+        skyscraper_ob = Simulation_loop()
+        skyscraper_ob.create_skyscraper()
         self.skyscraper_pos = Vector2(20, 20)
         self.skyscraper_size_x = 40
         self.skyscraper_size_y = 40
@@ -241,8 +247,8 @@ class Simulation_loop(Moving_objects):
         self.skyscraper = []
         self.single_skyscraper = []
         for j in range (5):
-            self.skyscraper_ob.rect.x = self.skyscraper.rect[0]
-            self.skyscraper_ob.rect.y = self.skyscraper.rect[1]
+            self.skyscraper_ob.rect.x = self.skyscraper_rect[0]
+            self.skyscraper_ob.rect.y = self.skyscraper_rect[1]
             self.all_sprites_list.add(self.skyscraper_ob)
         self.skyscraper.append(self.single_skyscraper)
 
@@ -254,15 +260,6 @@ class Simulation_loop(Moving_objects):
         clock = pygame.time.Clock()
         time_passed = clock.tick(30) / 1000.0
         all_sprites_list = pygame.sprite.Group()
-        boids_ob = Simulation_loop()
-        boids_ob.create_boids()
-        hoiks_ob = Simulation_loop()
-        hoiks_ob.create_hoiks()
-        skyscraper_ob = Simulation_loop()
-        skyscraper_ob.create_skyscraper()
-
-        
-
         #all_sprites_list.add(self.boids_ob, self.hoiks_ob, self.skyscraper_ob)
 
         running = True
@@ -274,7 +271,7 @@ class Simulation_loop(Moving_objects):
                     pygame.display.flip()
             pygame.display.update()
             all_sprites_list.draw(screen)
-            pygame.draw.polygon(screen, (self.boids_col), (random.randint(0, 800), random.randint(0, 800), random.randint(0, 800)))
+            pygame.draw.polygon(screen, (self.boids_col), ((590, 600), (580, 570), (560, 550)))
             pygame.draw.circle(screen, (self.hoiks_col), (self.hoiks_rect[0], self.hoiks_rect[1]), self.hoiks_radius)
             pygame.draw.rect(screen, self.skyscraper_rect[0], self.skyscraper_rect[1], 1)
             clock.tick(60)
