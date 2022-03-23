@@ -14,7 +14,7 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.angle = 0
         self.boids_col = (255, 255, 255)
         self.hoiks_col = (255, 0, 0)
-        self.skycraper_col = (192, 192, 192)
+        self.skyscraper_col = (192, 192, 192)
     
     #method for drawing boids
     def draw(self):
@@ -273,7 +273,7 @@ class Simulation_loop(Moving_objects):
             all_sprites_list.draw(screen)
             pygame.draw.polygon(screen, (self.boids_col), ((590, 600), (580, 570), (560, 550)))
             pygame.draw.circle(screen, (self.hoiks_col), (self.hoiks_rect[0], self.hoiks_rect[1]), self.hoiks_radius)
-            pygame.draw.rect(screen, self.skyscraper_rect[0], self.skyscraper_rect[1], 1)
+            pygame.draw.rect(screen, (self.skyscraper_col), (self.skyscraper_rect[0], self.skyscraper_rect[1]), 1)
             clock.tick(60)
         pygame.quit()
         quit() 
