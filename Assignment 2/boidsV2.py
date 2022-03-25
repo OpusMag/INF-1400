@@ -240,7 +240,7 @@ class Simulation_loop(Moving_objects):
                     running = False
                     
                     pygame.display.flip()
-            self.update_game()
+            self.run()
             pygame.display.update()
             
             clock.tick(60)
