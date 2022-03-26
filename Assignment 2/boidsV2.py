@@ -10,15 +10,13 @@ WHITE = (255, 255, 255)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
-    def __init__(self, color, width, height, start_pos):
+    def __init__(self, color, width, height, speed):
         super().__init__()
         self.color = color
         self.image = pygame.Surface((width, height))
         self.image.fill(color)
-        self.rect = self.image.get_rect(center=start_pos)
+        self.rect = self.image.get_rect()
         
-        
-    
     #method for drawing boids
     #def draw(self):
     
@@ -213,7 +211,7 @@ class Simulation_loop(Moving_objects):
         self.create_boids()
         self.create_hoiks()
         self.create_skyscrapers()
-        self.all_sprites_list()
+        #self.all_sprites_list()
         
     def run(self):
         self.setup()
@@ -236,7 +234,7 @@ class Simulation_loop(Moving_objects):
                 if event.type == pygame.QUIT:
                     running = False
                     
-                    pygame.display.flip()
+            self.update_game()
             self.run()
         pygame.quit()
         quit() 
