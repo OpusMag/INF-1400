@@ -24,8 +24,8 @@ class Drawable_objects(pygame.sprite.Sprite):
     
 #Here all the code for moving the self.boids and hoiks goes. Other classes inherits from this
 class Moving_objects(Drawable_objects):
-    def __init__(self, color, width, height):
-        super().__init__(color, width, height)
+    def __init__(self, color, width, height, speed):
+        super().__init__(color, width, height, speed)
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
@@ -45,8 +45,7 @@ class Moving_objects(Drawable_objects):
 
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed):
-        super().__init__(self, color, width, height, speed)
-        
+        super().__init__(color, width, height, speed)
         
     def make_location(self):
         self.boids_pos = Vector2((random.randint(0, 800)), (random.randint(0, 800)))
@@ -155,7 +154,7 @@ class Boids(Moving_objects):
     
 class Hoiks(Moving_objects, pygame.sprite.Sprite):
     def __init__(self, color, width, height, speed):
-        super().__init__(self, color, width, height, speed)
+        super().__init__(color, width, height, speed)
         
     def update(self):
         self.rect.x += self.speed.x
@@ -170,7 +169,7 @@ class Hoiks(Moving_objects, pygame.sprite.Sprite):
 
 class Skyscrapers(Moving_objects):
     def __init__(self, color, width, height, speed):
-        super().__init__(self, color, width, height, speed)
+        super().__init__(color, width, height, speed)
         
     def make_location(self):
         self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
@@ -183,11 +182,11 @@ class Simulation_loop(Moving_objects):
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
-        self.screen = pygame.display.set_mode(800, 600)
+        self.screen = pygame.display.set_mode()
     
     def create_boids(self):
-        boids_ob = Boids()
         self.boids_pos = Vector2(0, 0)
+        boids_ob = Boids(WHITE, 10, 10, self.boids_pos)
         for h in range (50):
             boids_ob = Drawable_objects(WHITE, 10, 10, self.boids_pos)
             self.boids.add(boids_ob)
@@ -195,16 +194,16 @@ class Simulation_loop(Moving_objects):
         #self.boids.append(self.single_boid)
         
     def create_hoiks(self):
-        hoiks_ob = Hoiks()
         self.hoiks_pos = Vector2(10, 10)
+        hoiks_ob = Hoiks(RED, 15, 15, self.hoiks_pos)
         for i in range (5):
             hoiks_ob = Drawable_objects(RED, 15, 15, self.hoiks_pos)
             self.hoiks.add(hoiks_ob)
             self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
-        skyscraper_ob = Skyscrapers()
         self.skyscraper_pos = Vector2(20, 20)
+        skyscraper_ob = Skyscrapers(GREY, 20, 20, self.skyscraper_pos)
         for j in range (5):
             self.skyscraper_ob = Drawable_objects(GREY, 20, 20, self.skyscraper_pos)
             self.skyscrapers.add(skyscraper_ob)
