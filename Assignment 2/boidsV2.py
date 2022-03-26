@@ -7,20 +7,16 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREY = (192, 192, 192)
 WHITE = (255, 255, 255)
-screen = (800, 600)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self, color, width, height, start_pos):
         super().__init__()
-        self.screen = (800, 600)
         self.color = color
         self.image = pygame.Surface((width, height))
         self.image.fill(color)
         self.rect = self.image.get_rect(center=start_pos)
-        self.max_speed = 5
-        self.max_length = 1
-        self.angle = 0
+        
         
     
     #method for drawing boids
@@ -30,6 +26,10 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height):
         super().__init__(color, width, height)
+        self.max_speed = 5
+        self.max_length = 1
+        self.angle = 0
+        
         self.speed = Vector2(10, 10)
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
@@ -162,7 +162,7 @@ class Hoiks(Moving_objects, pygame.sprite.Sprite):
         self.rect.y += self.speed.y
     
     def make_location(self):
-        self.hoiks_pos = Vector2((random.randint(0, 800)), (random.randint(0, 800)))    
+        self.hoiks_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))    
     
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -173,7 +173,7 @@ class Skyscrapers(Moving_objects):
         super().__init__(self, color, width, height, speed)
         
     def make_location(self):
-        self.skyscrapers_pos = Vector2((random.randint(0, 800)), (random.randint(0, 800)))
+        self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
     #draw method is inherited from Drawable_objects
     #rectangles
     
@@ -183,7 +183,7 @@ class Simulation_loop(Moving_objects):
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
-        self.screen = pygame.display.set_mode()
+        self.screen = pygame.display.set_mode(800, 600)
     
     def create_boids(self):
         boids_ob = Boids()
@@ -217,8 +217,8 @@ class Simulation_loop(Moving_objects):
         self.all_sprites_list()
         
     def run(self):
-        self.setup
-        self.game_loop
+        self.setup()
+        self.game_loop()
     
     def update_game(self):
         #Oppdaterer og tegner
@@ -229,9 +229,7 @@ class Simulation_loop(Moving_objects):
         
     def game_loop(self):
         pygame.init()
-        screen = pygame.display.set_mode((800, 600), 0, 32)
         pygame.display.set_caption('Boids')
-        clock = pygame.time.Clock()
 
         running = True
         while running:
@@ -241,9 +239,6 @@ class Simulation_loop(Moving_objects):
                     
                     pygame.display.flip()
             self.run()
-            pygame.display.update()
-            
-            clock.tick(60)
         pygame.quit()
         quit() 
         
