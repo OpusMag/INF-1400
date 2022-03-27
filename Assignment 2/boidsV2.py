@@ -28,7 +28,7 @@ class Moving_objects(Drawable_objects):
         self.max_length = 1
         self.angle = 0
         
-        self.speed = Vector2(10, 40)
+        self.speed = Vector2((random.randint(0, 5)), (random.randint(0, 100)))
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
         
