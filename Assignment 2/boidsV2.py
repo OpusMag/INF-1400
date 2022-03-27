@@ -45,9 +45,6 @@ class Boids(Moving_objects):
     def __init__(self, color, width, height, speed):
         super().__init__(color, width, height, speed)
         
-    def make_location(self):
-        self.boids_pos = Vector2((random.randint(0, 800)), (random.randint(0, 800)))
-        
     def update(self):
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
@@ -65,8 +62,9 @@ class Boids(Moving_objects):
         #see source [9] in the report bibliography for the code that inspired the code for my separation, cohesion, alignment and behaviour methods
     def separation(self):
         sum = 0
-        steer = Vector2()
-
+        steer = Vector2(0, 0)
+        single_boid = []
+        self.boids = []
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -77,7 +75,7 @@ class Boids(Moving_objects):
 
         if sum > 0:
             steer = steer / sum
-            steer.normalize()
+            steer.Normalize()
             steer = steer * self.max_speed
             steer = steer - self.speed
             steer.limit(self.max_length)
@@ -88,7 +86,7 @@ class Boids(Moving_objects):
         #alignment: steer towards the average heading of local flockmates
     def alignment(self):
         sum = 0
-        steer = Vector2()
+        steer = Vector2(0, 0)
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -100,7 +98,7 @@ class Boids(Moving_objects):
 
         if sum > 0:
             steer = steer / sum
-            steer.normalize()
+            steer.Normalize()
             steer = steer * self.max_speed
             steer = steer - self.speed.Normalize()
             steer.limit(self.max_length)
@@ -111,7 +109,8 @@ class Boids(Moving_objects):
     def cohesion(self):
         sum = 0
         steer = Vector2()
-
+        single_boid = []
+        self.boids = []
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -121,7 +120,7 @@ class Boids(Moving_objects):
         if sum > 0:
             steer = steer / sum
             steer = steer - self.position
-            steer.normalize()
+            steer.Normalize()
             steer = steer * self.max_speed
             steer = steer - self.speed
             steer.limit(self.max_length)
@@ -157,10 +156,7 @@ class Hoiks(Moving_objects, pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
-    
-    def make_location(self):
-        self.hoiks_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))    
-    
+
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
     #triangles
@@ -169,8 +165,7 @@ class Skyscrapers(Moving_objects):
     def __init__(self, color, width, height, speed):
         super().__init__(color, width, height, speed)
         
-    def make_location(self):
-        self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
+    
     #draw method is inherited from Drawable_objects
     #rectangles
     
@@ -183,39 +178,35 @@ class Simulation_loop(Moving_objects):
         self.screen = pygame.display.set_mode()
     
     def create_boids(self):
-        self.boids_pos = Vector2(0, 0)
+        self.boids_pos = Vector2((random.randint (0, 600)), (random.randint(0, 600)))
         boids_ob = Boids(WHITE, 10, 10, self.boids_pos)
-        for h in range (50):
-            boids_ob = Drawable_objects(WHITE, 10, 10, self.boids_pos)
-            self.boids.add(boids_ob)
-            self.all_sprites_list.add(boids_ob)
+        self.boids.add(boids_ob)
+        self.all_sprites_list.add(boids_ob)
+        self.update_game()
         #self.boids.append(self.single_boid)
         
     def create_hoiks(self):
-        self.hoiks_pos = Vector2(10, 10)
+        self.hoiks_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600))) 
         hoiks_ob = Hoiks(RED, 15, 15, self.hoiks_pos)
-        for i in range (5):
-            hoiks_ob = Drawable_objects(RED, 15, 15, self.hoiks_pos)
-            self.hoiks.add(hoiks_ob)
-            self.all_sprites_list.add(hoiks_ob)
+        self.hoiks.add(hoiks_ob)
+        self.all_sprites_list.add(hoiks_ob)
+        self.update_game()
     
     def create_skyscrapers(self):
-        self.skyscraper_pos = Vector2(20, 20)
-        skyscraper_ob = Skyscrapers(GREY, 20, 20, self.skyscraper_pos)
-        for j in range (5):
-            self.skyscraper_ob = Drawable_objects(GREY, 20, 20, self.skyscraper_pos)
-            self.skyscrapers.add(skyscraper_ob)
-            self.all_sprites_list.add(skyscraper_ob)
+        self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
+        skyscraper_ob = Skyscrapers(GREY, 20, 20, self.skyscrapers_pos)
+        self.skyscrapers.add(skyscraper_ob)
+        self.all_sprites_list.add(skyscraper_ob)
+        self.update_game()
 
     def setup(self):
         self.create_boids()
         self.create_hoiks()
         self.create_skyscrapers()
-        #self.all_sprites_list()
         
     def run(self):
         self.setup()
-        self.game_loop()
+        #self.game_loop()
     
     def update_game(self):
         #Oppdaterer og tegner
@@ -234,7 +225,7 @@ class Simulation_loop(Moving_objects):
                 if event.type == pygame.QUIT:
                     running = False
                     
-            self.update_game()
+            #self.update_game()
             self.run()
         pygame.quit()
         quit() 
