@@ -182,7 +182,7 @@ class Simulation_loop(Moving_objects):
         boids_ob = Boids(WHITE, 10, 10, self.boids_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
-        self.update_game()
+        #self.update_game()
         #self.boids.append(self.single_boid)
         
     def create_hoiks(self):
@@ -190,23 +190,23 @@ class Simulation_loop(Moving_objects):
         hoiks_ob = Hoiks(RED, 15, 15, self.hoiks_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
-        self.update_game()
+        #self.update_game()
     
     def create_skyscrapers(self):
         self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
         skyscraper_ob = Skyscrapers(GREY, 20, 20, self.skyscrapers_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
-        self.update_game()
+        #self.update_game()
 
     def setup(self):
         self.create_boids()
         self.create_hoiks()
         self.create_skyscrapers()
+        self.update_game()
         
     def run(self):
         self.setup()
-        #self.game_loop()
     
     def update_game(self):
         #Oppdaterer og tegner
@@ -225,7 +225,6 @@ class Simulation_loop(Moving_objects):
                 if event.type == pygame.QUIT:
                     running = False
                     
-            #self.update_game()
             self.run()
         pygame.quit()
         quit() 
