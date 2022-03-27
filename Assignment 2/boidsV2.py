@@ -28,7 +28,7 @@ class Moving_objects(Drawable_objects):
         self.max_length = 1
         self.angle = 0
         
-        self.speed = Vector2(10, 10)
+        self.speed = Vector2(10, 40)
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
         
@@ -175,35 +175,34 @@ class Simulation_loop(Moving_objects):
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
-        self.screen = pygame.display.set_mode()
+        self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
     
     def create_boids(self):
         self.boids_pos = Vector2((random.randint (0, 600)), (random.randint(0, 600)))
-        boids_ob = Boids(WHITE, 10, 10, self.boids_pos)
+        boids_ob = Boids(WHITE, 15, 15, self.boids_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
-        #self.update_game()
+        self.update_game()
         #self.boids.append(self.single_boid)
         
     def create_hoiks(self):
         self.hoiks_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600))) 
-        hoiks_ob = Hoiks(RED, 15, 15, self.hoiks_pos)
+        hoiks_ob = Hoiks(RED, 25, 25, self.hoiks_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
-        #self.update_game()
+        self.update_game()
     
     def create_skyscrapers(self):
         self.skyscrapers_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
-        skyscraper_ob = Skyscrapers(GREY, 20, 20, self.skyscrapers_pos)
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.skyscrapers_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
-        #self.update_game()
-
+        self.update_game()
+        
     def setup(self):
         self.create_boids()
         self.create_hoiks()
         self.create_skyscrapers()
-        self.update_game()
         
     def run(self):
         self.setup()
