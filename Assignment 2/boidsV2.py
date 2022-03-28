@@ -10,8 +10,8 @@ WHITE = (255, 255, 255)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(self, color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, speed):
+        super().__init__()
         self.color = color
         self.image = pygame.Surface((width, height))
         self.image.fill(color)
@@ -22,8 +22,8 @@ class Drawable_objects(pygame.sprite.Sprite):
     
 #Here all the code for moving the self.boids and hoiks goes. Other classes inherits from this
 class Moving_objects(Drawable_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, speed):
+        super().__init__(color, width, height, speed)
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
@@ -42,8 +42,8 @@ class Moving_objects(Drawable_objects):
             self.speed.y *= -1
 
 class Boids(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, speed):
+        super().__init__(color, width, height, speed)
         
     def update(self):
         self.rect.x += self.speed.x
@@ -150,8 +150,8 @@ class Boids(Moving_objects):
     #circles
     
 class Hoiks(Moving_objects, pygame.sprite.Sprite):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, speed):
+        super().__init__(color, width, height, speed)
         
     def update(self):
         self.rect.x += self.speed.x
@@ -162,8 +162,8 @@ class Hoiks(Moving_objects, pygame.sprite.Sprite):
     #triangles
 
 class Skyscrapers(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, speed):
+        super().__init__(color, width, height, speed)
         
     
     #draw method is inherited from Drawable_objects
@@ -178,20 +178,23 @@ class Simulation_loop(Moving_objects):
         self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
     
     def create_boids(self):
+        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
         ob_pos = Vector2((random.randint (0, 600)), (random.randint(0, 600)))
-        boids_ob = Boids(WHITE, 15, 15, ob_pos)
+        boids_ob = Boids(WHITE, 15, 15, self.speed, ob_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
+        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
         ob_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600))) 
-        hoiks_ob = Hoiks(RED, 25, 25, ob_pos)
+        hoiks_ob = Hoiks(RED, 25, 25, self.speed, ob_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
+        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
         ob_pos = Vector2((random.randint(0, 600)), (random.randint(0, 600)))
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, ob_pos)
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, ob_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
         
