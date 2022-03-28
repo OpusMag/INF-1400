@@ -27,8 +27,8 @@ class Moving_objects(Drawable_objects):
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
-        
-        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
+        self.ob_pos = ((random.randint(0, 1000)), (random.randint(0, 1000))) 
+        self.speed = Vector2(1, 1)
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
         
@@ -40,15 +40,7 @@ class Moving_objects(Drawable_objects):
             self.speed.x *= -1
         if self.rect.top <= 0:
             self.speed.y *= -1
-
-class Boids(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
-        
-    def update(self):
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
-         
+            
     def collision_hoiks(self):
         if pygame.sprite.spritecollide(self.boids, self.hoiks, True):
             self.boids.remove(self.boids)
@@ -146,6 +138,16 @@ class Boids(Moving_objects):
             align = self.alignment(self.boids)
             align = align * self.alignment
             self.acceleration.add(align)
+
+class Boids(Moving_objects):
+    def __init__(self, color, width, height, speed, ob_pos):
+        super().__init__(color, width, height, speed, ob_pos)
+        
+    def update(self):
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
+         
+    
     #move is inherited from Moving_objects
     #circles
     
@@ -178,23 +180,23 @@ class Simulation_loop(Moving_objects):
         self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
     
     def create_boids(self):
-        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
-        ob_pos = ((random.randint (200, 1000)), (random.randint(200, 1000)))
-        boids_ob = Boids(WHITE, 15, 15, self.speed, ob_pos)
+        self.speed = Vector2(0, 0)
+        self.ob_pos = (0, 0)
+        boids_ob = Boids(WHITE, 15, 15, self.speed, self.ob_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
-        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
-        ob_pos = ((random.randint(200, 1000)), (random.randint(200, 1000))) 
-        hoiks_ob = Hoiks(RED, 25, 25, self.speed, ob_pos)
+        self.speed = Vector2(0, 0)
+        self.ob_pos = (0, 0)
+        hoiks_ob = Hoiks(RED, 25, 25, self.speed, self.ob_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
-        self.speed = Vector2((random.randint(0, 2)), (random.randint(0, 2)))
-        ob_pos = ((random.randint(200, 1000)), (random.randint(200, 1000)))
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, ob_pos)
+        self.speed = Vector2(0, 0)
+        self.ob_pos = (0, 0)
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.ob_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
         
@@ -208,6 +210,15 @@ class Simulation_loop(Moving_objects):
         
     def run(self):
         self.setup()
+        
+    def move(self):
+        self.collision_screen()
+        self.collision_hoiks()
+        self.collision_skyscrapers()
+        self.separation()
+        self.alignment()
+        self.cohesion()
+        self.behaviour()
     
     def update_game(self):
         #Oppdaterer og tegner
@@ -226,7 +237,8 @@ class Simulation_loop(Moving_objects):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                
+            
+            self.move()
             self.update_game()
         pygame.quit()
         quit() 
