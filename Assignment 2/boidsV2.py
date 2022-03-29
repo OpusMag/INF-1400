@@ -75,8 +75,12 @@ class Simulation_loop:
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
+        #self.rect = pygame.Surface.get_rect(self)
     
     def create_boids(self):
+        self.image = pygame.Surface((15, 15))
+        self.image.fill(WHITE)
+        self.b_rect = self.image.get_rect()
         self.b_speed = Vector2(1, 1)
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.ob_pos)
@@ -84,6 +88,9 @@ class Simulation_loop:
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
+        self.image = pygame.Surface((25, 25))
+        self.image.fill(RED)
+        self.h_rect = self.image.get_rect()
         self.h_speed = Vector2(1/10, 2)
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         hoiks_ob = Hoiks(RED, 25, 25, self.h_speed, self.ob_pos)
@@ -91,6 +98,9 @@ class Simulation_loop:
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(GREY)
+        self.s_rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.ob_pos)
@@ -99,19 +109,28 @@ class Simulation_loop:
     
     def collision_screen(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.rect.right >= self.screen.x or self.rect.left <= 0:
+        if self.b_rect.right >= 1920 or self.b_rect.left <= 0:
             self.speed.x *= -1
-        if self.rect.bottom >= self.screen.y:
+        if self.b_rect.bottom >= 1080:
             self.speed.x *= -1
-        if self.rect.top <= 0:
+        if self.b_rect.top <= 0:
+            self.speed.y *= -1
+            
+    def collision_screen(self):
+        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        if self.h_rect.right >= 1920 or self.h_rect.left <= 0:
+            self.speed.x *= -1
+        if self.h_rect.bottom >= 1080:
+            self.speed.x *= -1
+        if self.h_rect.top <= 0:
             self.speed.y *= -1
             
     def collision_hoiks(self):
-        if pygame.sprite.spritecollide(self.boids, self.hoiks, True):
+        if pygame.sprite.spritecollideany(self.boids, self.hoiks, True):
             self.boids.remove(self.boids)
         
     def collision_skyscrapers(self):
-        if pygame.sprite.spritecollide(self.boids, self.skyscrapers, True):
+        if pygame.sprite.spritecollideany(self.boids, self.skyscrapers, True):
             self.boids.remove(self.boids)
         
         #method for separation
