@@ -27,8 +27,10 @@ class Moving_objects(Drawable_objects):
         self.max_speed = 5
         self.max_length = 1
         self.angle = 0
-        self.ob_pos = ((random.randint(0, 1000)), (random.randint(0, 1000))) 
+        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.speed = Vector2(1, 1)
+        self.rect.x = self.ob_pos[0] 
+        self.rect.y = self.ob_pos[1]
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
         
@@ -55,8 +57,8 @@ class Moving_objects(Drawable_objects):
     def separation(self):
         sum = 0
         steer = Vector2(0, 0)
-        single_boid = []
-        self.boids = []
+        #single_boid = []
+        #self.boids = []
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -101,8 +103,8 @@ class Moving_objects(Drawable_objects):
     def cohesion(self):
         sum = 0
         steer = Vector2()
-        single_boid = []
-        self.boids = []
+        #single_boid = []
+        #self.boids = []
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -172,7 +174,8 @@ class Skyscrapers(Moving_objects):
     #rectangles
     
 class Simulation_loop(Moving_objects):
-    def __init__(self):
+    def __init__(self, color, width, height, speed, ob_pos):
+        super().__init__(color, width, height, speed, ob_pos)
         self.boids = pygame.sprite.Group()
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
@@ -248,5 +251,5 @@ class Simulation_loop(Moving_objects):
     startet igjen. De statiske bbjektene kan være firkanter, predators kan være trekanter og self.boidsene kan være sirkler."""
 if __name__ == '__main__':
     pygame.init()
-    br = Simulation_loop()
+    br = Simulation_loop(color, width, height, speed, ob_pos)
     br.game_loop()
