@@ -29,6 +29,7 @@ class Moving_objects(Drawable_objects):
         self.angle = 0
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.speed = Vector2(1, 1)
+        pygame.Surface.get_rect()
         self.rect.x = self.ob_pos[0] 
         self.rect.y = self.ob_pos[1]
         self.rect.x += self.speed.x
@@ -153,7 +154,7 @@ class Boids(Moving_objects):
     #move is inherited from Moving_objects
     #circles
     
-class Hoiks(Moving_objects, pygame.sprite.Sprite):
+class Hoiks(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
         
@@ -176,11 +177,14 @@ class Skyscrapers(Moving_objects):
 class Simulation_loop(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
+        
+        self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
+    
+    def groups(self):
         self.boids = pygame.sprite.Group()
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
-        self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
     
     def create_boids(self):
         self.speed = Vector2(0, 0)
@@ -251,5 +255,5 @@ class Simulation_loop(Moving_objects):
     startet igjen. De statiske bbjektene kan være firkanter, predators kan være trekanter og self.boidsene kan være sirkler."""
 if __name__ == '__main__':
     pygame.init()
-    br = Simulation_loop(color, width, height, speed, ob_pos)
+    br = Simulation_loop()
     br.game_loop()
