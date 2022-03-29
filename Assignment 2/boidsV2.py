@@ -29,7 +29,7 @@ class Moving_objects(Drawable_objects):
         self.angle = 0
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.speed = Vector2(1, 1)
-        pygame.Surface.get_rect()
+        #pygame.Surface.get_rect()
         self.rect.x = self.ob_pos[0] 
         self.rect.y = self.ob_pos[1]
         self.rect.x += self.speed.x
@@ -174,10 +174,8 @@ class Skyscrapers(Moving_objects):
     #draw method is inherited from Drawable_objects
     #rectangles
     
-class Simulation_loop(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
-        
+class Simulation_loop:
+    def __init__(self):
         self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
     
     def groups(self):
@@ -187,22 +185,22 @@ class Simulation_loop(Moving_objects):
         self.all_sprites_list = pygame.sprite.Group()
     
     def create_boids(self):
-        self.speed = Vector2(0, 0)
-        self.ob_pos = (0, 0)
+        self.speed = Vector2(1, 1)
+        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         boids_ob = Boids(WHITE, 15, 15, self.speed, self.ob_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
-        self.speed = Vector2(0, 0)
-        self.ob_pos = (0, 0)
+        self.speed = Vector2(1, 1)
+        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         hoiks_ob = Hoiks(RED, 25, 25, self.speed, self.ob_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
-        self.speed = Vector2(0, 0)
-        self.ob_pos = (0, 0)
+        self.speed = Vector2(1, 1)
+        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.ob_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
