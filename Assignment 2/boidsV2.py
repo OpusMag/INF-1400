@@ -1,7 +1,9 @@
 from pygame import Vector2
 import pygame
 import random
+from random import uniform
 import math
+from math import pi
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -24,9 +26,6 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        self.max_speed = 5
-        self.max_length = 1
-        self.angle = 0
         self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.speed = Vector2(1, 1)
         #pygame.Surface.get_rect()
@@ -75,6 +74,22 @@ class Simulation_loop:
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
+        vector_x = uniform(-1, 1)
+        vector_y = uniform(-1, 1)
+        self.velocity = Vector2(vector_x, vector_y)
+        self.velocity.normalize()
+		#set a random magnitude
+        self.velocity = self.velocity * uniform(1.5, 4)
+        self.acceleration = Vector2()
+        self.max_speed = 5
+        self.max_length = 1
+        self.size = 2
+        self.stroke = 5
+        self.angle = 0
+        self.hue = 0
+        self.toggles = {"separation":True, "alignment":True, "cohesion":True}
+        self.values = {"separation":0.1, "alignment":0.1, "cohesion":0.1}
+        self.radius = 40
         #self.rect = pygame.Surface.get_rect(self)
     
     def create_boids(self):
@@ -82,8 +97,8 @@ class Simulation_loop:
         self.image.fill(WHITE)
         self.b_rect = self.image.get_rect()
         self.b_speed = Vector2(1, 1)
-        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.ob_pos)
+        self.b_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.b_pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
@@ -91,9 +106,9 @@ class Simulation_loop:
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
         self.h_rect = self.image.get_rect()
-        self.h_speed = Vector2(1/10, 2)
-        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        hoiks_ob = Hoiks(RED, 25, 25, self.h_speed, self.ob_pos)
+        self.h_speed = Vector2(2, 8)
+        self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        hoiks_ob = Hoiks(RED, 25, 25, self.h_speed, self.h_pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
@@ -101,37 +116,33 @@ class Simulation_loop:
         self.image = pygame.Surface((50, 50))
         self.image.fill(GREY)
         self.s_rect = self.image.get_rect()
-        self.speed = Vector2(0, 0)
-        self.ob_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.ob_pos)
+        self.s_speed = Vector2(0, 0)
+        self.s_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.s_speed, self.s_pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
     
-    def collision_screen(self):
+    def collision_screen_b(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.b_rect.right >= 1920 or self.b_rect.left <= 0:
-            self.speed.x *= -1
-        if self.b_rect.bottom >= 1080:
-            self.speed.x *= -1
-        if self.b_rect.top <= 0:
-            self.speed.y *= -1
+        if self.b_pos[0] >= 1920 or self.b_pos[0] <= 0:
+            self.b_speed[0] *= -1
+        if self.b_pos[1] >= 1080 or self.b_pos[1] <= 0:
+            self.b_speed[1] *= -1
             
-    def collision_screen(self):
+    def collision_screen_h(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.h_rect.right >= 1920 or self.h_rect.left <= 0:
-            self.speed.x *= -1
-        if self.h_rect.bottom >= 1080:
-            self.speed.x *= -1
-        if self.h_rect.top <= 0:
-            self.speed.y *= -1
+        if self.h_pos[0] >= 1920 or self.h_rect[0] <= 0:
+            self.h_speed[0] *= -1
+        if self.h_pos[1] >= 1080 or self.h_pos[1] <= 0:
+            self.h_speed[1] *= -1
             
     def collision_hoiks(self):
-        if pygame.sprite.spritecollideany(self.boids, self.hoiks, True):
-            self.boids.remove(self.boids)
+        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
+            pass #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
         
     def collision_skyscrapers(self):
-        if pygame.sprite.spritecollideany(self.boids, self.skyscrapers, True):
-            self.boids.remove(self.boids)
+        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
+            pass
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
@@ -166,9 +177,9 @@ class Simulation_loop:
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
-                speed = self.speed.Normalize()
+                velocity = self.velocity.Normalize()
                 steer.add(speed)
-                self.color = (255, 255, 255)
+                self.color = (155, 155, 155)
                 sum += 1
 
 
@@ -176,7 +187,7 @@ class Simulation_loop:
             steer = steer / sum
             steer.Normalize()
             steer = steer * self.max_speed
-            steer = steer - self.speed.Normalize()
+            steer = steer - self.velocity.Normalize()
             steer.limit(self.max_length)
             return steer
         
@@ -198,7 +209,7 @@ class Simulation_loop:
             steer = steer - self.position
             steer.Normalize()
             steer = steer * self.max_speed
-            steer = steer - self.speed
+            steer = steer - self.velocity
             steer.limit(self.max_length)
 
         return steer
@@ -206,22 +217,28 @@ class Simulation_loop:
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
     def behaviour(self):
-        self.acceleration.reset()
+        self.speed.reset()
 
         if self.separation == True:
             avoid = self.separation(self.boids)
             avoid = avoid * self.separation
-            self.acceleration.add(avoid)
+            self.velocity.add(avoid)
 
         if self.cohesion == True:
             cohesion = self.cohesion(self.boids)
             cohesion = cohesion * self.cohesion
-            self.acceleration.add(cohesion)
+            self.velocity.add(cohesion)
 
         if self.alignment == True:
             align = self.alignment(self.boids)
             align = align * self.alignment
-            self.acceleration.add(align)
+            self.velocity.add(align)
+    
+    def update(self):
+        self.position = self.position + self.velocity
+        self.velocity = self.velocity + self.acceleration
+        self.velocity.limit(self.max_speed)
+        self.angle = self.velocity.heading() + pi/2
         
     def setup(self):
         for h in range(50):
@@ -235,13 +252,14 @@ class Simulation_loop:
         self.setup()
         
     def move(self):
-        self.collision_screen()
+        self.collision_screen_b()
+        self.collision_screen_h()
         self.collision_hoiks()
         self.collision_skyscrapers()
-        self.separation()
-        self.alignment()
-        self.cohesion()
-        self.behaviour()
+        #self.separation()
+        #self.alignment()
+        #self.cohesion()
+        #self.behaviour()
     
     def update_game(self):
         #Oppdaterer og tegner
