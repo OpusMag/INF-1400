@@ -34,10 +34,11 @@ class Moving_objects(Drawable_objects):
         self.h_speed = Vector2(2, 8)
         self.speed = Vector2(1, 1)
         #pygame.Surface.get_rect()
-        #self.rect.x = self.b_pos[0] 
-        #self.rect.y = self.b_pos[1]
-        #self.rect.x += self.speed.x
-        #self.rect.y += self.speed.y
+        #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
+        self.rect.x = self.b_pos[0] 
+        self.rect.y = self.b_pos[1]
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
         vector_x = uniform(-1, 1)
         vector_y = uniform(-1, 1)
         self.velocity = Vector2(vector_x, vector_y)
@@ -102,7 +103,7 @@ class Boids(Moving_objects):
             steer = steer / sum
             steer.normalize()
             steer = steer * self.max_speed
-            steer = steer - self.speed
+            steer = steer - self.b_speed
             steer.limit(self.max_length)
         
         return steer
@@ -155,7 +156,7 @@ class Boids(Moving_objects):
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
     def behaviour(self):
-        self.speed.reset()
+        self.b_speed.reset()
 
         if self.separation == True:
             avoid = self.separation(self.boids)
@@ -175,8 +176,8 @@ class Boids(Moving_objects):
     def update(self):
         self.b_pos = self.b_pos + self.velocity
         self.velocity = self.velocity + self.acceleration
-        self.velocity.limit(self.max_speed)
-        self.angle = self.velocity.heading() + pi/2
+        #self.velocity.limit(self.max_speed)
+        #self.angle = self.velocity.heading() + pi/2
         
     """def update(self):
         self.rect.x += self.speed.x
@@ -190,8 +191,8 @@ class Hoiks(Moving_objects):
         super().__init__(color, width, height, speed, ob_pos)
         
     def update(self):
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        self.rect.x += self.h_speed.x
+        self.rect.y += self.h_speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
