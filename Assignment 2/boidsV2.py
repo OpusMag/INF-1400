@@ -4,6 +4,8 @@ import random
 from random import uniform
 import math
 from math import pi
+import sympy
+from sympy import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -28,6 +30,8 @@ class Moving_objects(Drawable_objects):
         super().__init__(color, width, height, speed, ob_pos)
         self.b_pos = (random.randint(0, 1000), random.randint(0, 1000))
         self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        self.b_speed = Vector2(1, 1)
+        self.h_speed = Vector2(2, 8)
         self.speed = Vector2(1, 1)
         #pygame.Surface.get_rect()
         #self.rect.x = self.b_pos[0] 
@@ -215,7 +219,7 @@ class Simulation_loop:
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.b_rect = self.image.get_rect()
-        self.b_speed = Vector2(1, 1)
+        self.b_speed = Vector2(2, 2)
         self.b_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.b_pos)
         self.boids.add(boids_ob)
