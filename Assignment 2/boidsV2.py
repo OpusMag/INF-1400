@@ -49,7 +49,6 @@ class Moving_objects(Drawable_objects):
         self.angle = 0
         self.hue = 0
         self.radius = 40
-    
 
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
@@ -64,6 +63,11 @@ class Boids(Moving_objects):
         self.boids = pygame.sprite.Group()
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
+        self.flock = []
+        
+    def flock(self):
+        for i in range(50):
+            self.flock.append(Boids(random.randint(15, 1920-20), random.randint(15, 1080-20)))
         
     def boid_screen_wrap(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
@@ -75,8 +79,6 @@ class Boids(Moving_objects):
             self.b_rect.bottom = 0
         if self.b_rect.bottom > 1080:
             self.b_rect.top = 0
-                    
-    
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
@@ -86,10 +88,10 @@ class Boids(Moving_objects):
         steer = Vector2(0, 0)
         #single_boid = []
         #self.boids = []
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
-                temporary = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
+        for self.boids in self.flock:
+            distance = math.hypot(self.b_pos - self.flock, self.b_pos - self.flock.position)
+            if self.boids is not self and distance < self.radius:
+                temporary = math.hypot(self.boids - self.flock.position, self.b_pos - self.flock.position)
                 temporary = temporary/(distance ** 2)
                 steer.add(temporary)
                 sum += 1
@@ -108,9 +110,9 @@ class Boids(Moving_objects):
     def alignment(self):
         sum = 0
         steer = Vector2()
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
+        for self.boids in self.flock:
+            distance = math.hypot(self.b_pos - self.flock.position, self.b_pos - self.flock.position)
+            if self.boids is not self and distance < self.radius:
                 velocity = self.velocity.normalize()
                 steer.add(velocity)
                 self.color = (155, 155, 155)
@@ -132,15 +134,15 @@ class Boids(Moving_objects):
         steer = Vector2()
         #single_boid = []
         #self.boids = []
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
-                steer.add(self.boids)
+        for self.boids in self.flock:
+            distance = math.hypot(self.b_pos - self.flock.position, self.b_pos - self.flock.position)
+            if self.boids is not self and distance < self.radius:
+                steer.add(self.b_pos)
                 sum += 1
 
         if sum > 0:
             steer = steer / sum
-            steer = steer - self.pos
+            steer = steer - self.b_pos
             steer.normalize()
             steer = steer * self.max_speed
             steer = steer - self.velocity
@@ -154,17 +156,17 @@ class Boids(Moving_objects):
         self.speed.reset()
 
         if self.separation == True:
-            avoid = self.separation(self.boids)
+            avoid = self.separation(self.b_pos)
             avoid = avoid * self.separation
             self.velocity.add(avoid)
 
         if self.cohesion == True:
-            cohesion = self.cohesion(self.boids)
+            cohesion = self.cohesion(self.b_pos)
             cohesion = cohesion * self.cohesion
             self.velocity.add(cohesion)
 
         if self.alignment == True:
-            align = self.alignment(self.boids)
+            align = self.alignment(self.b_pos)
             align = align * self.alignment
             self.velocity.add(align)
     
@@ -204,7 +206,7 @@ class Hoiks(Moving_objects):
         self.hoiks = pygame.sprite.Group()
     
     def hoik_screen_wrap(self):
-        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        #screen wrap. Makes it so that when objects move out of the screen they reappear on the opposite side. Works but has a super long delay?
         if self.h_rect.left >= 1920: 
             self.h_rect.right = 0
         if self.h_rect.right <= 0:

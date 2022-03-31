@@ -1,3 +1,5 @@
+from email.mime import image
+import numpy
 from pygame import Vector2
 import pygame
 import random
@@ -28,157 +30,151 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        self.b_pos = (random.randint(0, 1000), random.randint(0, 1000))
-        self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        self.b_speed = Vector2(1, 1)
-        self.h_speed = Vector2(2, 8)
+        self.pos = Vector2(random.randint(0, 1000), random.randint(0, 1000))
         self.speed = Vector2(1, 1)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
-        self.rect.x = self.b_pos[0] 
-        self.rect.y = self.b_pos[1]
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
-        vector_x = uniform(-1, 1)
-        vector_y = uniform(-1, 1)
-        self.velocity = Vector2(vector_x, vector_y)
-        self.velocity.normalize()
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
 		#set a random magnitude
-        self.velocity = self.velocity * uniform(1.5, 4)
-        self.acceleration = Vector2()
-        self.max_speed = 5
+        self.perception = 50
+        vector = (numpy.random.rand(2) - 0.5)/2
+        self.acceleration = Vector2(*vector) 
+        self.velocity = Vector2(*vector)
+        self.velocity.normalize()
+        self.max_speed = 4
+        self.max_power = 5
         self.max_length = 1
         self.size = 2
         self.stroke = 5
         self.angle = 0
-        self.hue = 0
-        self.toggles = {"separation":True, "alignment":True, "cohesion":True}
-        self.values = {"separation":0.1, "alignment":0.1, "cohesion":0.1}
         self.radius = 40
-    
 
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
+        self.image = pygame.Surface((15, 15))
+        self.image.fill(WHITE)
+        self.b_pos = self.pos
+        self.b_speed = self.speed
+        self.b_rect = self.image.get_rect()
+        self.b_rect.x = self.b_pos[0] 
+        self.b_rect.y = self.b_pos[1]
+        self.boids = pygame.sprite.Group()
+        self.hoiks = pygame.sprite.Group()
+        self.skyscrapers = pygame.sprite.Group()
+        self.flock = []
         
-    def collision_screen_b(self):
-        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.b_pos[0] >= 1920 or self.b_pos[0] <= 0:
-            self.b_speed[0] *= -1
-        if self.b_pos[1] >= 1080 or self.b_pos[1] <= 0:
-            self.b_speed[1] *= -1
-            
-    def collision_screen_h(self):
-        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.h_pos[0] >= 1920 or self.h_rect[0] <= 0:
-            self.h_speed[0] *= -1
-        if self.h_pos[1] >= 1080 or self.h_pos[1] <= 0:
-            self.h_speed[1] *= -1
-            
-    def collision_hoiks(self):
-        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
-            pass #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
+    def flock(self):
+        for i in range(50):
+            self.flock.append(Boids(random.randint(15, 1920-20), random.randint(15, 1080-20)))
         
-    def collision_skyscrapers(self):
-        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
-            pass
+    def boid_screen_wrap(self):
+        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        if self.b_rect.left >= 1920: 
+            self.b_rect.right = 0
+        if self.b_rect.right <= 0:
+            self.b_rect.left = 1920
+        if self.b_rect.top > 1080:
+            self.b_rect.bottom = 0
+        if self.b_rect.bottom > 1080:
+            self.b_rect.top = 0
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
         #see source [9] in the report bibliography for the code that inspired the code for my separation, cohesion, alignment and behaviour methods
-    def separation(self):
-        sum = 0
-        steer = Vector2(0, 0)
-        #single_boid = []
-        #self.boids = []
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
-                temporary = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-                temporary = temporary/(distance ** 2)
-                steer.add(temporary)
-                sum += 1
-
-        if sum > 0:
-            steer = steer / sum
-            steer.normalize()
-            steer = steer * self.max_speed
-            steer = steer - self.b_speed
-            steer.limit(self.max_length)
-        
-        return steer
-        
-        #metode for alignment
+    
+    #metode for alignment
         #alignment: steer towards the average heading of local flockmates
-    def alignment(self):
-        sum = 0
-        steer = Vector2(0, 0)
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
-                velocity = self.velocity.normalize()
-                steer.add(velocity)
-                self.color = (155, 155, 155)
-                sum += 1
+    def align(self, boids):
+        steering = Vector2(*numpy.zeros(2))
+        total = 0
+        avg_vector= Vector2(*numpy.zeros(2))
+        for boid in boids:
+            if numpy.linalg.norm(self.b_pos - self.pos) < self.perception:
+                avg_vector += boid.velocity
+                total += 1
+        if total > 0:
+            avg_vector /= total
+            avg_vector = Vector2(*avg_vector)
+            avg_vector = (avg_vector/numpy.linalg.norm(avg_vector)) * self.max_speed
+            steering = avg_vector - self.velocity
 
-
-        if sum > 0:
-            steer = steer / sum
-            steer.normalize()
-            steer = steer * self.max_speed
-            steer = steer - self.velocity.normalize()
-            steer.limit(self.max_length)
-            return steer
-        
-        #metode for cohesion
+        return steering
+    
+    #metode for cohesion
         #cohesion: steer to move towards the average position (center of mass) of local flockmates
-    def cohesion(self):
-        sum = 0
-        steer = Vector2()
-        #single_boid = []
-        #self.boids = []
-        for single_boid in self.boids:
-            distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
-            if single_boid is not self and distance < self.radius:
-                steer.add(self.boids)
-                sum += 1
+    def cohesion(self, boids):
+        steering = Vector2(*numpy.zeros(2))
+        total = 0
+        center_of_mass = Vector2(*numpy.zeros(2))
+        for boid in boids:
+            if numpy.linalg.norm(self.b_pos - self.pos) < self.perception:
+                center_of_mass += self.b_pos
+                total += 1
+        if total > 0:
+            center_of_mass /= total
+            center_of_mass = Vector2(*center_of_mass)
+            vec_to_com = center_of_mass - self.pos
+            if numpy.linalg.norm(vec_to_com) > 0:
+                vec_to_com = (vec_to_com / numpy.linalg.norm(vec_to_com)) * self.max_speed
+            steering = vec_to_com - self.velocity
+            if numpy.linalg.norm(steering)> self.max_power:
+                steering = (steering /numpy.linalg.norm(steering)) * self.max_power
 
-        if sum > 0:
-            steer = steer / sum
-            steer = steer - self.b_pos
-            steer.normalize()
-            steer = steer * self.max_speed
-            steer = steer - self.velocity
-            steer.limit(self.max_length)
+        return steering
+    
+    def separation(self, boids):
+        steering = Vector2(*numpy.zeros(2))
+        total = 0
+        avg_vector = Vector2(*numpy.zeros(2))
+        for boid in boids:
+            distance = numpy.linalg.norm(self.b_pos - self.pos)
+            if self.pos != self.b_pos and distance < self.perception:
+                diff = self.pos - self.b_pos
+                diff /= distance
+                avg_vector += diff
+                total += 1
+        if total > 0:
+            avg_vector /= total
+            avg_vector = Vector2(*avg_vector)
+            if numpy.linalg.norm(steering) > 0:
+                avg_vector = (avg_vector / numpy.linalg.norm(steering)) * self.max_speed
+            steering = avg_vector - self.velocity
+            if numpy.linalg.norm(steering)> self.max_power:
+                steering = (steering /numpy.linalg.norm(steering)) * self.max_power
 
-        return steer
+        return steering
+        
         
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
-    def behaviour(self):
-        self.b_speed.reset()
+    def behaviour(self, boids):
+        
+        alignment = self.align(boids)
+        cohesion = self.cohesion(boids)
+        separation = self.separation(boids)
 
-        if self.separation == True:
-            avoid = self.separation(self.boids)
-            avoid = avoid * self.separation
-            self.velocity.add(avoid)
-
-        if self.cohesion == True:
-            cohesion = self.cohesion(self.boids)
-            cohesion = cohesion * self.cohesion
-            self.velocity.add(cohesion)
-
-        if self.alignment == True:
-            align = self.alignment(self.boids)
-            align = align * self.alignment
-            self.velocity.add(align)
+        self.acceleration += alignment
+        self.acceleration += cohesion
+        self.acceleration += separation
     
     def update(self):
-        self.b_pos = self.b_pos + self.velocity
-        self.velocity = self.velocity + self.acceleration
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
+        #self.pos += self.velocity
+        #self.velocity += self.acceleration
         #self.velocity.limit(self.max_speed)
         #self.angle = self.velocity.heading() + pi/2
         
+    def collision_hoiks(self):
+        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
+            self.image = pygame.transform.scale(image, (26, 26)) #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
+        
+    def collision_skyscrapers(self):
+        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
+            print("a bird in the hand is better than two in the")    
+    
     """def update(self):
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y"""
@@ -189,10 +185,29 @@ class Boids(Moving_objects):
 class Hoiks(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        
+        self.image = pygame.Surface((25, 25))
+        self.image.fill(RED)
+        self.h_pos = self.pos
+        self.h_speed = self.speed
+        self.h_rect = self.image.get_rect()
+        self.h_rect.x = self.h_pos[0] 
+        self.h_rect.y = self.h_pos[1]
+        self.hoiks = pygame.sprite.Group()
+    
+    def hoik_screen_wrap(self):
+        #screen wrap. Makes it so that when objects move out of the screen they reappear on the opposite side. Works but has a super long delay?
+        if self.h_rect.left >= 1920: 
+            self.h_rect.right = 0
+        if self.h_rect.right <= 0:
+            self.h_rect.left = 1920
+        if self.h_rect.top > 1080:
+            self.h_rect.bottom = 0
+        if self.h_rect.bottom > 1080:
+            self.h_rect.top = 0
+    
     def update(self):
-        self.rect.x += self.h_speed.x
-        self.rect.y += self.h_speed.y
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -201,7 +216,7 @@ class Hoiks(Moving_objects):
 class Skyscrapers(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        
+        self.skyscrapers = pygame.sprite.Group()
     
     #draw method is inherited from Drawable_objects
     #rectangles
@@ -219,33 +234,32 @@ class Simulation_loop:
     def create_boids(self):
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
-        self.b_rect = self.image.get_rect()
-        self.b_speed = Vector2(2, 2)
-        self.b_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.b_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(2, 2)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
-        self.h_rect = self.image.get_rect()
-        self.h_speed = Vector2(2, 8)
-        self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        hoiks_ob = Hoiks(RED, 25, 25, self.h_speed, self.h_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(2, 8)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        hoiks_ob = Hoiks(RED, 25, 25, self.speed, self.pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
         self.image = pygame.Surface((50, 50))
         self.image.fill(GREY)
-        self.s_rect = self.image.get_rect()
-        self.s_speed = Vector2(0, 0)
-        self.s_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.s_speed, self.s_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(0, 0)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
-    
     
         
     def setup(self):
