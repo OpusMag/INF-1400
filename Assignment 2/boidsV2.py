@@ -31,14 +31,10 @@ class Moving_objects(Drawable_objects):
         self.b_pos = (random.randint(0, 1000), random.randint(0, 1000))
         self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.b_speed = Vector2(1, 1)
-        self.h_speed = Vector2(2, 8)
-        self.speed = Vector2(1, 1)
+        self.h_speed = Vector2(2, 2)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
-        self.rect.x = self.b_pos[0] 
-        self.rect.y = self.b_pos[1]
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        
         vector_x = uniform(-1, 1)
         vector_y = uniform(-1, 1)
         self.velocity = Vector2(vector_x, vector_y)
@@ -46,35 +42,38 @@ class Moving_objects(Drawable_objects):
 		#set a random magnitude
         self.velocity = self.velocity * uniform(1.5, 4)
         self.acceleration = Vector2()
-        self.max_speed = 5
+        self.max_speed = 4
         self.max_length = 1
         self.size = 2
         self.stroke = 5
         self.angle = 0
         self.hue = 0
-        self.toggles = {"separation":True, "alignment":True, "cohesion":True}
-        self.values = {"separation":0.1, "alignment":0.1, "cohesion":0.1}
         self.radius = 40
     
 
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
+        self.image = pygame.Surface((15, 15))
+        self.image.fill(WHITE)
+        self.b_rect = self.image.get_rect()
+        self.b_rect.x = self.b_pos[0] 
+        self.b_rect.y = self.b_pos[1]
+        self.boids = pygame.sprite.Group()
+        self.hoiks = pygame.sprite.Group()
+        self.skyscrapers = pygame.sprite.Group()
         
-    def collision_screen_b(self):
+    def boid_screen_wrap(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.b_pos[0] >= 1920 or self.b_pos[0] <= 0:
-            self.b_speed[0] *= -1
-        if self.b_pos[1] >= 1080 or self.b_pos[1] <= 0:
-            self.b_speed[1] *= -1
-            
-    def collision_screen_h(self):
-        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.h_pos[0] >= 1920 or self.h_rect[0] <= 0:
-            self.h_speed[0] *= -1
-        if self.h_pos[1] >= 1080 or self.h_pos[1] <= 0:
-            self.h_speed[1] *= -1
-            
+        if self.b_rect.left >= 1920: 
+            self.b_rect.right = 0
+        if self.b_rect.right <= 0:
+            self.b_rect.left = 1920
+        if self.b_rect.top > 1080:
+            self.b_rect.bottom = 0
+        if self.b_rect.bottom > 1080:
+            self.b_rect.top = 0
+                    
     def collision_hoiks(self):
         if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
             pass #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
@@ -174,10 +173,10 @@ class Boids(Moving_objects):
             self.velocity.add(align)
     
     def update(self):
-        self.b_pos = self.b_pos + self.velocity
-        self.velocity = self.velocity + self.acceleration
-        #self.velocity.limit(self.max_speed)
-        #self.angle = self.velocity.heading() + pi/2
+        self.b_pos += self.velocity
+        self.velocity += self.acceleration
+        self.velocity.limit(self.max_speed)
+        self.angle = self.velocity.heading() + pi/2
         
     """def update(self):
         self.rect.x += self.speed.x
@@ -189,10 +188,27 @@ class Boids(Moving_objects):
 class Hoiks(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        
+        self.image = pygame.Surface((25, 25))
+        self.image.fill(RED)
+        self.h_rect = self.image.get_rect()
+        self.h_rect.x = self.h_pos[0] 
+        self.h_rect.y = self.h_pos[1]
+        self.hoiks = pygame.sprite.Group()
+    
+    def hoik_screen_wrap(self):
+        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        if self.h_rect.left >= 1920: 
+            self.h_rect.right = 0
+        if self.h_rect.right <= 0:
+            self.h_rect.left = 1920
+        if self.h_rect.top > 1080:
+            self.h_rect.bottom = 0
+        if self.h_rect.bottom > 1080:
+            self.h_rect.top = 0
+    
     def update(self):
-        self.rect.x += self.h_speed.x
-        self.rect.y += self.h_speed.y
+        self.h_rect.x += self.h_speed.x
+        self.h_rect.y += self.h_speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -201,7 +217,7 @@ class Hoiks(Moving_objects):
 class Skyscrapers(Moving_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        
+        self.skyscrapers = pygame.sprite.Group()
     
     #draw method is inherited from Drawable_objects
     #rectangles
