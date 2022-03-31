@@ -1,23 +1,26 @@
+from cmath import cos, sin
 import pygame
-from tools import *
+#from tools import *
 from random import uniform
 import colorsys
-from matrix import *
-from math import pi,sin,cos
+#from matrix import *
+import math
+from math import pi
+from pygame import Vector2
 # def hsvToRGB(h, s, v):
 # 	return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
 
 
 class Boid:
 	def __init__(self, x, y):
-		self.position = Vector(x, y)
+		self.position = Vector2(x, y)
 		vec_x = uniform(-1, 1)
 		vec_y = uniform(-1, 1)
-		self.velocity = Vector(vec_x, vec_y)
+		self.velocity = Vector2(vec_x, vec_y)
 		self.velocity.normalize()
 		#set a random magnitude
 		self.velocity = self.velocity * uniform(1.5, 4)
-		self.acceleration = Vector()
+		self.acceleration = Vector2()
 		self.color = (255, 255,255)
 		self.temp = self.color
 		self.secondaryColor = (70, 70, 70)
@@ -62,12 +65,12 @@ class Boid:
 
 	def separation(self, flockMates):
 		total = 0
-		steering = Vector()
+		steering = Vector2()
 
 		for mate in flockMates:
-			dist = getDistance(self.position, mate.position)
+			dist = math.hypot(self.position, mate.position)
 			if mate is not self and dist < self.radius:
-				temp = SubVectors(self.position,mate.position)
+				temp = Vector2(self.position,mate.position)
 				temp = temp/(dist ** 2)
 				steering.add(temp)
 				total += 1
@@ -83,14 +86,14 @@ class Boid:
 		return steering
 	def alignment(self, flockMates):
 		total = 0
-		steering = Vector()
+		steering = Vector2()
 		# hue = uniform(0, 0.5)
 		for mate in flockMates:
-			dist = getDistance(self.position, mate.position)
+			dist = math.hypot(self.position, mate.position)
 			if mate is not self and dist < self.radius:
 				vel = mate.velocity.Normalize()
 				steering.add(vel)
-				mate.color = hsv_to_rgb( self.hue ,1, 1)
+				mate.color = (255, 0, 0)
 
 				total += 1
 
@@ -105,10 +108,10 @@ class Boid:
 
 	def cohesion(self, flockMates):
 		total = 0
-		steering = Vector()
+		steering = Vector2()
 
 		for mate in flockMates:
-			dist = getDistance(self.position, mate.position)
+			dist = math.hypot(self.position, mate.position)
 			if mate is not self and dist < self.radius:
 				steering.add(mate.position)
 				total += 1
@@ -137,17 +140,6 @@ class Boid:
 		points[0] = [[0],[-self.size],[0]]
 		points[1] = [[self.size//2],[self.size//2],[0]]
 		points[2] = [[-self.size//2],[self.size//2],[0]]
-
-		for point in points:
-			rotated = matrix_multiplication(rotationZ(self.angle) , point)
-			z = 1/(distance - rotated[2][0])
-
-			projection_matrix = [[z, 0, 0], [0, z, 0]]
-			projected_2d = matrix_multiplication(projection_matrix, rotated)
-
-			x = int(projected_2d[0][0] * scale) + self.position.x
-			y = int(projected_2d[1][0] * scale) + self.position.y
-			ps.append((x, y))
 
 		pygame.draw.polygon(screen, self.secondaryColor, ps)
 		pygame.draw.polygon(screen, self.color, ps, self.stroke)

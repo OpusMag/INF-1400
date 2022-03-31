@@ -1,3 +1,4 @@
+from email.mime import image
 from pygame import Vector2
 import pygame
 import random
@@ -28,13 +29,12 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
-        self.b_pos = (random.randint(0, 1000), random.randint(0, 1000))
-        self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        self.b_speed = Vector2(1, 1)
-        self.h_speed = Vector2(2, 2)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000))
+        self.speed = Vector2(1, 1)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
-        
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
         vector_x = uniform(-1, 1)
         vector_y = uniform(-1, 1)
         self.velocity = Vector2(vector_x, vector_y)
@@ -56,6 +56,8 @@ class Boids(Moving_objects):
         super().__init__(color, width, height, speed, ob_pos)
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
+        self.b_pos = self.pos
+        self.b_speed = self.speed
         self.b_rect = self.image.get_rect()
         self.b_rect.x = self.b_pos[0] 
         self.b_rect.y = self.b_pos[1]
@@ -74,13 +76,7 @@ class Boids(Moving_objects):
         if self.b_rect.bottom > 1080:
             self.b_rect.top = 0
                     
-    def collision_hoiks(self):
-        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
-            pass #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
-        
-    def collision_skyscrapers(self):
-        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
-            pass
+    
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
@@ -111,7 +107,7 @@ class Boids(Moving_objects):
         #alignment: steer towards the average heading of local flockmates
     def alignment(self):
         sum = 0
-        steer = Vector2(0, 0)
+        steer = Vector2()
         for single_boid in self.boids:
             distance = math.hypot(single_boid[0] - self.boids[0], single_boid[1] - self.boids[1])
             if single_boid is not self and distance < self.radius:
@@ -144,7 +140,7 @@ class Boids(Moving_objects):
 
         if sum > 0:
             steer = steer / sum
-            steer = steer - self.b_pos
+            steer = steer - self.pos
             steer.normalize()
             steer = steer * self.max_speed
             steer = steer - self.velocity
@@ -155,7 +151,7 @@ class Boids(Moving_objects):
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
     def behaviour(self):
-        self.b_speed.reset()
+        self.speed.reset()
 
         if self.separation == True:
             avoid = self.separation(self.boids)
@@ -173,11 +169,21 @@ class Boids(Moving_objects):
             self.velocity.add(align)
     
     def update(self):
-        self.b_pos += self.velocity
-        self.velocity += self.acceleration
-        self.velocity.limit(self.max_speed)
-        self.angle = self.velocity.heading() + pi/2
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
+        #self.pos += self.velocity
+        #self.velocity += self.acceleration
+        #self.velocity.limit(self.max_speed)
+        #self.angle = self.velocity.heading() + pi/2
         
+    def collision_hoiks(self):
+        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
+            self.image = pygame.transform.scale(image, (26, 26)) #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
+        
+    def collision_skyscrapers(self):
+        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
+            print("a bird in the hand is better than two in the")    
+    
     """def update(self):
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y"""
@@ -190,6 +196,8 @@ class Hoiks(Moving_objects):
         super().__init__(color, width, height, speed, ob_pos)
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
+        self.h_pos = self.pos
+        self.h_speed = self.speed
         self.h_rect = self.image.get_rect()
         self.h_rect.x = self.h_pos[0] 
         self.h_rect.y = self.h_pos[1]
@@ -207,8 +215,8 @@ class Hoiks(Moving_objects):
             self.h_rect.top = 0
     
     def update(self):
-        self.h_rect.x += self.h_speed.x
-        self.h_rect.y += self.h_speed.y
+        self.rect.x += self.speed.x
+        self.rect.y += self.speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -235,33 +243,32 @@ class Simulation_loop:
     def create_boids(self):
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
-        self.b_rect = self.image.get_rect()
-        self.b_speed = Vector2(2, 2)
-        self.b_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.b_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(2, 2)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
     def create_hoiks(self):
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
-        self.h_rect = self.image.get_rect()
-        self.h_speed = Vector2(2, 8)
-        self.h_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        hoiks_ob = Hoiks(RED, 25, 25, self.h_speed, self.h_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(2, 8)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        hoiks_ob = Hoiks(RED, 25, 25, self.speed, self.pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
     def create_skyscrapers(self):
         self.image = pygame.Surface((50, 50))
         self.image.fill(GREY)
-        self.s_rect = self.image.get_rect()
-        self.s_speed = Vector2(0, 0)
-        self.s_pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.s_speed, self.s_pos)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(0, 0)
+        self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
-    
     
         
     def setup(self):
