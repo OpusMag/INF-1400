@@ -31,7 +31,7 @@ class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, ob_pos):
         super().__init__(color, width, height, speed, ob_pos)
         self.pos = Vector2(random.randint(0, 1000), random.randint(0, 1000))
-        self.speed = Vector2(1, 1)
+        self.speed = Vector2(50, 50)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
         self.rect.x = self.pos[0] 
