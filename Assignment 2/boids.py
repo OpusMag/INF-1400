@@ -67,7 +67,7 @@ class Boids(Moving_objects):
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.pos = self.rect
-        self.speed = Vector2(1,1)
+        self.speed = Vector2(1, 1)
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
@@ -86,11 +86,11 @@ class Boids(Moving_objects):
         self.stroke = 5
         self.angle = 0
         self.radius = 40
-        self.flock = []
+        #self.flock = []
         
-    def flock(self):
-        for i in range(50):
-            self.flock.append(Boids(random.randint(15, 1920-15), random.randint(15, 1080-15)))
+    #def flock(self):
+        #for i in range(50):
+            #self.flock.append(Boids(random.randint(15, 1920-15), random.randint(15, 1080-15)))
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
@@ -102,9 +102,9 @@ class Boids(Moving_objects):
         steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector= Vector2(*numpy.zeros(2))
-        for boid in boids:
-            if numpy.linalg.norm(boid.pos - self.pos) < self.perception:
-                avg_vector += boid.velocity
+        for boids_ob in boids:
+            if numpy.linalg.norm(boids_ob.pos - self.pos) < self.perception:
+                avg_vector += self.velocity
                 total += 1
         if total > 0:
             avg_vector /= total
@@ -120,9 +120,9 @@ class Boids(Moving_objects):
         steering = Vector2(*numpy.zeros(2))
         total = 0
         mass_center = Vector2(*numpy.zeros(2))
-        for boid in boids:
-            if numpy.linalg.norm(boid.pos - self.pos) < self.perception:
-                mass_center += boid.pos
+        for boids_ob in boids:
+            if numpy.linalg.norm(boids_ob.pos - self.pos) < self.perception:
+                mass_center += boids_ob.pos
                 total += 1
         if total > 0:
             mass_center /= total
@@ -140,10 +140,10 @@ class Boids(Moving_objects):
         steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector = Vector2(*numpy.zeros(2))
-        for boid in boids:
-            distance = numpy.linalg.norm(boid.pos - self.pos)
-            if self.pos != boid.pos and distance < self.perception:
-                diff = self.pos - boid.pos
+        for boids_ob in boids:
+            distance = numpy.linalg.norm(boids_ob.pos - self.pos)
+            if self.pos != boids_ob.pos and distance < self.perception:
+                diff = self.pos - boids_ob.pos
                 diff /= distance
                 avg_vector += diff
                 total += 1
@@ -161,11 +161,11 @@ class Boids(Moving_objects):
         
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
-    def behaviour(self, boids):
+    def behaviour(self):
         
-        alignment = self.alignment(boids)
-        cohesion = self.cohesion(boids)
-        separation = self.separation(boids)
+        alignment = self.alignment(self.boids)
+        cohesion = self.cohesion(self.boids)
+        separation = self.separation(self.boids)
 
         self.acceleration += alignment
         self.acceleration += cohesion
@@ -174,12 +174,15 @@ class Boids(Moving_objects):
     def update(self):
         #kan ikke bruke pos når du bruker vectorer, må bruker rect, så endre pos fra pos i alt som har med bevegelse å gjøre?
         #boid_screen_wrap()
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        #self.rect.x += self.speed.x
+        #self.rect.y += self.speed.y
         self.screen_wrap()
-        #self.pos += self.velocity
-        #self.velocity += self.acceleration
-        #self.velocity.limit(self.max_speed)
+        self.rect.x += self.velocity.x
+        self.rect.y += self.velocity.y
+        self.velocity += self.acceleration
+        #numpy.clip(self.velocity, 3, 3)
+        if numpy.linalg.norm(self.velocity) > self.max_speed:
+            self.velocity = self.velocity / numpy.linalg.norm(self.velocity) * self.max_speed
         #self.angle = self.velocity.heading() + pi/2   
     
     """def update(self):
@@ -197,7 +200,7 @@ class Hoiks(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(3, 1)
+        self.speed = Vector2(1, 1)
         self.hoiks = pygame.sprite.Group()
     
     """def hoik_screen_wrap(self):
@@ -277,11 +280,11 @@ class Simulation_loop:
             print("a bird in the hand is better than two in the building")
         
     def setup(self):
-        for h in range(50):
+        for h in range(100):
             self.create_boids()
-        for i in range(5):
+        for i in range(3):
             self.create_hoiks()
-        for j in range(5):
+        for j in range(4):
             self.create_skyscrapers()
         
     def run(self):
