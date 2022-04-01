@@ -31,8 +31,8 @@ class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, b_speed, h_speed, pos):
         super().__init__(color, width, height, b_speed, h_speed, pos)
         self.pos = Vector2(random.randint(0, 1000), random.randint(0, 1000))
-        self.b_speed = Vector2(1, 1)
-        self.h_speed = Vector2(2, 5)
+        self.b_speed = Vector2(20, 10)
+        self.h_speed = Vector2(50, 30)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
         self.rect.x = self.pos[0] 
@@ -50,7 +50,7 @@ class Moving_objects(Drawable_objects):
         self.stroke = 5
         self.angle = 0
         self.radius = 40
-
+    
 class Boids(Moving_objects):
     def __init__(self, color, width, height, b_speed, h_speed, pos):
         super().__init__(color, width, height, b_speed, h_speed, pos)
@@ -79,6 +79,14 @@ class Boids(Moving_objects):
             self.b_rect.bottom = 0
         if self.b_rect.bottom > 1080:
             self.b_rect.top = 0
+        print(self.velocity)
+    def collision_hoiks(self):
+        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
+            self.image = pygame.transform.scale(image, (26, 26)) #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
+        
+    def collision_skyscrapers(self):
+        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
+            print("a bird in the hand is better than two in the building")
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
@@ -86,7 +94,7 @@ class Boids(Moving_objects):
     
     #metode for alignment
         #alignment: steer towards the average heading of local flockmates
-    def align(self, boids):
+    def alignment(self, boids):
         steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector= Vector2(*numpy.zeros(2))
@@ -160,20 +168,12 @@ class Boids(Moving_objects):
         self.acceleration += separation
     
     def update(self):
-        self.rect.x += self.b_speed.x
-        self.rect.y += self.b_speed.y
-        #self.pos += self.velocity
-        #self.velocity += self.acceleration
+        #self.rect.x += self.b_speed.x
+        #self.rect.y += self.b_speed.y
+        self.pos += self.velocity
+        self.velocity += self.acceleration
         #self.velocity.limit(self.max_speed)
-        #self.angle = self.velocity.heading() + pi/2
-        
-    def collision_hoiks(self):
-        if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
-            self.image = pygame.transform.scale(image, (26, 26)) #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
-        
-    def collision_skyscrapers(self):
-        if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
-            print("a bird in the hand is better than two in the")    
+        #self.angle = self.velocity.heading() + pi/2   
     
     """def update(self):
         self.rect.x += self.speed.x
