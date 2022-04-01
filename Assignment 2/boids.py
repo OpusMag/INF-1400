@@ -16,7 +16,7 @@ WHITE = (255, 255, 255)
 
 #this is the class that holds the draw method that the other classes inherits from
 class Drawable_objects(pygame.sprite.Sprite):
-    def __init__(self, color, width, height, speed, ob_pos):
+    def __init__(self, color, width, height, b_speed, h_speed, pos):
         super().__init__()
         self.color = color
         self.image = pygame.Surface((width, height))
@@ -28,10 +28,11 @@ class Drawable_objects(pygame.sprite.Sprite):
     
 #Here all the code for moving the self.boids and hoiks goes. Other classes inherits from this
 class Moving_objects(Drawable_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, b_speed, h_speed, pos):
+        super().__init__(color, width, height, b_speed, h_speed, pos)
         self.pos = Vector2(random.randint(0, 1000), random.randint(0, 1000))
-        self.speed = Vector2(50, 50)
+        self.b_speed = Vector2(1, 1)
+        self.h_speed = Vector2(2, 5)
         #pygame.Surface.get_rect()
         #de neste fire linjene fixed startposisjonen til skyscrapers og hoiks, men bare boids beveger seg? why?
         self.rect.x = self.pos[0] 
@@ -51,12 +52,11 @@ class Moving_objects(Drawable_objects):
         self.radius = 40
 
 class Boids(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, b_speed, h_speed, pos):
+        super().__init__(color, width, height, b_speed, h_speed, pos)
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.b_pos = self.pos
-        self.b_speed = self.speed
         self.b_rect = self.image.get_rect()
         self.b_rect.x = self.b_pos[0] 
         self.b_rect.y = self.b_pos[1]
@@ -67,7 +67,7 @@ class Boids(Moving_objects):
         
     def flock(self):
         for i in range(50):
-            self.flock.append(Boids(random.randint(15, 1920-20), random.randint(15, 1080-20)))
+            self.flock.append(Boids(random.randint(15, 1920-15), random.randint(15, 1080-15)))
         
     def boid_screen_wrap(self):
         #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
@@ -107,18 +107,18 @@ class Boids(Moving_objects):
     def cohesion(self, boids):
         steering = Vector2(*numpy.zeros(2))
         total = 0
-        center_of_mass = Vector2(*numpy.zeros(2))
+        mass_center = Vector2(*numpy.zeros(2))
         for boid in boids:
             if numpy.linalg.norm(self.b_pos - self.pos) < self.perception:
-                center_of_mass += self.b_pos
+                mass_center += self.b_pos
                 total += 1
         if total > 0:
-            center_of_mass /= total
-            center_of_mass = Vector2(*center_of_mass)
-            vec_to_com = center_of_mass - self.pos
-            if numpy.linalg.norm(vec_to_com) > 0:
-                vec_to_com = (vec_to_com / numpy.linalg.norm(vec_to_com)) * self.max_speed
-            steering = vec_to_com - self.velocity
+            mass_center /= total
+            mass_center = Vector2(*mass_center)
+            cm_vector = mass_center - self.pos
+            if numpy.linalg.norm(cm_vector) > 0:
+                cm_vector = (cm_vector / numpy.linalg.norm(cm_vector)) * self.max_speed
+            steering = cm_vector - self.velocity
             if numpy.linalg.norm(steering)> self.max_power:
                 steering = (steering /numpy.linalg.norm(steering)) * self.max_power
 
@@ -141,7 +141,7 @@ class Boids(Moving_objects):
             if numpy.linalg.norm(steering) > 0:
                 avg_vector = (avg_vector / numpy.linalg.norm(steering)) * self.max_speed
             steering = avg_vector - self.velocity
-            if numpy.linalg.norm(steering)> self.max_power:
+            if numpy.linalg.norm(steering) > self.max_power:
                 steering = (steering /numpy.linalg.norm(steering)) * self.max_power
 
         return steering
@@ -160,8 +160,8 @@ class Boids(Moving_objects):
         self.acceleration += separation
     
     def update(self):
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        self.rect.x += self.b_speed.x
+        self.rect.y += self.b_speed.y
         #self.pos += self.velocity
         #self.velocity += self.acceleration
         #self.velocity.limit(self.max_speed)
@@ -183,12 +183,11 @@ class Boids(Moving_objects):
     #circles
     
 class Hoiks(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, b_speed, h_speed, pos):
+        super().__init__(color, width, height, b_speed, h_speed, pos)
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
         self.h_pos = self.pos
-        self.h_speed = self.speed
         self.h_rect = self.image.get_rect()
         self.h_rect.x = self.h_pos[0] 
         self.h_rect.y = self.h_pos[1]
@@ -206,16 +205,16 @@ class Hoiks(Moving_objects):
             self.h_rect.top = 0
     
     def update(self):
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        self.rect.x += self.h_speed.x
+        self.rect.y += self.h_speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
     #triangles
 
 class Skyscrapers(Moving_objects):
-    def __init__(self, color, width, height, speed, ob_pos):
-        super().__init__(color, width, height, speed, ob_pos)
+    def __init__(self, color, width, height, b_speed, h_speed, pos):
+        super().__init__(color, width, height, b_speed, h_speed, pos)
         self.skyscrapers = pygame.sprite.Group()
     
     #draw method is inherited from Drawable_objects
@@ -235,9 +234,10 @@ class Simulation_loop:
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(2, 2)
+        self.b_speed = Vector2(2, 2)
+        self.h_speed = Vector2(0, 0)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
+        boids_ob = Boids(WHITE, 15, 15, self.b_speed, self.h_speed, self.pos)
         self.boids.add(boids_ob)
         self.all_sprites_list.add(boids_ob)
         
@@ -245,9 +245,10 @@ class Simulation_loop:
         self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(2, 8)
+        self.h_speed = Vector2(2, 8)
+        self.b_speed = Vector2(0, 0)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        hoiks_ob = Hoiks(RED, 25, 25, self.speed, self.pos)
+        hoiks_ob = Hoiks(RED, 25, 25, self.b_speed, self.h_speed, self.pos)
         self.hoiks.add(hoiks_ob)
         self.all_sprites_list.add(hoiks_ob)
     
@@ -255,9 +256,10 @@ class Simulation_loop:
         self.image = pygame.Surface((50, 50))
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(0, 0)
+        self.b_speed = Vector2(0, 0)
+        self.h_speed = Vector2(0, 0)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.pos)
+        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.b_speed, self.h_speed, self.pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
     
