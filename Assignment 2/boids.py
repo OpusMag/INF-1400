@@ -11,7 +11,7 @@ from sympy import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-GREY = (192, 192, 192)
+GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 
 #this is the class that holds the draw method that the other classes inherits from
@@ -64,28 +64,23 @@ class Moving_objects(Drawable_objects):
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.image = pygame.Surface((15, 15))
-        self.image.fill(WHITE)
-        self.pos = self.rect
-        self.speed = Vector2(1, 1)
-        self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
-        self.boids = pygame.sprite.Group()
-        self.hoiks = pygame.sprite.Group()
-        self.skyscrapers = pygame.sprite.Group()
-        self.perception = 50
+        #self.rect.x = self.pos[0] 
+        #self.rect.y = self.pos[1]
+        #self.boids = pygame.sprite.Group()
+        #self.hoiks = pygame.sprite.Group()
+        #self.skyscrapers = pygame.sprite.Group()
+        #self.perception = 50
         vector = (numpy.random.rand(2) - 0.5)/2
-        self.acceleration = Vector2(*vector) 
-        self.velocity = Vector2(*vector)
-        self.velocity.normalize()
-        self.max_speed = 4
-        self.max_power = 5
-        self.max_length = 1
-        self.size = 2
-        self.stroke = 5
-        self.angle = 0
-        self.radius = 40
+        #self.acceleration = Vector2(*vector) 
+        #self.velocity = Vector2(*vector)
+        #self.velocity.normalize()
+        #self.max_speed = 4
+        #self.max_power = 5
+        #self.max_length = 1
+        #self.size = 2
+        #self.stroke = 5
+        #self.angle = 0
+        #self.radius = 40
         #self.flock = []
         
     #def flock(self):
@@ -103,7 +98,7 @@ class Boids(Moving_objects):
         total = 0
         avg_vector= Vector2(*numpy.zeros(2))
         for boids_ob in boids:
-            if numpy.linalg.norm(boids_ob.pos - self.pos) < self.perception:
+            if numpy.linalg.norm(boids_ob.rect.center - self.rect.center) < self.perception:
                 avg_vector += self.velocity
                 total += 1
         if total > 0:
@@ -121,13 +116,13 @@ class Boids(Moving_objects):
         total = 0
         mass_center = Vector2(*numpy.zeros(2))
         for boids_ob in boids:
-            if numpy.linalg.norm(boids_ob.pos - self.pos) < self.perception:
-                mass_center += boids_ob.pos
+            if numpy.linalg.norm(boids_ob.rect.center - self.rect.center) < self.perception:
+                mass_center += boids_ob.rect.center
                 total += 1
         if total > 0:
             mass_center /= total
             mass_center = Vector2(*mass_center)
-            cm_vector = mass_center - self.pos
+            cm_vector = mass_center - self.rect.center
             if numpy.linalg.norm(cm_vector) > 0:
                 cm_vector = (cm_vector / numpy.linalg.norm(cm_vector)) * self.max_speed
             steering = cm_vector - self.velocity
@@ -141,9 +136,9 @@ class Boids(Moving_objects):
         total = 0
         avg_vector = Vector2(*numpy.zeros(2))
         for boids_ob in boids:
-            distance = numpy.linalg.norm(boids_ob.pos - self.pos)
-            if self.pos != boids_ob.pos and distance < self.perception:
-                diff = self.pos - boids_ob.pos
+            distance = numpy.linalg.norm(boids_ob.rect.center - self.rect.center)
+            if self.rect.center != boids_ob.rect.center and distance < self.perception:
+                diff = self.rect.center - boids_ob.rect.center
                 diff /= distance
                 avg_vector += diff
                 total += 1
@@ -263,11 +258,11 @@ class Simulation_loop:
     
     def create_skyscrapers(self):
         self.image = pygame.Surface((50, 50))
-        self.image.fill(GREY)
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        skyscraper_ob = Skyscrapers(GREY, 50, 50, self.speed, self.pos)
+        skyscraper_ob = Skyscrapers(GREEN, 50, 50, self.speed, self.pos)
         self.skyscrapers.add(skyscraper_ob)
         self.all_sprites_list.add(skyscraper_ob)
     
