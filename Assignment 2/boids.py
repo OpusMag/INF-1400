@@ -51,15 +51,26 @@ class Moving_objects(Drawable_objects):
         self.angle = 0
         self.radius = 40
     
+    def screen_wrap(self):
+        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
+        if self.rect.left >= 1920: 
+            self.rect.right = 0
+        if self.rect.right <= 0:
+            self.rect.left = 1920
+        if self.rect.top > 1080:
+            self.rect.bottom = 0
+        if self.rect.bottom > 1080:
+            self.rect.top = 0
+    
 class Boids(Moving_objects):
     def __init__(self, color, width, height, b_speed, h_speed, pos):
         super().__init__(color, width, height, b_speed, h_speed, pos)
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.b_pos = self.pos
-        self.b_rect = self.image.get_rect()
-        self.b_rect.x = self.b_pos[0] 
-        self.b_rect.y = self.b_pos[1]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.b_pos[0] 
+        self.rect.y = self.b_pos[1]
         self.boids = pygame.sprite.Group()
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
@@ -69,17 +80,6 @@ class Boids(Moving_objects):
         for i in range(50):
             self.flock.append(Boids(random.randint(15, 1920-15), random.randint(15, 1080-15)))
         
-    def boid_screen_wrap(self):
-        #collision control: keep self.boids from flying off the screen (borrowed from previous hand in breakoutnovectorsorclasses.py)
-        if self.b_rect.left >= 1920: 
-            self.b_rect.right = 0
-        if self.b_rect.right <= 0:
-            self.b_rect.left = 1920
-        if self.b_rect.top > 1080:
-            self.b_rect.bottom = 0
-        if self.b_rect.bottom > 1080:
-            self.b_rect.top = 0
-        print(self.velocity)
     def collision_hoiks(self):
         if pygame.sprite.groupcollide(self.boids, self.hoiks, True, False):
             self.image = pygame.transform.scale(image, (26, 26)) #legge til at størrelsen på hoiks skal øke når den "spiser" en boid
@@ -159,7 +159,7 @@ class Boids(Moving_objects):
         #avoid: stop boids from colliding with skyscrapers
     def behaviour(self, boids):
         
-        alignment = self.align(boids)
+        alignment = self.alignment(boids)
         cohesion = self.cohesion(boids)
         separation = self.separation(boids)
 
@@ -168,10 +168,13 @@ class Boids(Moving_objects):
         self.acceleration += separation
     
     def update(self):
-        #self.rect.x += self.b_speed.x
-        #self.rect.y += self.b_speed.y
-        self.pos += self.velocity
-        self.velocity += self.acceleration
+        #kan ikke bruke pos når du bruker vectorer, må bruker rect, så endre pos fra pos i alt som har med bevegelse å gjøre?
+        #boid_screen_wrap()
+        self.screen_wrap()
+        self.rect.x += self.b_speed.x
+        self.rect.y += self.b_speed.y
+        #self.pos += self.velocity
+        #self.velocity += self.acceleration
         #self.velocity.limit(self.max_speed)
         #self.angle = self.velocity.heading() + pi/2   
     
@@ -193,7 +196,7 @@ class Hoiks(Moving_objects):
         self.h_rect.y = self.h_pos[1]
         self.hoiks = pygame.sprite.Group()
     
-    def hoik_screen_wrap(self):
+    """def hoik_screen_wrap(self):
         #screen wrap. Makes it so that when objects move out of the screen they reappear on the opposite side. Works but has a super long delay?
         if self.h_rect.left >= 1920: 
             self.h_rect.right = 0
@@ -202,9 +205,10 @@ class Hoiks(Moving_objects):
         if self.h_rect.top > 1080:
             self.h_rect.bottom = 0
         if self.h_rect.bottom > 1080:
-            self.h_rect.top = 0
+            self.h_rect.top = 0"""
     
     def update(self):
+        self.screen_wrap()
         self.rect.x += self.h_speed.x
         self.rect.y += self.h_speed.y
 
