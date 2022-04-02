@@ -3,7 +3,7 @@ from pygame import Vector2
 import pygame
 import random
 import math
-from math import pi
+from math import *
 import sympy
 from sympy import *
 
@@ -178,9 +178,9 @@ class Simulation_loop:
         self.rect = self.image.get_rect()
         self.speed = Vector2(1, 1)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
-        boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
-        self.boids.add(boids_ob)
-        self.all_sprites_list.add(boids_ob)
+        self.boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
+        self.boids.add(self.boids_ob)
+        self.all_sprites_list.add(self.boids_ob)
         
     def create_hoiks(self):
         self.image = pygame.Surface((25, 25))
@@ -275,9 +275,9 @@ class Simulation_loop:
         #avoid: stop boids from colliding with skyscrapers
     def behaviour(self):
         
-        alignment = self.alignment(numpy.linalg.norm(self.boids))
-        cohesion = self.cohesion(numpy.linalg.norm(self.boids))
-        separation = self.separation(numpy.linalg.norm(self.boids))
+        alignment = self.alignment(self.boids)
+        cohesion = self.cohesion(self.boids)
+        separation = self.separation(self.boids)
 
         self.acceleration += alignment
         self.acceleration += cohesion
