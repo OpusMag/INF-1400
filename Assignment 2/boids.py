@@ -1,9 +1,7 @@
-from email.mime import image
 import numpy
 from pygame import Vector2
 import pygame
 import random
-from random import uniform
 import math
 from math import pi
 import sympy
