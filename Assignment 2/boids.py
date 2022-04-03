@@ -62,6 +62,7 @@ class Moving_objects(Drawable_objects):
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
+        boid_list = pygame.sprite.Group()
         #self.rect.x = self.pos[0] 
         #self.rect.y = self.pos[1]
         #self.boids = pygame.sprite.Group()
@@ -91,7 +92,7 @@ class Boids(Moving_objects):
     
     #metode for alignment
         #alignment: steer towards the average heading of local flockmates
-    def alignment(self, boids):
+    def alignment(self, boid_list, boids):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector= Vector2(*numpy.zeros(2))
@@ -109,7 +110,7 @@ class Boids(Moving_objects):
     
     #metode for cohesion
         #cohesion: steer to move towards the average position (center of mass) of local flockmates
-    def cohesion(self, boids):
+    def cohesion(self, boid_list, boids):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         mass_center = Vector2(*numpy.zeros(2))
@@ -129,7 +130,7 @@ class Boids(Moving_objects):
         
         return self.steering
     
-    def separation(self, boids):
+    def separation(self, boid_list, boids):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector = Vector2(*numpy.zeros(2))
@@ -157,7 +158,7 @@ class Boids(Moving_objects):
         self.c_heading = self.boids_ob.pos + self.separation()""" 
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
-    def behaviour(self, boids):
+    def behaviour(self, boid_list, boids):
         
         #a_heading = self.alignment()
         #b_heading = self.cohesion()
@@ -165,24 +166,25 @@ class Boids(Moving_objects):
         
         #print(self.steering)
         #alignment = self.rect + self.steering
-        alignment = self.alignment(self.boids)
-        cohesion = self.cohesion(self.boids)
-        separation = self.separation(self.boids)
+        alignment = self.alignment(boid_list)
+        cohesion = self.cohesion(boid_list)
+        separation = self.separation(boid_list)
 
         self.acceleration += alignment
         self.acceleration += cohesion
         self.acceleration += separation
     
     
-    def update(self, boids):
+    def update(self, boid_list, boids):
         #kan ikke bruke pos når du bruker vectorer, må bruker rect, så endre pos fra pos i alt som har med bevegelse å gjøre?
         #boid_screen_wrap()
         #self.rect.x += self.speed.x
         #self.rect.y += self.speed.y
+        
         new_speed = Vector2(0,0)
-        new_speed += self.alignment(self.boids)
-        new_speed += self.cohesion(self.boids)
-        new_speed += self.separation(self.boids)
+        new_speed += self.alignment(boid_list)
+        new_speed += self.cohesion(boid_list)
+        new_speed += self.separation(boid_list)
         self.screen_wrap()
         self.rect.x += new_speed.x
         self.rect.y += new_speed.y
@@ -243,6 +245,7 @@ class Simulation_loop:
     def __init__(self):
         self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
         self.boids = pygame.sprite.Group()
+        self.boid_list = pygame.sprite.Group()
         self.hoiks = pygame.sprite.Group()
         self.skyscrapers = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
@@ -265,7 +268,7 @@ class Simulation_loop:
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(self.boids_ob)
-        self.all_sprites_list.add(self.boids_ob)
+        self.all_sprites_list.add(self.boids_ob, self.boid_list)
         print(self.boids_ob.pos)
         
     """def create_hoiks(self):
@@ -321,7 +324,7 @@ class Simulation_loop:
     def update_game(self):
         #Oppdaterer og tegner
         self.screen.fill(BLACK)
-        self.all_sprites_list.update()
+        self.all_sprites_list.update(self.boid_list)
         self.all_sprites_list.draw(self.screen)
         self.collision_hoiks()
         self.collision_skyscrapers()
