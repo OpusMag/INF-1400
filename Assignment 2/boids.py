@@ -91,16 +91,101 @@ class Boids(Moving_objects):
     
     #metode for alignment
         #alignment: steer towards the average heading of local flockmates
+    def alignment(self, boids):
+        self.steering = Vector2(*numpy.zeros(2))
+        total = 0
+        avg_vector= Vector2(*numpy.zeros(2))
+        for self.boids_ob in self.boids:
+            if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
+                avg_vector += self.velocity
+                total += 1
+        if total > 0:
+            avg_vector /= total
+            avg_vector = Vector2(*avg_vector)
+            avg_vector = (avg_vector/numpy.linalg.norm(avg_vector)) * self.max_speed
+            self.steering = avg_vector - self.velocity
+        
+        return self.steering
+    
+    #metode for cohesion
+        #cohesion: steer to move towards the average position (center of mass) of local flockmates
+    def cohesion(self, boids):
+        self.steering = Vector2(*numpy.zeros(2))
+        total = 0
+        mass_center = Vector2(*numpy.zeros(2))
+        for self.boids_ob in self.boids:
+            if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
+                mass_center += self.boids_ob.pos
+                total += 1
+        if total > 0:
+            mass_center /= total
+            mass_center = Vector2(*mass_center)
+            cm_vector = mass_center - self.pos
+            if numpy.linalg.norm(cm_vector) > 0:
+                cm_vector = (cm_vector / numpy.linalg.norm(cm_vector)) * self.max_speed
+            self.steering = cm_vector - self.velocity
+            if numpy.linalg.norm(self.steering) > self.max_power:
+                self.steering = (self.steering /numpy.linalg.norm(self.steering)) * self.max_power
+        
+        return self.steering
+    
+    def separation(self, boids):
+        self.steering = Vector2(*numpy.zeros(2))
+        total = 0
+        avg_vector = Vector2(*numpy.zeros(2))
+        for self.boids_ob in self.boids:
+            distance = numpy.linalg.norm(self.boids_ob.pos - self.pos)
+            if self.pos != self.boids_ob.pos and distance < self.perception:
+                diff = (tuple(map(lambda i, j: i - j, self.boids_ob.pos, self.pos)))
+                diff /= distance
+                avg_vector += diff
+                total += 1
+        if total > 0:
+            avg_vector /= total
+            avg_vector = Vector2(*avg_vector)
+            if numpy.linalg.norm(self.steering) > 0:
+                avg_vector = (avg_vector / numpy.linalg.norm(self.steering)) * self.max_speed
+            self.steering = avg_vector - self.velocity
+            if numpy.linalg.norm(self.steering) > self.max_power:
+                self.steering = (self.steering /numpy.linalg.norm(self.steering)) * self.max_power
+        
+        return self.steering  
+    
+    """def _add_(self):
+        self.a_heading = self.boids_ob.pos + self.alignment()
+        self.b_heading = self.boids_ob.pos + self.cohesion()
+        self.c_heading = self.boids_ob.pos + self.separation()""" 
+        #metode for avoid
+        #avoid: stop boids from colliding with skyscrapers
+    def behaviour(self, boids):
+        
+        #a_heading = self.alignment()
+        #b_heading = self.cohesion()
+        #c_heading = self.separation()
+        
+        #print(self.steering)
+        #alignment = self.rect + self.steering
+        alignment = self.alignment(self.boids)
+        cohesion = self.cohesion(self.boids)
+        separation = self.separation(self.boids)
+
+        self.acceleration += alignment
+        self.acceleration += cohesion
+        self.acceleration += separation
     
     
-    def update(self):
+    def update(self, boids):
         #kan ikke bruke pos når du bruker vectorer, må bruker rect, så endre pos fra pos i alt som har med bevegelse å gjøre?
         #boid_screen_wrap()
         #self.rect.x += self.speed.x
         #self.rect.y += self.speed.y
+        new_speed = Vector2(0,0)
+        new_speed += self.alignment(self.boids)
+        new_speed += self.cohesion(self.boids)
+        new_speed += self.separation(self.boids)
         self.screen_wrap()
-        self.rect.x += self.velocity.x
-        self.rect.y += self.velocity.y
+        self.rect.x += new_speed.x
+        self.rect.y += new_speed.y
         self.velocity += self.acceleration
         #numpy.clip(self.velocity, 3, 3)
         if numpy.linalg.norm(self.velocity) > self.max_speed:
@@ -181,7 +266,7 @@ class Simulation_loop:
         self.boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(self.boids_ob)
         self.all_sprites_list.add(self.boids_ob)
-        
+        print(self.boids_ob.pos)
         
     """def create_hoiks(self):
         self.image = pygame.Surface((25, 25))
@@ -211,77 +296,6 @@ class Simulation_loop:
         if pygame.sprite.groupcollide(self.boids, self.skyscrapers, True, False):
             print("a bird in the hand is better than two in the building")
     
-    def alignment(self):
-        steering = Vector2(*numpy.zeros(2))
-        total = 0
-        avg_vector= Vector2(*numpy.zeros(2))
-        for boids_ob in self.boids:
-            if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
-                avg_vector += self.velocity
-                total += 1
-        if total > 0:
-            avg_vector /= total
-            avg_vector = Vector2(*avg_vector)
-            avg_vector = (avg_vector/numpy.linalg.norm(avg_vector)) * self.max_speed
-            steering = avg_vector - self.velocity
-
-        return steering
-    
-    #metode for cohesion
-        #cohesion: steer to move towards the average position (center of mass) of local flockmates
-    def cohesion(self):
-        steering = Vector2(*numpy.zeros(2))
-        total = 0
-        mass_center = Vector2(*numpy.zeros(2))
-        for boids_ob in self.boids:
-            if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
-                mass_center += self.boids_ob.pos
-                total += 1
-        if total > 0:
-            mass_center /= total
-            mass_center = Vector2(*mass_center)
-            cm_vector = mass_center - self.pos
-            if numpy.linalg.norm(cm_vector) > 0:
-                cm_vector = (cm_vector / numpy.linalg.norm(cm_vector)) * self.max_speed
-            steering = cm_vector - self.velocity
-            if numpy.linalg.norm(steering) > self.max_power:
-                steering = (steering /numpy.linalg.norm(steering)) * self.max_power
-
-        return steering
-    
-    def separation(self):
-        steering = Vector2(*numpy.zeros(2))
-        total = 0
-        avg_vector = Vector2(*numpy.zeros(2))
-        for self.boids_ob in self.boids:
-            distance = numpy.linalg.norm(self.boids_ob.pos - self.pos)
-            if self.pos != self.boids_ob.pos and distance < self.perception:
-                diff = (tuple(map(lambda i, j: i - j, self.boids_ob.pos, self.pos)))
-                diff /= distance
-                avg_vector += diff
-                total += 1
-        if total > 0:
-            avg_vector /= total
-            avg_vector = Vector2(*avg_vector)
-            if numpy.linalg.norm(steering) > 0:
-                avg_vector = (avg_vector / numpy.linalg.norm(steering)) * self.max_speed
-            steering = avg_vector - self.velocity
-            if numpy.linalg.norm(steering) > self.max_power:
-                steering = (steering /numpy.linalg.norm(steering)) * self.max_power
-
-        return steering  
-        
-        #metode for avoid
-        #avoid: stop boids from colliding with skyscrapers
-    def behaviour(self):
-
-        alignment = self.boids.update(self.alignment)
-        cohesion = self.boids.update(self.alignment)
-        separation = self.boids.update(self.alignment)
-
-        self.acceleration += alignment
-        self.acceleration += cohesion
-        self.acceleration += separation
     
     def setup(self):
         for h in range(50):
@@ -311,10 +325,10 @@ class Simulation_loop:
         self.all_sprites_list.draw(self.screen)
         self.collision_hoiks()
         self.collision_skyscrapers()
-        self.alignment()
-        self.cohesion()
-        self.separation()
-        self.behaviour()
+        #self.alignment()
+        #self.cohesion()
+        #self.separation()
+        #self.behaviour()
         pygame.display.flip()
         
     def game_loop(self):
