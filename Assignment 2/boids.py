@@ -62,7 +62,6 @@ class Moving_objects(Drawable_objects):
 class Boids(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        boid_list = pygame.sprite.Group()
         #self.rect.x = self.pos[0] 
         #self.rect.y = self.pos[1]
         #self.boids = pygame.sprite.Group()
@@ -92,11 +91,11 @@ class Boids(Moving_objects):
     
     #metode for alignment
         #alignment: steer towards the average heading of local flockmates
-    def alignment(self, boid_list, boids):
+    def alignment(self, boid_list):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector= Vector2(*numpy.zeros(2))
-        for self.boids_ob in self.boids:
+        for self.boids_ob in boid_list:
             if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
                 avg_vector += self.velocity
                 total += 1
@@ -105,16 +104,16 @@ class Boids(Moving_objects):
             avg_vector = Vector2(*avg_vector)
             avg_vector = (avg_vector/numpy.linalg.norm(avg_vector)) * self.max_speed
             self.steering = avg_vector - self.velocity
-        
+        print(boid_list)
         return self.steering
     
     #metode for cohesion
         #cohesion: steer to move towards the average position (center of mass) of local flockmates
-    def cohesion(self, boid_list, boids):
+    def cohesion(self, boid_list):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         mass_center = Vector2(*numpy.zeros(2))
-        for self.boids_ob in self.boids:
+        for self.boids_ob in boid_list:
             if numpy.linalg.norm(self.boids_ob.pos - self.pos) < self.perception:
                 mass_center += self.boids_ob.pos
                 total += 1
@@ -130,11 +129,11 @@ class Boids(Moving_objects):
         
         return self.steering
     
-    def separation(self, boid_list, boids):
+    def separation(self, boid_list):
         self.steering = Vector2(*numpy.zeros(2))
         total = 0
         avg_vector = Vector2(*numpy.zeros(2))
-        for self.boids_ob in self.boids:
+        for self.boids_ob in boid_list:
             distance = numpy.linalg.norm(self.boids_ob.pos - self.pos)
             if self.pos != self.boids_ob.pos and distance < self.perception:
                 diff = (tuple(map(lambda i, j: i - j, self.boids_ob.pos, self.pos)))
@@ -158,7 +157,7 @@ class Boids(Moving_objects):
         self.c_heading = self.boids_ob.pos + self.separation()""" 
         #metode for avoid
         #avoid: stop boids from colliding with skyscrapers
-    def behaviour(self, boid_list, boids):
+    def behaviour(self, boid_list):
         
         #a_heading = self.alignment()
         #b_heading = self.cohesion()
@@ -166,16 +165,16 @@ class Boids(Moving_objects):
         
         #print(self.steering)
         #alignment = self.rect + self.steering
-        alignment = self.alignment(boid_list)
-        cohesion = self.cohesion(boid_list)
-        separation = self.separation(boid_list)
+        alignment = self.alignment(self.boid_list)
+        cohesion = self.cohesion(self.boid_list)
+        separation = self.separation(self.boid_list)
 
         self.acceleration += alignment
         self.acceleration += cohesion
         self.acceleration += separation
     
     
-    def update(self, boid_list, boids):
+    def update(self, boid_list):
         #kan ikke bruke pos når du bruker vectorer, må bruker rect, så endre pos fra pos i alt som har med bevegelse å gjøre?
         #boid_screen_wrap()
         #self.rect.x += self.speed.x
@@ -264,10 +263,12 @@ class Simulation_loop:
         self.image = pygame.Surface((15, 15))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
+        self.boid_list = pygame.sprite.Group()
         self.speed = Vector2(1, 1)
         self.pos = (random.randint(0, 1000), random.randint(0, 1000)) 
         self.boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(self.boids_ob)
+        self.boid_list.add(self.boids_ob)
         self.all_sprites_list.add(self.boids_ob, self.boid_list)
         print(self.boids_ob.pos)
         
