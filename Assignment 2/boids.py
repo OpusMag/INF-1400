@@ -104,7 +104,7 @@ class Boids(Moving_objects):
             avg_vector = Vector2(*avg_vector)
             avg_vector = (avg_vector/numpy.linalg.norm(avg_vector)) * self.max_speed
             self.steering = avg_vector - self.velocity
-        print(boid_list)
+        
         return self.steering
     
     #metode for cohesion
@@ -269,8 +269,8 @@ class Simulation_loop:
         self.boids_ob = Boids(WHITE, 15, 15, self.speed, self.pos)
         self.boids.add(self.boids_ob)
         self.boid_list.add(self.boids_ob)
-        self.all_sprites_list.add(self.boids_ob, self.boid_list)
-        print(self.boids_ob.pos)
+        self.all_sprites_list.add(self.boids_ob)
+        
         
     """def create_hoiks(self):
         self.image = pygame.Surface((25, 25))
