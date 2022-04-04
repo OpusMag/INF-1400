@@ -87,7 +87,7 @@ class Boids(Moving_objects):
         
         #method for separation
         #separation: steer to avoid crowding local flockmates
-        #see source [9] in the report bibliography for the code that inspired the code for my separation, cohesion, alignment and behaviour methods
+        #see source [https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118] for more info on this implementation
     
     #metode for alignment
         #alignment: steer towards the average heading of local flockmates

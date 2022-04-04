@@ -1,0 +1,1 @@
+README: This is my implementation of boids. If you want to change the boids behaviour, alter the value of max_power and max_speed in the Boid class init.
