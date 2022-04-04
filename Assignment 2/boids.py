@@ -72,8 +72,8 @@ class Boids(Moving_objects):
         self.acceleration = Vector2(*vector) 
         self.velocity = Vector2(*vector)
         self.velocity.normalize()
-        self.max_speed = 50
-        self.max_power = 1
+        self.max_speed = 15
+        self.max_power = 0.8
         self.max_length = 1
         self.size = 2
         self.stroke = 5
@@ -209,10 +209,10 @@ class Hoiks(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(1, 1)
+        self.h_speed = Vector2(10, 10)
         self.hoiks = pygame.sprite.Group()
     
-    def hoik_screen_wrap(self):
+    def hoik_screen_wrap(self, boid_list):
         #screen wrap. Makes it so that when objects move out of the screen they reappear on the opposite side. Works but has a super long delay?
         if self.h_rect.left >= 1920: 
             self.h_rect.right = 0
@@ -223,10 +223,10 @@ class Hoiks(Moving_objects):
         if self.h_rect.bottom > 1080:
             self.h_rect.top = 0
     
-    def update(self):
+    def update(self, boid_list):
         self.screen_wrap()
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        self.rect.x += self.h_speed.x
+        self.rect.y += self.h_speed.y
 
     #move method is inherited from Moving_objects
     #draw method is inherited from Drawable_objects
@@ -235,7 +235,7 @@ class Hoiks(Moving_objects):
 class Skyscrapers(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.skyscrapers = pygame.sprite.Group()
+        
     
     #draw method is inherited from Drawable_objects
     #rectangles
@@ -303,10 +303,10 @@ class Simulation_loop:
     def setup(self):
         for h in range(50):
             self.create_boids()
-        """for i in range(3):
+        for i in range(3):
             self.create_hoiks()
         for j in range(4):
-            self.create_skyscrapers()"""
+            self.create_skyscrapers()
         
     def run(self):
         self.setup()
