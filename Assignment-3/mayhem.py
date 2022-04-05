@@ -27,10 +27,10 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.pos = Vector2(0, 0)
+        #self.pos = Vector2(0, 0)
         self.speed = Vector2(0, 0)
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
+        #self.rect.x = self.pos[0] 
+        #self.rect.y = self.pos[1]
         
 class Player1(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
@@ -38,8 +38,8 @@ class Player1(Moving_objects):
         self.image = pygame.Surface((30, 30))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
+        #self.rect.x = self.pos[0] 
+        #self.rect.y = self.pos[1]
         self.speed = Vector2(10, 10)
         self.pos = (30, 1010)
         
@@ -59,8 +59,8 @@ class Player2(Moving_objects):
         self.image = pygame.Surface((30, 30))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
+        #self.rect.x = self.pos[0] 
+        #self.rect.y = self.pos[1]
         self.speed = Vector2(10, 10)
         self.pos = (1850, 1010)
         
@@ -80,9 +80,10 @@ class Asteroids(Moving_objects):
         self.image = pygame.Surface((70, 70))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
-        self.speed = Vector2((8, 1), 1)
+        #self.rect.x = self.pos[0] 
+        #self.rect.y = self.pos[1]
+        self.speed.x = 1
+        self.speed.y = 0
         self.pos1 = (0, 300)
         self.pos2 = (0, 600)
         self.pos3 = (0, 900)
