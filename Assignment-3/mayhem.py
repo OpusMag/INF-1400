@@ -28,10 +28,10 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.pos = Vector2(0, 0)
+        #self.pos = (0, 0)
         self.speed = Vector2(0, 0)
-        self.rect.x = self.pos[0] 
-        self.rect.y = self.pos[1]
+        #self.rect.x = self.pos.x
+        #self.rect.y = self.pos.y
         self.gravity = Vector2(-2, -2)
         self.thrust = Vector2(1, 1)
         self.clock = pygame.time.Clock()
