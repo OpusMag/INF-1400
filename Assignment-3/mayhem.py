@@ -27,10 +27,22 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        #self.pos = Vector2(0, 0)
+        self.pos = Vector2(0, 0)
         self.speed = Vector2(0, 0)
-        #self.rect.x = self.pos[0] 
-        #self.rect.y = self.pos[1]
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
+        self.gravity = -0.4
+        self.thrust = 0.2
+        
+    def player_movement(self):
+        self.acceleration = self.thrust - self.gravity
+        if self.acceleration < 0:
+            self.rect.x += self.acceleration
+            self.rect.y += self.acceleration
+        if self.acceleration > 0:
+            self.rect.x += self.acceleration
+            self.rect.y += self.acceleration
+        return self.rect.x, self.rect.y
         
 class Player1(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
@@ -38,11 +50,15 @@ class Player1(Moving_objects):
         self.image = pygame.Surface((30, 30))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        #self.rect.x = self.pos[0] 
-        #self.rect.y = self.pos[1]
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
         self.speed = Vector2(10, 10)
         self.pos = (30, 1010)
         
+    def update(self):
+        self.player_movement()
+        self.rect.x += self.acceleration
+        self.rect.y += self.acceleration
     """def update(self):
         pygame.key.get_pressed(pygame.K_w)
             #apply thrust on object
@@ -59,8 +75,8 @@ class Player2(Moving_objects):
         self.image = pygame.Surface((30, 30))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
-        #self.rect.x = self.pos[0] 
-        #self.rect.y = self.pos[1]
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
         self.speed = Vector2(10, 10)
         self.pos = (1850, 1010)
         
@@ -80,8 +96,8 @@ class Asteroids(Moving_objects):
         self.image = pygame.Surface((70, 70))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        #self.rect.x = self.pos[0] 
-        #self.rect.y = self.pos[1]
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
         self.speed.x = 1
         self.speed.y = 0
         self.pos1 = (0, 300)
@@ -167,6 +183,27 @@ class Game:
         self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos2)
         self.platforms.add(self.platform_ob1, self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob1, self.platform_ob2)
+    
+    def collision_players(self):
+        if pygame.sprite.groupcollide(self.player1, self.player2, True, True):
+            print("YOU BOTH LOSE! LOSERS!") 
+        
+    def collision_p1asteroids(self):
+        if pygame.sprite.groupcollide(self.player1, self.asteroids, True, False):
+            print("Player 1 down, player 2 has won.")
+    
+    def collision_p2asteroids(self):
+        if pygame.sprite.groupcollide(self.player2, self.asteroids, True, False):
+            print("Player 2 down, player 1 has won.")
+            
+    def collision_p1platforms(self):
+        if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
+            print("You're all fueled up") #refill fuel
+            
+    def collision_p2platforms(self):
+        if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
+            print("You're all fueled up") #refill fuel 
+    
     def setup(self):
         
         self.create_player1()
@@ -196,16 +233,20 @@ class Game:
                         #apply thrust on object
                     if pygame.key.get_pressed(pygame.K_a):
                         #rotate object left
+                        pygame.transform.rotate(20)
                     if pygame.key.get_pressed(pygame.K_d):
                         #rotate object right
+                        pygame.transform.rotate(-20)
                     if pygame.key.get_pressed(pygame.K_LSHIFT):
                         #fire weapon
                     if pygame.key.get_pressed(pygame.K_UP):
                         #apply thrust on object
                     if pygame.key.get_pressed(pygame.K_LEFT):
                         #rotate object left
+                        pygame.transform.rotate(20)
                     if pygame.key.get_pressed(pygame.K_RIGHT):
                         #rotate object right
+                        pygame.transform.rotate(-20)
                     if pygame.key.get_pressed(pygame.K_RSHIFT):
                         #fire weapon"""
             #self.move()
