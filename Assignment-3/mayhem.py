@@ -1,4 +1,3 @@
-from turtle import screensize
 import pygame
 from pygame import Vector2
 import math
@@ -16,7 +15,7 @@ GREY = (192, 192, 192)
 WHITE = (255, 255, 255)
 WIDTH = 1920
 HEIGHT = 1080
-screensize = WIDTH, HEIGHT
+Screen_size = WIDTH, HEIGHT
 
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self, color, width, height, speed, pos):
@@ -54,10 +53,10 @@ class Player1(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(1, 1)
+        self.speed = Vector2(2, 3)
         self.pos = (30, 1010)
     
-    def collision_screen(self, player1_ob):
+    """def collision_screen(self, player1_ob):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
         if self.rect.left > 1920: 
             pygame.kill(player1_ob)
@@ -66,9 +65,9 @@ class Player1(Moving_objects):
         if self.rect.top > 1080:
             pygame.kill(player1_ob)
         if self.rect.bottom > 1080:
-            pygame.kill(player1_ob)
+            pygame.kill(player1_ob)"""
         
-    def update(self, player1_ob):
+    def update(self):
         self.player_movement()
         
     """def update(self):
@@ -89,10 +88,10 @@ class Player2(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(1, 1)
+        self.speed = Vector2(2, 2)
         self.pos = (1850, 1010)
         
-    def collision_screen(self, player2_ob):
+    """def collision_screen(self, player2_ob):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
         if self.rect.left > 1920: 
             pygame.kill(player2_ob)
@@ -101,9 +100,9 @@ class Player2(Moving_objects):
         if self.rect.top > 1080:
             pygame.kill(player2_ob)
         if self.rect.bottom > 1080:
-            pygame.kill(player2_ob)
+            pygame.kill(player2_ob)"""
     
-    def update(self, player2_ob):
+    def update(self):
         self.player_movement()
         
     """def update(self):
@@ -209,9 +208,6 @@ class Game:
         self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos2)
         self.platforms.add(self.platform_ob1, self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob1, self.platform_ob2)
-    
-    def collision_screen(self):
-        if pygame.sprite.collideany()
     
     def collision_players(self):
         if pygame.sprite.groupcollide(self.player1, self.player2, True, True):
