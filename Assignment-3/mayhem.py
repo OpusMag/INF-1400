@@ -77,15 +77,6 @@ class Player1(Moving_objects):
     def create_missile1(self):
         return Missile1(GREEN, 5, 5, self.speed, self.pos)
     
-    """def update(self):
-        pygame.key.get_pressed(pygame.K_w)
-            #apply thrust on object
-        pygame.key.get_pressed(pygame.K_a)
-            #rotate object left
-        pygame.key.get_pressed(pygame.K_d)
-            #rotate object right
-        pygame.key.get_pressed(pygame.K_LSHIFT)
-            #fire weapon"""
         
 class Player2(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
@@ -125,16 +116,6 @@ class Player2(Moving_objects):
     
     def create_missile2(self):
         return Missile2(BLUE, 5, 5, self.speed, self.pos)
-      
-    """def update(self):
-        pygame.key.get_pressed(pygame.K_UP)
-            #apply thrust on object
-        pygame.key.get_pressed(pygame.K_LEFT)
-            #rotate object left
-        pygame.key.get_pressed(pygame.K_RIGHT)
-            #rotate object right
-        pygame.key.get_pressed(pygame.K_RSHIFT)
-            #fire weapon"""
 
 class Missile1(Player1):
     def __init__(self, color, width, height, speed, pos):
@@ -297,11 +278,11 @@ class Game:
             
     def collision_p1platforms(self):
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
-            print("You're all fueled up") #refill fuel
+            print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
             
     def collision_p2platforms(self):
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
-            print("You're all fueled up") #refill fuel 
+            print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
     
     def setup(self):
         
