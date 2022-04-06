@@ -28,21 +28,13 @@ class Drawable_objects(pygame.sprite.Sprite):
 class Moving_objects(Drawable_objects):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        #self.pos = (0, 0)
+        self.pos = pos
         self.speed = Vector2(0, 0)
-        #self.rect.x = self.pos.x
-        #self.rect.y = self.pos.y
+        self.rect = self.pos
         self.gravity = Vector2(-2, -2)
         self.thrust = Vector2(1, 1)
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 500.0
-        
-    def player_movement(self):
-        self.acceleration = self.thrust + self.gravity
-        self.new_speed = self.speed + self.acceleration * self.time
-        
-        self.rect.x += self.new_speed.x
-        self.rect.y += self.new_speed.y
         
         
 class Player1(Moving_objects):
@@ -53,10 +45,10 @@ class Player1(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(2, 3)
-        self.pos = (30, 1010)
+        self.speed = Vector2(0, 0)
+        self.pos = pos
     
-    """def collision_screen(self, player1_ob):
+    def collision_screen(self, player1_ob):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
         if self.rect.left > 1920: 
             pygame.kill(player1_ob)
@@ -65,11 +57,19 @@ class Player1(Moving_objects):
         if self.rect.top > 1080:
             pygame.kill(player1_ob)
         if self.rect.bottom > 1080:
-            pygame.kill(player1_ob)"""
+            pygame.kill(player1_ob)
         
     def update(self):
-        self.player_movement()
-        
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
+        if pygame.event == pygame.KEYDOWN:
+            if pygame.key.get_pressed(pygame.K_w) or pygame.key.get_pressed(pygame.UP):
+                self.rect.x += self.new_speed.x
+                self.rect.y += self.new_speed.y
+    
+    def create_missile1(self):
+        return Missile1(GREEN, 5, 5, self.speed, self.pos)
+    
     """def update(self):
         pygame.key.get_pressed(pygame.K_w)
             #apply thrust on object
@@ -88,10 +88,10 @@ class Player2(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(2, 2)
-        self.pos = (1850, 1010)
+        self.speed = Vector2(0, 0)
+        self.pos = pos
         
-    """def collision_screen(self, player2_ob):
+    def collision_screen(self, player2_ob):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
         if self.rect.left > 1920: 
             pygame.kill(player2_ob)
@@ -100,11 +100,19 @@ class Player2(Moving_objects):
         if self.rect.top > 1080:
             pygame.kill(player2_ob)
         if self.rect.bottom > 1080:
-            pygame.kill(player2_ob)"""
+            pygame.kill(player2_ob)
     
     def update(self):
-        self.player_movement()
-        
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
+        if pygame.event == pygame.KEYDOWN:
+            if pygame.key.get_pressed(pygame.K_w) or pygame.key.get_pressed(pygame.UP):
+                self.rect.x += self.new_speed.x
+                self.rect.y += self.new_speed.y
+    
+    def create_missile2(self):
+        return Missile2(BLUE, 5, 5, self.speed, self.pos)
+      
     """def update(self):
         pygame.key.get_pressed(pygame.K_UP)
             #apply thrust on object
@@ -114,6 +122,28 @@ class Player2(Moving_objects):
             #rotate object right
         pygame.key.get_pressed(pygame.K_RSHIFT)
             #fire weapon"""
+
+class Missile1(Player1):
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
+        self.image = pygame.Surface((5, 5))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect(center = (self.pos))
+        
+    def update(self):
+        self.rect.x += self.new_speed.x + 1
+        self.rect.x += self.new_speed.x + 1
+        
+class Missile2(Player1):
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
+        self.image = pygame.Surface((5, 5))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect(center = (self.pos))
+        
+    def update(self):
+        self.rect.x += self.new_speed.x + 1
+        self.rect.x += self.new_speed.x + 1
         
 class Asteroids(Moving_objects):
     def __init__(self, color, width, height, speed, pos):
@@ -125,9 +155,7 @@ class Asteroids(Moving_objects):
         self.rect.y = self.pos[1]
         self.speed.x = 1
         self.speed.y = 0
-        self.pos1 = (0, 300)
-        self.pos2 = (0, 600)
-        self.pos3 = (0, 900)
+        self.pos = pos
     
     def screen_wrap(self):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
@@ -151,8 +179,9 @@ class Platforms(Moving_objects):
         self.image = pygame.Surface((40, 50))
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
-        self.pos1 = (1870, 1030)
-        self.pos2 = (50, 1030)
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
+        self.pos = pos
         
         
 class Game:
@@ -162,6 +191,7 @@ class Game:
         self.player2 = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
+        self.missiles = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
     
     def create_player1(self):
@@ -169,45 +199,68 @@ class Game:
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
-        self.pos = (30, 1010)
+        self.pos = (30, 1000)
         self.player1_ob = Player1(GREEN, 30, 30, self.speed, self.pos)
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
-        
+    
     def create_player2(self):
         self.image = pygame.Surface((30, 30))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
-        self.pos = (1850, 1010)
+        self.pos = (1850, 1000)
         self.player2_ob = Player2(BLUE, 30, 30, self.speed, self.pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
         
-    def create_asteroids(self):
-        self.image = pygame.Surface((70, 70))
-        self.image.fill(RED)
+    """def create_missile1(self):
+        self.image = pygame.Surface((5, 5))
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
-        self.pos1 = (0, 300)
-        self.pos2 = (0, 600)
-        self.pos3 = (0, 900)
-        self.asteroids_ob1 = Asteroids(RED, 70, 70, self.speed, self.pos1)
-        self.asteroids_ob2 = Asteroids(RED, 70, 70, self.speed, self.pos2)
-        self.asteroids_ob3 = Asteroids(RED, 70, 70, self.speed, self.pos3)
-        self.asteroids.add(self.asteroids_ob1, self.asteroids_ob2, self.asteroids_ob3)
-        self.all_sprites_list.add(self.asteroids_ob1, self.asteroids_ob2, self.asteroids_ob3)
+        self.pos = (30, 1000)
+        self.missile1_ob = Missile1(GREEN, 5, 5, self.speed, self.pos)
+        self.missiles.add(self.missile1_ob)
+        self.all_sprites_list.add(self.missile1_ob)
         
-    def create_platforms(self):
+    def create_missile2(self):
+        self.image = pygame.Surface((5, 5))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(0, 0)
+        self.pos = (30, 1000)
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.pos)
+        self.missiles.add(self.missile2_ob)
+        self.all_sprites_list.add(self.missile2_ob)"""
+        
+    def create_asteroids(self):
+        self.image = pygame.Surface((70, 70))
+        self.image.fill(GREY)
+        self.rect = self.image.get_rect()
+        self.speed = Vector2(0, 0)
+        self.pos = (random.randint(0, 0), random.randint(100, 800))
+        self.asteroids_ob = Asteroids(RED, 70, 70, self.speed, self.pos)
+        self.asteroids.add(self.asteroids_ob)
+        self.all_sprites_list.add(self.asteroids_ob)
+        
+    def create_platform1(self):
         self.image = pygame.Surface((50, 50))
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
-        self.pos1 = (1870, 1030)
-        self.pos2 = (50, 1030)
-        self.platform_ob1 = Platforms(GREY, 40, 50, self.speed, self.pos1)
-        self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos2)
-        self.platforms.add(self.platform_ob1, self.platform_ob2)
-        self.all_sprites_list.add(self.platform_ob1, self.platform_ob2)
+        self.pos = (25, 1030)
+        self.platform_ob1 = Platforms(GREY, 40, 50, self.speed, self.pos)
+        self.platforms.add(self.platform_ob1)
+        self.all_sprites_list.add(self.platform_ob1)
+    
+    def create_platform2(self):
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(GREY)
+        self.rect = self.image.get_rect()
+        self.pos = (1845, 1030)
+        self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos)
+        self.platforms.add(self.platform_ob2)
+        self.all_sprites_list.add(self.platform_ob2)
     
     def collision_players(self):
         if pygame.sprite.groupcollide(self.player1, self.player2, True, True):
@@ -233,8 +286,12 @@ class Game:
         
         self.create_player1()
         self.create_player2()
-        self.create_asteroids()
-        self.create_platforms()
+        #self.create_missile1()
+        #self.create_missile2()
+        for i in range(3):
+            self.create_asteroids()
+        self.create_platform1()
+        self.create_platform2()
         
     def update_game(self):
         #Oppdaterer og tegner
@@ -256,6 +313,9 @@ class Game:
                 """if event.type == pygame.KEYDOWN:
                     if pygame.key.get_pressed(pygame.K_w):
                         #apply thrust on object
+                        self.player_movement()
+                        self.rect.x += self.new_speed.x
+                        self.rect.y += self.new_speed.y
                     if pygame.key.get_pressed(pygame.K_a):
                         #rotate object left
                         pygame.transform.rotate(20)
@@ -264,8 +324,13 @@ class Game:
                         pygame.transform.rotate(-20)
                     if pygame.key.get_pressed(pygame.K_LSHIFT):
                         #fire weapon
+                        self.missiles.add(self.player2.create_missile2())
+                        self.all_sprites_list.add(self.player2.create_missile2())
                     if pygame.key.get_pressed(pygame.K_UP):
                         #apply thrust on object
+                        self.player_movement()
+                        self.rect.x += self.new_speed.x
+                        self.rect.y += self.new_speed.y
                     if pygame.key.get_pressed(pygame.K_LEFT):
                         #rotate object left
                         pygame.transform.rotate(20)
@@ -273,7 +338,9 @@ class Game:
                         #rotate object right
                         pygame.transform.rotate(-20)
                     if pygame.key.get_pressed(pygame.K_RSHIFT):
-                        #fire weapon"""
+                        #fire weapon
+                        self.missiles.add(self.player1.create_missile1())
+                        self.all_sprites_list.add(self.player1.create_missile1())"""
             #self.move()
             self.update_game()
         pygame.quit()
