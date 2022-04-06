@@ -125,6 +125,8 @@ class Missile1(Player1):
         self.rect = self.image.get_rect(center = (self.pos))
         
     def update(self):
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.rect.x += self.new_speed.x + 1
         self.rect.x += self.new_speed.x + 1
         
@@ -136,6 +138,8 @@ class Missile2(Player1):
         self.rect = self.image.get_rect(center = (self.pos))
         
     def update(self):
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.rect.x += self.new_speed.x + 1
         self.rect.x += self.new_speed.x + 1
         
@@ -325,8 +329,8 @@ class Game:
                         pygame.transform.rotate(Player1.image, -20)
                     if event.key == pygame.K_LSHIFT:
                         #fire weapon
-                        self.missiles.add(self.player2.create_missile2())
-                        self.all_sprites_list.add(self.player2.create_missile2())
+                        self.missiles.add(Player2.create_missile2(self))
+                        self.all_sprites_list.add(Player2.create_missile2(self))
                     if event.key == pygame.K_UP:
                         #apply thrust on object
                         Player2.update(self)
@@ -338,8 +342,8 @@ class Game:
                         pygame.transform.rotate(Player2.rect, -20)
                     if event.key == pygame.K_RSHIFT:
                         #fire weapon
-                        self.missiles.add(self.player1.create_missile1())
-                        self.all_sprites_list.add(self.player1.create_missile1())
+                        self.missiles.add(Player1.create_missile1(self))
+                        self.all_sprites_list.add(Player1.create_missile1(self))
                         
                 pygame.time.set_timer(fuel_loss, 1000)
                 if pygame.event == fuel_loss:
