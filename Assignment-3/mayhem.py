@@ -39,8 +39,8 @@ class Moving_objects(Drawable_objects):
         
         
 class Player1(Moving_objects):
-    def __init__(self, color, rect, width, height, speed, pos):
-        super().__init__(color, rect, width, height, speed, pos)
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((30, 30))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
@@ -364,7 +364,7 @@ class Game:
                 if pygame.event == fuel_loss:
                     FUEL - 5
                     if FUEL == 0:
-                        pygame.kill(self.player1_ob, self.player2_ob)
+                        pygame.sprite.Sprite.kill(self.player1_ob, self.player2_ob)
                         print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
 
 
