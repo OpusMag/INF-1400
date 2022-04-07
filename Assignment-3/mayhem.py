@@ -1,4 +1,4 @@
-#This code was written by Magnus Lyngra
+"""This code was written by Magnus Lyngra"""
 import pygame
 from pygame import Vector2
 import math
@@ -10,6 +10,7 @@ import sympy
 
 #Top parent class, responsible for variables needed to draw an object
 class Drawable_objects(pygame.sprite.Sprite):
+    """Top parent class. Responsible for variables needed to draw an object"""
     def __init__(self, color, width, height, speed, pos):
         super().__init__()
         self.color = color
@@ -19,6 +20,7 @@ class Drawable_objects(pygame.sprite.Sprite):
 
 #Parent class. The child classes inherit from this which in turn inherits from Drawable_objects. Responsible for variables that move objects
 class Moving_objects(Drawable_objects):
+    """Parent class that inherits from Drawable Objects, but all other classes except for the game class inherits from it."""
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.pos = pos
@@ -31,6 +33,11 @@ class Moving_objects(Drawable_objects):
         
 #Player 1 class. Holds the variables for the player 1 object.
 class Player1(Moving_objects):
+    """Player 1 class that holds the variables for the player 1 object.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((30, 30))
@@ -78,6 +85,11 @@ class Player1(Moving_objects):
     
 #Player 2 class. Holds the variables for the player 2 object
 class Player2(Moving_objects):
+    """Player 2 class that holds the variables for the player 2 object.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it.
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((30, 30))
@@ -125,6 +137,11 @@ class Player2(Moving_objects):
 
 #First missile class. Holds the variables for the first missile object
 class Missile1(Player1):
+    """Missile 1 class that holds the variables for the Missile 1 object.
+
+    Args:
+        Player 1 (Parent): Player 1 is the parent class for this class and this class inherits from it.
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((10, 10))
@@ -139,7 +156,12 @@ class Missile1(Player1):
         self.rect.x += self.new_speed.x + 1
 
 #Second missile class. Holds the variables for the second missile object  
-class Missile2(Player1):
+class Missile2(Player2):
+    """Missile 2 class that holds the variables for the Missile 2 object.
+
+    Args:
+        Player2 (Parent): Player2 is the parent class for this class and this class inherits from it
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((10, 10))
@@ -155,6 +177,11 @@ class Missile2(Player1):
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
+    """Asteroids class that holds the variables for the Asteroids object.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it.
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((70, 70))
@@ -186,6 +213,11 @@ class Asteroids(Moving_objects):
 
 #Class for the platforms. Holds the variables for the plattform object
 class Platforms(Moving_objects):
+    """Platforms class that holds the variables for the Platforms objects.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it.
+    """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
         self.image = pygame.Surface((40, 50))
@@ -197,6 +229,7 @@ class Platforms(Moving_objects):
         
 #Game class. Responsible for the game loop, most of the collision detection and creating most of the objects apart from the missiles.    
 class Game:
+    """Game class that's responsible for creating most of the objects, doing most of the collision checks and running the game loop."""
     def __init__(self):
         self.screen = pygame.display.set_mode((1920, 1080), 0, 0)
         self.player1 = pygame.sprite.Group()
