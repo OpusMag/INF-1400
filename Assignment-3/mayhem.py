@@ -7,6 +7,7 @@ from config import *
 import random
 import math
 import sympy
+import cProfile
 
 #Top parent class, responsible for variables needed to draw an object
 class Drawable_objects(pygame.sprite.Sprite):
@@ -69,7 +70,7 @@ class Player1(Moving_objects):
             SCOREP1 -= 1
     
     #updates the position of player 1
-    def update(self):
+    def movement(self):
         self.acceleration = self.thrust + self.gravity
         self.new_speed = self.speed + self.acceleration * self.time
         self.rect.x += self.new_speed.x
@@ -121,7 +122,7 @@ class Player2(Moving_objects):
             SCOREP2 -= 1
     
     #Updates the position of player 2
-    def update(self):
+    def movement(self):
         self.acceleration = self.thrust + self.gravity
         self.new_speed = self.speed + self.acceleration * self.time
         self.rect.x += self.new_speed.x
@@ -408,7 +409,7 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_w:
                         #apply thrust on object
-                        Player1.update(self)
+                        Player1.movement(self)
                     if event.key == pygame.K_a:
                         #rotate object left
                         pygame.transform.rotate(Player1.image, 20)
@@ -421,7 +422,7 @@ class Game:
                         self.all_sprites_list.add(Player2.create_missile2(self))
                     if event.key == pygame.K_UP:
                         #apply thrust on object
-                        Player2.update(self)
+                        Player2.movement(self)
                     if event.key == pygame.K_LEFT:
                         #rotate object left
                         pygame.transform.rotate(Player2.rect, 20)
