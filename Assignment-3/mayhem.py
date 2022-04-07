@@ -7,17 +7,6 @@ import random
 import math
 import sympy
 
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-GREY = (192, 192, 192)
-WHITE = (255, 255, 255)
-WIDTH = 1920
-HEIGHT = 1080
-Screen_size = WIDTH, HEIGHT
-FUEL = 100
-
 class Drawable_objects(pygame.sprite.Sprite):
     def __init__(self, color, width, height, speed, pos):
         super().__init__()
@@ -53,16 +42,21 @@ class Player1(Moving_objects):
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
     
+    #check for collision between screen and player1
     def collision_screen(self, player1_ob):
-        #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
+        
         if self.rect.left > 1920: 
-            pygame.kill(player1_ob)
+            self.rect.left = 1920
+            SCOREP1 -= 1
         if self.rect.right < 0:
-            pygame.kill(player1_ob)
+            self.rect.right = 0
+            SCOREP1 -= 1
         if self.rect.top > 1080:
-            pygame.kill(player1_ob)
+            self.rect.top = 1080
+            SCOREP1 -= 1
         if self.rect.bottom > 1080:
-            pygame.kill(player1_ob)
+            self.rect.bottom = 1080
+            SCOREP1 -= 1
         
     def update(self):
         self.acceleration = self.thrust + self.gravity
@@ -96,13 +90,17 @@ class Player2(Moving_objects):
     def collision_screen(self, player2_ob):
         #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py)
         if self.rect.left > 1920: 
-            pygame.kill(player2_ob)
+            self.rect.left = 1920
+            SCOREP2 -= 1
         if self.rect.right < 0:
-            pygame.kill(player2_ob)
+            self.rect.right = 0
+            SCOREP2 -= 1
         if self.rect.top > 1080:
-            pygame.kill(player2_ob)
+            self.rect.top = 1080
+            SCOREP2 -= 1
         if self.rect.bottom > 1080:
-            pygame.kill(player2_ob)
+            self.rect.bottom = 1080
+            SCOREP2 -= 1
     
     def update(self):
         self.acceleration = self.thrust + self.gravity
@@ -120,7 +118,7 @@ class Player2(Moving_objects):
 class Missile1(Player1):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.image = pygame.Surface((5, 5))
+        self.image = pygame.Surface((10, 10))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect(center = (self.pos))
         
@@ -133,7 +131,7 @@ class Missile1(Player1):
 class Missile2(Player1):
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
-        self.image = pygame.Surface((5, 5))
+        self.image = pygame.Surface((10, 10))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect(center = (self.pos))
         
@@ -270,24 +268,36 @@ class Game:
     
     def collision_players(self):
         if pygame.sprite.groupcollide(self.player1, self.player2, True, True):
-            print("YOU BOTH LOSE! LOSERS!") 
-        
+            print("YOU BOTH LOSE! LOSERS!")
+            self.player1.kill()
+            self.player2.kill()
     def collision_p1asteroids(self):
         if pygame.sprite.groupcollide(self.player1, self.asteroids, True, False):
             print("Player 1 down, player 2 has won.")
-    
+            SCOREP1 -= 1
+            self.player1.kill()
     def collision_p2asteroids(self):
         if pygame.sprite.groupcollide(self.player2, self.asteroids, True, False):
             print("Player 2 down, player 1 has won.")
-            
+            SCOREP2 -= 1
+            self.player2.kill()
     def collision_p1platforms(self):
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            
+            FUEL = 50
     def collision_p2platforms(self):
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
+            FUEL = 50
     
+    def collision_missile1(self):
+        if pygame.sprite.groupcollide(self.player1, self.missiles, True, True):
+            SCOREP1 -= 1
+            
+    def collision_missile2(self):
+        if pygame.sprite.groupcollide(self.player2, self.missiles, True, True):
+            SCOREP2 -= 1
+            
     def setup(self):
         
         self.create_player1()
@@ -305,6 +315,24 @@ class Game:
         self.all_sprites_list.update()
         self.all_sprites_list.draw(self.screen)
         pygame.display.flip()
+    
+    def score_text(self):
+        font = pygame.font.Font(None, 60)
+        p1_score = font.render(str(SCOREP1), 1, WHITE)
+        self.screen.blit(p1_score, (700,10))
+        p2_score = font.render(str(SCOREP2), 1, WHITE)
+        self.screen.blit(p2_score, (1220,10))
+        
+    def winner_text(self):
+        font = pygame.font.Font(None, 200)
+        p1w = "Player 1 has won the game"
+        p2w = "Player 2 has won the game"
+        if SCOREP1 >= 50:
+            p1_winner = font.render(str(p1w), 1, WHITE)
+            self.screen.blit(p1_winner, (700,10))
+        if SCOREP2 >= 50:
+            p2_winner = font.render(str(p2w), 1, WHITE)
+            self.screen.blit(p2_winner, (1220,10))
         
     def game_loop(self):
         pygame.init()
@@ -354,6 +382,8 @@ class Game:
 
 
             #self.move()
+            self.score_text()
+            self.winner_text()
             self.update_game()
         pygame.quit()
         quit() 
