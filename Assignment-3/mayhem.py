@@ -46,9 +46,11 @@ class Player1(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(1, 1)
         self.gravity = Vector2(-2, -2)
         self.thrust = Vector2(1, 1)
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
@@ -71,8 +73,7 @@ class Player1(Moving_objects):
     
     #updates the position of player 1
     def movement(self):
-        self.acceleration = self.thrust + self.gravity
-        self.new_speed = self.speed + self.acceleration * self.time
+        
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
         """if event.type == pygame.KEYDOWN:
@@ -82,7 +83,7 @@ class Player1(Moving_objects):
     
     #creates a missile object
     def create_missile1(self):
-        return Missile1(GREEN, 5, 5, self.speed, self.pos)
+        return Missile1(GREEN, 5, 5, self.new_speed, self.pos)
     
 #Player 2 class. Holds the variables for the player 2 object
 class Player2(Moving_objects):
@@ -98,9 +99,11 @@ class Player2(Moving_objects):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0] 
         self.rect.y = self.pos[1]
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(1, 1)
         self.gravity = Vector2(-2, -2)
         self.thrust = Vector2(1, 1)
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
@@ -123,8 +126,7 @@ class Player2(Moving_objects):
     
     #Updates the position of player 2
     def movement(self):
-        self.acceleration = self.thrust + self.gravity
-        self.new_speed = self.speed + self.acceleration * self.time
+        
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
         """if event.type == pygame.KEYDOWN:
@@ -134,7 +136,7 @@ class Player2(Moving_objects):
     
     #Creates another missile object
     def create_missile2(self):
-        return Missile2(BLUE, 5, 5, self.speed, self.pos)
+        return Missile2(BLUE, 5, 5, self.new_speed, self.pos)
 
 #First missile class. Holds the variables for the first missile object
 class Missile1(Player1):
@@ -145,16 +147,20 @@ class Missile1(Player1):
     """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
+        self.pos = (40, 1000)
         self.image = pygame.Surface((10, 10))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect(center = (self.pos))
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
     
     #Method responsible for updating the missile's position
     def update(self):
-        self.acceleration = self.thrust + self.gravity
-        self.new_speed = self.speed + self.acceleration * self.time
+        
         self.rect.x += self.new_speed.x + 1
-        self.rect.x += self.new_speed.x + 1
+        self.rect.y += self.new_speed.y + 1
 
 #Second missile class. Holds the variables for the second missile object  
 class Missile2(Player2):
@@ -165,16 +171,20 @@ class Missile2(Player2):
     """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
+        self.rect.x = self.pos[0] 
+        self.rect.y = self.pos[1]
+        self.pos = (1860, 1000)
         self.image = pygame.Surface((10, 10))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect(center = (self.pos))
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
     
     #Updates the position of the second missile object
     def update(self):
-        self.acceleration = self.thrust + self.gravity
-        self.new_speed = self.speed + self.acceleration * self.time
+        
         self.rect.x += self.new_speed.x + 1
-        self.rect.x += self.new_speed.x + 1
+        self.rect.y += self.new_speed.y + 1
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
@@ -246,11 +256,13 @@ class Game:
         self.image = pygame.Surface((30, 30))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(0, 0)
-        self.gravity = Vector2(-2, -2)
-        self.thrust = Vector2(1, 1)
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
+        self.speed = Vector2(1, 1)
+        self.gravity = Vector2(-2, -2)
+        self.thrust = Vector2(1, 1)
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.pos = (30, 1000)
         self.player1_ob = Player1(GREEN, 30, 30, self.speed, self.pos)
         self.player1.add(self.player1_ob)
@@ -261,23 +273,25 @@ class Game:
         self.image = pygame.Surface((30, 30))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(0, 0)
-        self.gravity = Vector2(-2, -2)
-        self.thrust = Vector2(1, 1)
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
+        self.speed = Vector2(1, 1)
+        self.gravity = Vector2(-2, -2)
+        self.thrust = Vector2(1, 1)
+        self.acceleration = self.thrust + self.gravity
+        self.new_speed = self.speed + self.acceleration * self.time
         self.pos = (1850, 1000)
         self.player2_ob = Player2(BLUE, 30, 30, self.speed, self.pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
         
-    """def create_missile1(self):
+    def create_missile1(self):
         self.image = pygame.Surface((5, 5))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
         self.pos = (30, 1000)
-        self.missile1_ob = Missile1(GREEN, 5, 5, self.speed, self.pos)
+        self.missile1_ob = Missile1(GREEN, 5, 5, self.new_speed, self.pos)
         self.missiles.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
@@ -286,17 +300,17 @@ class Game:
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.speed = Vector2(0, 0)
-        self.pos = (30, 1000)
-        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.pos)
+        self.pos = (1850, 1000)
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.new_speed, self.pos)
         self.missiles.add(self.missile2_ob)
-        self.all_sprites_list.add(self.missile2_ob)"""
+        self.all_sprites_list.add(self.missile2_ob)
     
     #creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
     def create_asteroids(self):
         self.image = pygame.Surface((70, 70))
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(1, 1)
         self.pos = (random.randint(0, 0), random.randint(100, 800))
         self.asteroids_ob = Asteroids(RED, 70, 70, self.speed, self.pos)
         self.asteroids.add(self.asteroids_ob)
