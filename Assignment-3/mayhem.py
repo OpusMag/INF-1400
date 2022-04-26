@@ -369,10 +369,20 @@ class Game:
                     if event.key == pygame.K_a:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
+                        x = self.screen.get_width() - self.image.get_width() - 100
+                        y = self.image.get_height() + 10
+    
+                        # draw the rotated image to the pygame app main window screen.
+                        pygame.display.update(self.screen, self.rot_img, x, y)
                         return self.rot_img
                     if event.key == pygame.K_d:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
+                        x = self.screen.get_width() - self.image.get_width() - 100
+                        y = self.image.get_height() + 10
+    
+                        # draw the rotated image to the pygame app main window screen.
+                        pygame.display.update(self.screen, self.rot_img, x, y)
                         return self.rot_img
                     if event.key == pygame.K_LSHIFT:
                         #fire weapon
@@ -388,10 +398,20 @@ class Game:
                     if event.key == pygame.K_LEFT:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
+                        x = self.screen.get_width() - self.image.get_width() - 100
+                        y = self.image.get_height() + 10
+    
+                        # draw the rotated image to the pygame app main window screen.
+                        pygame.display.update(self.screen, self.rot_img, x, y)
                         return self.rot_img
                     if event.key == pygame.K_RIGHT:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
+                        x = self.screen.get_width() - self.image.get_width() - 100
+                        y = self.image.get_height() + 10
+    
+                        # draw the rotated image to the pygame app main window screen.
+                        pygame.display.update(self.screen, self.rot_img, x, y)
                         return self.rot_img
                     if event.key == pygame.K_RSHIFT:
                         #fire weapon
