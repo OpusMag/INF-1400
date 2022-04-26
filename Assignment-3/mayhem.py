@@ -33,6 +33,7 @@ class Moving_objects(Drawable_objects):
         self.thrust = Vector2()
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
+        self.max_speed = Vector2(-2, -2)
         
         
 #Player 1 class. Holds the variables for the player 1 object.
@@ -44,23 +45,34 @@ class Player(Moving_objects):
     """
     def __init__(self, color, width, height, speed, pos):
         super().__init__(color, width, height, speed, pos)
+        self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, -10)
-        self.thrust = Vector2(-10, -10)
+        self.speed = Vector2(0, -5)
+        self.thrust = Vector2(-5, -5)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
     #updates the position of player 1
     def update(self):
+        
+        
+        
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_w:
                         self.rect.x += self.new_speed.x
                         self.rect.y += self.new_speed.y
+                        #if self.new_speed > Vector2(3, 3):
+                            #self.new_speed = Vector2(3, 3)
                     elif event.key == pygame.K_UP:
                         self.rect.x += self.new_speed.x
                         self.rect.y += self.new_speed.y
+                       # if self.new_speed > self.max_speed:
+                            #self.new_speed = self.max_speed
+            elif event.type == pygame.KEYUP:
+                self.speed = Vector2(0, 0)
+                self.speed += GRAVITY
         """if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w or event.key == pygame.UP:
                 self.rect.x += self.new_speed.x
@@ -92,17 +104,6 @@ class Missile(Player):
                     elif event.key == pygame.K_RSHIFT:
                         self.rect.x += self.new_speed.x
                         self.rect.y += self.new_speed.y
-                    elif event.key == pygame.K_a:
-                        #rotate object left
-                        pygame.transform.rotate(self.image2, 20)
-                    elif event.key == pygame.K_d:
-                        #rotate object right
-                        pygame.transform.rotate(self.image2, -20)
-                    elif event.key == pygame.K_LSHIFT:
-                        #fire weapon
-                        self.create_missile2(self.p2_pos)
-                        self.missile2.add(self.missile2_ob)
-                        self.all_sprites_list.add(self.missile2_ob)
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
@@ -171,6 +172,7 @@ class Game:
     
     #creates player 1 object and adds it to its sprite group and the main sprite group for all the sprites
     def create_player1(self):
+        self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
         self.p1_pos = (30, 1000)
         self.player1_ob = Player(GREEN, 30, 30, self.speed, self.p1_pos)
@@ -179,6 +181,7 @@ class Game:
     
     #creates player 2 object and adds it to its sprite group and the main sprite group for all the sprites
     def create_player2(self):
+        self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
         self.p2_pos = (1850, 1000)
         self.player2_ob = Player(BLUE, 30, 30, self.speed, self.p2_pos)
@@ -309,9 +312,9 @@ class Game:
     def score_text(self):
         self.font = pygame.font.Font(None, 60)
         self.p1_score = self.font.render(str(SCOREP1), 1, WHITE)
-        self.screen.blit(self.p1_score, (700,10))
+        self.screen.blit(self.p1_score, (900,10))
         self.p2_score = self.font.render(str(SCOREP2), 1, WHITE)
-        self.screen.blit(self.p2_score, (1220,10))
+        self.screen.blit(self.p2_score, (1420,10))
     
     #text for fuel count   
     def score_fuel(self):
@@ -363,22 +366,42 @@ class Game:
                         #apply thrust on object
                         #Player.update(self)
                         #need to update pos of missile as well
-                    
+                    if event.key == pygame.K_a:
+                        #rotate object left
+                        self.rot_img = pygame.transform.rotate(self.image, 20)
+                        return self.rot_img
+                    if event.key == pygame.K_d:
+                        #rotate object right
+                        self.rot_img = pygame.transform.rotate(self.image, -20)
+                        return self.rot_img
+                    if event.key == pygame.K_LSHIFT:
+                        #fire weapon
+                        self.create_missile2(self.p2_pos)
+                        self.missile2.add(self.missile2_ob)
+                        self.all_sprites_list.add(self.missile2_ob)
+                        #self.rect.x += self.speed.x
+                        #self.rect.y += self.speed.y
                     #if event.key == pygame.K_UP:
                         #apply thrust on object
                         #Player.update(self)
                         #need to update pos of missile as well
                     if event.key == pygame.K_LEFT:
                         #rotate object left
-                        pygame.transform.rotate(self.image1, 20)
+                        self.rot_img = pygame.transform.rotate(self.image, 20)
+                        return self.rot_img
                     if event.key == pygame.K_RIGHT:
                         #rotate object right
-                        pygame.transform.rotate(self.image1, -20)
+                        self.rot_img = pygame.transform.rotate(self.image, -20)
+                        return self.rot_img
                     if event.key == pygame.K_RSHIFT:
                         #fire weapon
                         self.create_missile1(self.p1_pos)
                         self.missile1.add(self.missile1_ob)
                         self.all_sprites_list.add(self.missile1_ob)
+                        #self.rect.x += self.speed.x
+                        #self.rect.y += self.speed.y
+                elif event.type == pygame.KEYUP:
+                    self.speed += GRAVITY
                     
                 pygame.time.set_timer(fuel_loss, 1000)
                 if pygame.event == fuel_loss:
