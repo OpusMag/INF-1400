@@ -214,7 +214,7 @@ class Game:
             player1_ob.rect.top = 1080
             self.speed *= -1
             SCOREP1 -= 1
-        if player1_ob.rect.bottom > 0:
+        if player1_ob.rect.bottom < 0:
             player1_ob.rect.bottom = 0
             self.speed *= -1
             SCOREP1 -= 1
@@ -233,7 +233,7 @@ class Game:
             player2_ob.rect.top = 1080
             self.speed *= -1
             SCOREP2 -= 1
-        if player2_ob.rect.bottom > 0:
+        if player2_ob.rect.bottom < 0:
             player2_ob.rect.bottom = 0
             self.speed *= -1
             SCOREP2 -= 1    
@@ -281,8 +281,6 @@ class Game:
             self.create_asteroids()
         self.create_platform1()
         self.create_platform2()
-    
-    
     
     #text for displaying each player's score ingame
     def score_text(self):
@@ -345,14 +343,12 @@ class Game:
                     if event.key == pygame.K_a:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
-
                         # draw the rotated image to the pygame app main window screen.
                         self.screen.blit(self.rot_img, self.p2_pos)
                         return self.rot_img
                     if event.key == pygame.K_d:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
-                        
                         # draw the rotated image to the pygame app main window screen.
                         self.screen.blit(self.rot_img, self.p2_pos)
                         return self.rot_img
@@ -371,14 +367,12 @@ class Game:
                     if event.key == pygame.K_LEFT:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
-                       
                         # draw the rotated image to the pygame app main window screen.
                         self.screen.blit(self.rot_img, self.p1_pos)
                         return self.rot_img
                     if event.key == pygame.K_RIGHT:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
-                    
                         # draw the rotated image to the pygame app main window screen.
                         self.screen.blit(self.rot_img, self.p1_pos)
                         return self.rot_img
