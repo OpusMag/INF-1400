@@ -30,6 +30,7 @@ class Moving_objects(Drawable_objects):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.speed = Vector2()
+        #self.pos = Vector2(0, 0)
         self.thrust = Vector2()
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
@@ -48,15 +49,15 @@ class Player(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, -1)
-        self.thrust = Vector2(0, -2)
+        self.speed = Vector2(0, 0)
+        self.thrust = Vector2(0, -4)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
     #updates the position of players
-    def update(self):
+    """def update(self):
         self.rect.x += self.new_speed.x
-        self.rect.y += self.new_speed.y
+        self.rect.y += self.new_speed.y"""
         
     
 #First missile class. Holds the variables for the first missile object
@@ -79,6 +80,10 @@ class Missile(Player):
     def update(self):
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
+        #self.pos.x += self.p1_pos.x
+        #self.pos.y += self.p1_pos.y
+        #self.pos.x += self.p2_pos.x
+        #self.pos.y += self.p2_pos.y
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
@@ -149,7 +154,9 @@ class Game:
     def create_player1(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p1_pos = (30, 1000)
+        self.p1_pos = Vector2()
+        self.p1_pos.xy = 30, 1000
+        self.direction = Vector2(5, 0)
         self.player1_ob = Player(GREEN, 30, 30, self.speed, self.p1_pos)
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
@@ -158,7 +165,9 @@ class Game:
     def create_player2(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p2_pos = (1850, 1000)
+        self.p2_pos = Vector2()
+        self.p2_pos.xy = 1850, 1000
+        self.direction = Vector2(5, 0)
         self.player2_ob = Player(BLUE, 30, 30, self.speed, self.p2_pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
@@ -180,22 +189,22 @@ class Game:
     #creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
     def create_asteroids(self):
         self.speed = Vector2(1, 1)
-        self.pos = (random.randint(0, 0), random.randint(100, 800))
-        self.asteroids_ob = Asteroids(RED, 70, 70, self.speed, self.pos)
+        self.pos_a = (random.randint(0, 0), random.randint(100, 800))
+        self.asteroids_ob = Asteroids(RED, 70, 70, self.speed, self.pos_a)
         self.asteroids.add(self.asteroids_ob)
         self.all_sprites_list.add(self.asteroids_ob)
     
     #creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
     def create_platform1(self):
-        self.pos = (25, 1030)
-        self.platform_ob1 = Platforms(GREY, 40, 50, self.speed, self.pos)
+        self.pos_pf1 = (25, 1030)
+        self.platform_ob1 = Platforms(GREY, 40, 50, self.speed, self.pos_pf1)
         self.platforms.add(self.platform_ob1)
         self.all_sprites_list.add(self.platform_ob1)
     
     #creates second platform object and adds it to its sprite group and the main sprite group for all the sprites
     def create_platform2(self):
-        self.pos = (1845, 1030)
-        self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos)
+        self.pos_pf2 = (1845, 1030)
+        self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos_pf2)
         self.platforms.add(self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob2)
     
@@ -336,47 +345,54 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_w:
+                    if (event.key == pygame.K_w):
                         #apply thrust on object
-                        self.player2_ob.update()
+                        #self.player2_ob.update()
+                        self.new_pos2 = self.p2_pos
+                        self.rect.x += self.speed.x
+                        self.rect.y += self.speed.y
                         #need to update pos of missile as well
-                    if event.key == pygame.K_a:
-                        #rotate object left
+                    if (event.key == pygame.K_a):
+                        self.p2_pos += self.direction
+                        """#rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.screen.blit(self.rot_img, self.p2_pos)
-                        return self.rot_img
-                    if event.key == pygame.K_d:
-                        #rotate object right
+                        self.rot_img.blit(self.screen, self.p2_pos)"""
+                        
+                    if (event.key == pygame.K_d):
+                        self.p2_pos -= self.direction
+                        """#rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.screen.blit(self.rot_img, self.p2_pos)
-                        return self.rot_img
-                    if event.key == pygame.K_LSHIFT:
+                        self.rot_img.blit(self.screen, self.p2_pos)"""
+                        
+                    if (event.key == pygame.K_LSHIFT):
                         #fire weapon
                         self.create_missile2(self.p2_pos)
                         self.missile2.add(self.missile2_ob)
                         self.all_sprites_list.add(self.missile2_ob)
                         self.missile2_ob.update()
-                        #self.rect.x += self.speed.x
-                        #self.rect.y += self.speed.y
-                    if event.key == pygame.K_UP:
+                        
+                    if (event.key == pygame.K_UP):
                         #apply thrust on object
                         self.player1_ob.update()
+                        self.new_pos1 = self.p1_pos
                         #need to update pos of missile as well
-                    if event.key == pygame.K_LEFT:
-                        #rotate object left
+                    if (event.key == pygame.K_LEFT):
+                        self.p1_pos += self.direction
+                        """#rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.screen.blit(self.rot_img, self.p1_pos)
-                        return self.rot_img
-                    if event.key == pygame.K_RIGHT:
-                        #rotate object right
+                        self.rot_img.blit(self.screen, self.p1_pos)"""
+                        
+                    if (event.key == pygame.K_RIGHT):
+                        self.p1_pos -= self.direction
+                        """#rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.screen.blit(self.rot_img, self.p1_pos)
-                        return self.rot_img
-                    if event.key == pygame.K_RSHIFT:
+                        self.rot_img.blit(self.screen, self.p1_pos)"""
+                        
+                    if (event.key == pygame.K_RSHIFT):
                         #fire weapon
                         self.create_missile1(self.p1_pos)
                         self.missile1.add(self.missile1_ob)
