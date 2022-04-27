@@ -48,35 +48,16 @@ class Player(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, -5)
-        self.thrust = Vector2(-5, -5)
+        self.speed = Vector2(0, -1)
+        self.thrust = Vector2(0, -2)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
-    #updates the position of player 1
+    #updates the position of players
     def update(self):
+        self.rect.x += self.new_speed.x
+        self.rect.y += self.new_speed.y
         
-        
-        
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_w:
-                        self.rect.x += self.new_speed.x
-                        self.rect.y += self.new_speed.y
-                        #if self.new_speed > Vector2(3, 3):
-                            #self.new_speed = Vector2(3, 3)
-                    elif event.key == pygame.K_UP:
-                        self.rect.x += self.new_speed.x
-                        self.rect.y += self.new_speed.y
-                       # if self.new_speed > self.max_speed:
-                            #self.new_speed = self.max_speed
-            elif event.type == pygame.KEYUP:
-                self.speed = Vector2(0, 0)
-                self.speed += GRAVITY
-        """if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w or event.key == pygame.UP:
-                self.rect.x += self.new_speed.x
-                self.rect.y += self.new_speed.y"""
     
 #First missile class. Holds the variables for the first missile object
 class Missile(Player):
@@ -90,20 +71,14 @@ class Missile(Player):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.speed = Vector2(0, 0)
-        self.thrust = Vector2(-10, -10)
+        self.thrust = Vector2(0, -5)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
     
     #Method responsible for updating the missile's position
     def update(self):
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LSHIFT:
-                        self.rect.x += self.new_speed.x
-                        self.rect.y += self.new_speed.y
-                    elif event.key == pygame.K_RSHIFT:
-                        self.rect.x += self.new_speed.x
-                        self.rect.y += self.new_speed.y
+        self.rect.x += self.new_speed.x
+        self.rect.y += self.new_speed.y
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
@@ -191,7 +166,7 @@ class Game:
     def create_missile1(self, p1_pos):
         self.speed = Vector2(0, 0)
         self.pos = p1_pos
-        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.pos)
+        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.p1_pos)
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
@@ -226,6 +201,7 @@ class Game:
     
     def collisions(self, player1_ob, player2_ob):
         #check for collision between screen and player1
+        SCOREP1 = 0
         if player1_ob.rect.left > 1920: 
             player1_ob.rect.left = 1920
             self.speed *= -1
@@ -238,13 +214,13 @@ class Game:
             player1_ob.rect.top = 1080
             self.speed *= -1
             SCOREP1 -= 1
-        if player1_ob.rect.bottom > 1080:
-            player1_ob.rect.bottom = 1080
+        if player1_ob.rect.bottom > 0:
+            player1_ob.rect.bottom = 0
             self.speed *= -1
             SCOREP1 -= 1
     
     #Checks for collisions between player 2 and the screen
-        
+        SCOREP2 = 0
         if player2_ob.rect.left > 1920: 
             player2_ob.rect.left = 1920
             self.speed *= -1
@@ -257,8 +233,8 @@ class Game:
             player2_ob.rect.top = 1080
             self.speed *= -1
             SCOREP2 -= 1
-        if player2_ob.rect.bottom > 1080:
-            player2_ob.rect.bottom = 1080
+        if player2_ob.rect.bottom > 0:
+            player2_ob.rect.bottom = 0
             self.speed *= -1
             SCOREP2 -= 1    
     
@@ -362,64 +338,57 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
-                    #if event.key == pygame.K_w:
+                    if event.key == pygame.K_w:
                         #apply thrust on object
-                        #Player.update(self)
+                        self.player2_ob.update()
                         #need to update pos of missile as well
                     if event.key == pygame.K_a:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
-                        x = self.screen.get_width() - self.image.get_width() - 100
-                        y = self.image.get_height() + 10
-    
+
                         # draw the rotated image to the pygame app main window screen.
-                        pygame.display.update(self.screen, self.rot_img, x, y)
+                        self.screen.blit(self.rot_img, self.p2_pos)
                         return self.rot_img
                     if event.key == pygame.K_d:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
-                        x = self.screen.get_width() - self.image.get_width() - 100
-                        y = self.image.get_height() + 10
-    
+                        
                         # draw the rotated image to the pygame app main window screen.
-                        pygame.display.update(self.screen, self.rot_img, x, y)
+                        self.screen.blit(self.rot_img, self.p2_pos)
                         return self.rot_img
                     if event.key == pygame.K_LSHIFT:
                         #fire weapon
                         self.create_missile2(self.p2_pos)
                         self.missile2.add(self.missile2_ob)
                         self.all_sprites_list.add(self.missile2_ob)
+                        self.missile2_ob.update()
                         #self.rect.x += self.speed.x
                         #self.rect.y += self.speed.y
-                    #if event.key == pygame.K_UP:
+                    if event.key == pygame.K_UP:
                         #apply thrust on object
-                        #Player.update(self)
+                        self.player1_ob.update()
                         #need to update pos of missile as well
                     if event.key == pygame.K_LEFT:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
-                        x = self.screen.get_width() - self.image.get_width() - 100
-                        y = self.image.get_height() + 10
-    
+                       
                         # draw the rotated image to the pygame app main window screen.
-                        pygame.display.update(self.screen, self.rot_img, x, y)
+                        self.screen.blit(self.rot_img, self.p1_pos)
                         return self.rot_img
                     if event.key == pygame.K_RIGHT:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
-                        x = self.screen.get_width() - self.image.get_width() - 100
-                        y = self.image.get_height() + 10
-    
+                    
                         # draw the rotated image to the pygame app main window screen.
-                        pygame.display.update(self.screen, self.rot_img, x, y)
+                        self.screen.blit(self.rot_img, self.p1_pos)
                         return self.rot_img
                     if event.key == pygame.K_RSHIFT:
                         #fire weapon
                         self.create_missile1(self.p1_pos)
                         self.missile1.add(self.missile1_ob)
                         self.all_sprites_list.add(self.missile1_ob)
-                        #self.rect.x += self.speed.x
-                        #self.rect.y += self.speed.y
+                        self.missile1_ob.update()
+                        
                 elif event.type == pygame.KEYUP:
                     self.speed += GRAVITY
                     
