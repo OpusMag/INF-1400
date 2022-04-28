@@ -49,15 +49,15 @@ class Player(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, 0)
-        self.thrust = Vector2(0, -4)
+        self.speed = Vector2(0, -20)
+        self.thrust = Vector2(0, -50)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
     #updates the position of players
-    """def update(self):
+    def move(self):
         self.rect.x += self.new_speed.x
-        self.rect.y += self.new_speed.y"""
+        self.rect.y += self.new_speed.y
         
     
 #First missile class. Holds the variables for the first missile object
@@ -154,9 +154,10 @@ class Game:
     def create_player1(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p1_pos = Vector2()
+        self.p1_pos = Vector2(0, -0.2)
         self.p1_pos.xy = 30, 1000
-        self.direction = Vector2(5, 0)
+        self.dir = Vector2(0, 5)
+        self.dir = Vector2(0, 5)
         self.player1_ob = Player(GREEN, 30, 30, self.speed, self.p1_pos)
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
@@ -165,9 +166,10 @@ class Game:
     def create_player2(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p2_pos = Vector2()
+        self.p2_pos = Vector2(0, -0.2)
         self.p2_pos.xy = 1850, 1000
-        self.direction = Vector2(5, 0)
+        self.dir = Vector2(0, 5)
+        self.n_dir = Vector2(0, -5)
         self.player2_ob = Player(BLUE, 30, 30, self.speed, self.p2_pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
@@ -347,24 +349,20 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if (event.key == pygame.K_w):
                         #apply thrust on object
-                        #self.player2_ob.update()
+                        self.player2_ob.move()
                         self.new_pos2 = self.p2_pos
-                        self.rect.x += self.speed.x
-                        self.rect.y += self.speed.y
                         #need to update pos of missile as well
                     if (event.key == pygame.K_a):
-                        self.p2_pos += self.direction
-                        """#rotate object left
+                        #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p2_pos)"""
+                        self.rot_img.blit(self.screen, self.p2_pos)
                         
                     if (event.key == pygame.K_d):
-                        self.p2_pos -= self.direction
-                        """#rotate object right
+                        #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p2_pos)"""
+                        self.rot_img.blit(self.screen, self.p2_pos)
                         
                     if (event.key == pygame.K_LSHIFT):
                         #fire weapon
@@ -375,22 +373,21 @@ class Game:
                         
                     if (event.key == pygame.K_UP):
                         #apply thrust on object
-                        self.player1_ob.update()
+                        self.player1_ob.move()
                         self.new_pos1 = self.p1_pos
                         #need to update pos of missile as well
                     if (event.key == pygame.K_LEFT):
-                        self.p1_pos += self.direction
-                        """#rotate object left
+                        
+                        #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p1_pos)"""
+                        self.rot_img.blit(self.screen, self.p1_pos)
                         
                     if (event.key == pygame.K_RIGHT):
-                        self.p1_pos -= self.direction
-                        """#rotate object right
+                        #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p1_pos)"""
+                        self.rot_img.blit(self.screen, self.p1_pos)
                         
                     if (event.key == pygame.K_RSHIFT):
                         #fire weapon
