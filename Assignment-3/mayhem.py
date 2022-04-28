@@ -49,16 +49,46 @@ class Player(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, -20)
-        self.thrust = Vector2(0, -50)
+        self.speed = Vector2(0, 0)
+        self.thrust = Vector2(0, -3)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
     #updates the position of players
-    def move(self):
-        self.rect.x += self.new_speed.x
-        self.rect.y += self.new_speed.y
-        
+    def update(self):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP]:
+            self.rect.x += self.new_speed.x
+            self.rect.y += self.new_speed.y
+        elif pygame.KEYUP:
+            self.rect.y += GRAVITY.y
+
+#Player 1 class. Holds the variables for the player 1 object.
+class Player2(Moving_objects):
+    """Player 2 class that holds the variables for the player 2 object.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it
+    """
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
+        self.rot_img = self.image
+        self.clock = pygame.time.Clock()
+        self.time = self.clock.tick(30) / 1000.0
+        self.speed = Vector2(0, 0)
+        self.thrust = Vector2(0, -3)
+        self.acceleration = self.thrust + GRAVITY
+        self.new_speed = self.speed + self.acceleration * self.time
+
+    #updates the position of players
+    def update(self):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_w]:
+            self.rect.x += self.new_speed.x
+            self.rect.y += self.new_speed.y
+        elif pygame.KEYUP:
+            self.rect.y += GRAVITY.y
+            
     
 #First missile class. Holds the variables for the first missile object
 class Missile(Player):
@@ -78,6 +108,33 @@ class Missile(Player):
     
     #Method responsible for updating the missile's position
     def update(self):
+        
+        self.rect.x += self.new_speed.x
+        self.rect.y += self.new_speed.y
+        #self.pos.x += self.p1_pos.x
+        #self.pos.y += self.p1_pos.y
+        #self.pos.x += self.p2_pos.x
+        #self.pos.y += self.p2_pos.y
+
+#First missile class. Holds the variables for the first missile object
+class Missile2(Player):
+    """Missile 1 class that holds the variables for the Missile 1 object.
+
+    Args:
+        Player 1 (Parent): Player 1 is the parent class for this class and this class inherits from it.
+    """
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
+        self.clock = pygame.time.Clock()
+        self.time = self.clock.tick(30) / 1000.0
+        self.speed = Vector2(0, 0)
+        self.thrust = Vector2(0, -5)
+        self.acceleration = self.thrust + GRAVITY
+        self.new_speed = self.speed + self.acceleration * self.time
+    
+    #Method responsible for updating the missile's position
+    def update(self):
+        
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
         #self.pos.x += self.p1_pos.x
@@ -170,7 +227,7 @@ class Game:
         self.p2_pos.xy = 1850, 1000
         self.dir = Vector2(0, 5)
         self.n_dir = Vector2(0, -5)
-        self.player2_ob = Player(BLUE, 30, 30, self.speed, self.p2_pos)
+        self.player2_ob = Player2(BLUE, 30, 30, self.speed, self.p2_pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
         
@@ -184,7 +241,7 @@ class Game:
     def create_missile2(self, p2_pos):
         self.speed = Vector2(0, 0)
         self.pos = p2_pos
-        self.missile2_ob = Missile(BLUE, 5, 5, self.speed, self.p2_pos)
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.p2_pos)
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
     
@@ -267,11 +324,13 @@ class Game:
     #checks for collision between player 1 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
+            self.p1_pos.xy = 30, 1000
             FUEL = 50
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
+            self.p2_pos.xy = 1850, 1000
             FUEL = 50
             
     #checks for collisions between player 1 and player 2's missile. If they collide, player 1 loses a point and is destroyed
@@ -340,56 +399,45 @@ class Game:
         pygame.display.set_caption('Mayhem')
         fuel_loss = pygame.USEREVENT + 1
         self.setup()
-        
+        pressed = pygame.key.get_pressed()
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN:
-                    if (event.key == pygame.K_w):
-                        #apply thrust on object
-                        self.player2_ob.move()
-                        self.new_pos2 = self.p2_pos
-                        #need to update pos of missile as well
-                    if (event.key == pygame.K_a):
+                
+                    if pressed[pygame.K_a]:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
                         self.rot_img.blit(self.screen, self.p2_pos)
                         
-                    if (event.key == pygame.K_d):
+                    if pressed[pygame.K_d]:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
                         self.rot_img.blit(self.screen, self.p2_pos)
                         
-                    if (event.key == pygame.K_LSHIFT):
+                    if pressed[pygame.K_LSHIFT]:
                         #fire weapon
                         self.create_missile2(self.p2_pos)
                         self.missile2.add(self.missile2_ob)
                         self.all_sprites_list.add(self.missile2_ob)
                         self.missile2_ob.update()
                         
-                    if (event.key == pygame.K_UP):
-                        #apply thrust on object
-                        self.player1_ob.move()
-                        self.new_pos1 = self.p1_pos
-                        #need to update pos of missile as well
-                    if (event.key == pygame.K_LEFT):
-                        
+                    if pressed[pygame.K_LEFT]:
                         #rotate object left
                         self.rot_img = pygame.transform.rotate(self.image, 20)
                         # draw the rotated image to the pygame app main window screen.
                         self.rot_img.blit(self.screen, self.p1_pos)
                         
-                    if (event.key == pygame.K_RIGHT):
+                    if pressed[pygame.K_RIGHT]:
                         #rotate object right
                         self.rot_img = pygame.transform.rotate(self.image, -20)
                         # draw the rotated image to the pygame app main window screen.
                         self.rot_img.blit(self.screen, self.p1_pos)
                         
-                    if (event.key == pygame.K_RSHIFT):
+                    if pressed[pygame.K_RSHIFT]:
                         #fire weapon
                         self.create_missile1(self.p1_pos)
                         self.missile1.add(self.missile1_ob)
@@ -408,6 +456,7 @@ class Game:
 
 
             #self.move()
+            
             self.score_text()
             self.score_fuel()
             self.winner_text()
