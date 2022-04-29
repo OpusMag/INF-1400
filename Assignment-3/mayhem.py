@@ -17,7 +17,7 @@ class Drawable_objects(pygame.sprite.Sprite):
         self.color = color
         self.image = pygame.Surface((width, height))
         self.image.fill(self.color)
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center = pos)
         self.pos = pos
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
@@ -49,7 +49,7 @@ class Player(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(-1, -1)
         self.thrust = Vector2(0, -3)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
@@ -60,8 +60,14 @@ class Player(Moving_objects):
         if pressed[pygame.K_UP]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
+            print(self.pos[0])
+            print(self.pos[1])
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
+        print(self.rect.x)
+            
+    #def create_missile(self):
+        #return Missile(GREEN, 5, 5, self.speed, self.pos)
 
 #Player 1 class. Holds the variables for the player 1 object.
 class Player2(Moving_objects):
@@ -75,7 +81,8 @@ class Player2(Moving_objects):
         self.rot_img = self.image
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
-        self.speed = Vector2(0, 0)
+        self.pos = pos
+        self.speed = Vector2(-1, -1)
         self.thrust = Vector2(0, -3)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
@@ -91,6 +98,9 @@ class Player2(Moving_objects):
     
     def rotate(self):
         self.player2_ob.new_speed.rotate_ip(5)
+    
+    #def create_missile2(self):
+        #return Missile2(BLUE, 5, 5, self.speed, self.pos)
             
     
 #First missile class. Holds the variables for the first missile object
@@ -104,6 +114,7 @@ class Missile(Player):
         super().__init__(color, width, height, speed, pos)
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
+        self.pos = pos
         self.speed = Vector2(0, 0)
         self.thrust = Vector2(0, -5)
         self.acceleration = self.thrust + GRAVITY
@@ -114,10 +125,6 @@ class Missile(Player):
         
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
-        #self.pos.x += self.p1_pos.x
-        #self.pos.y += self.p1_pos.y
-        #self.pos.x += self.p2_pos.x
-        #self.pos.y += self.p2_pos.y
         print(self.new_speed)
 #First missile class. Holds the variables for the first missile object
 class Missile2(Player):
@@ -130,6 +137,7 @@ class Missile2(Player):
         super().__init__(color, width, height, speed, pos)
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
+        self.pos = pos
         self.speed = Vector2(0, 0)
         self.thrust = Vector2(0, -5)
         self.acceleration = self.thrust + GRAVITY
@@ -140,10 +148,7 @@ class Missile2(Player):
         
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
-        #self.pos.x += self.p1_pos.x
-        #self.pos.y += self.p1_pos.y
-        #self.pos.x += self.p2_pos.x
-        #self.pos.y += self.p2_pos.y
+        
 
 #Class responsible for the asteroids object variables   
 class Asteroids(Moving_objects):
@@ -214,11 +219,11 @@ class Game:
     def create_player1(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p1_pos = Vector2(0, -0.2)
-        self.p1_pos.xy = 30, 1000
+        self.pos = Vector2(0, -0.2)
+        self.pos.xy = 30, 1000
         self.dir = Vector2(0, 5)
         self.dir = Vector2(0, 5)
-        self.player1_ob = Player(GREEN, 30, 30, self.speed, self.p1_pos)
+        self.player1_ob = Player(GREEN, 30, 30, self.speed, self.pos)
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
     
@@ -226,28 +231,28 @@ class Game:
     def create_player2(self):
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
-        self.p2_pos = Vector2(0, -0.2)
-        self.p2_pos.xy = 1850, 1000
+        self.pos = Vector2(0, -0.2)
+        self.pos.xy = 1850, 1000
         self.dir = Vector2(0, 5)
         self.n_dir = Vector2(0, -5)
-        self.player2_ob = Player2(BLUE, 30, 30, self.speed, self.p2_pos)
+        self.player2_ob = Player2(BLUE, 30, 30, self.speed, self.pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
         
-    def create_missile1(self, p1_pos):
-        self.speed = Vector2(0, 0)
-        self.pos = p1_pos
-        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.p1_pos)
+    def create_missile1(self):
+        self.pos.x = Player.rect.x
+        self.pos.y = Player.rect.y
+        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, (self.pos.x, self.pos.y))
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
-    def create_missile2(self, p2_pos):
-        self.speed = Vector2(0, 0)
-        self.pos = p2_pos
-        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.p2_pos)
+    def create_missile2(self):
+        self.pos = self.player2_ob.pos
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.pos)
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
-    
+        print(self.player2_ob.pos)
+        
     #creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
     def create_asteroids(self):
         self.speed = Vector2(1, 1)
@@ -275,39 +280,39 @@ class Game:
         SCOREP1 = 0
         if player1_ob.rect.left > 1920: 
             player1_ob.rect.left = 1920
-            self.speed *= -1
-            SCOREP1 -= 1
+            
+            SCOREP1 -1
         if player1_ob.rect.right < 0:
             player1_ob.rect.right = 0
-            self.speed *= -1
-            SCOREP1 -= 1
+            
+            SCOREP1 -1
         if player1_ob.rect.top > 1080:
             player1_ob.rect.top = 1080
-            self.speed *= -1
-            SCOREP1 -= 1
+            
+            SCOREP1 -1
         if player1_ob.rect.bottom < 0:
             player1_ob.rect.bottom = 0
-            self.speed *= -1
-            SCOREP1 -= 1
+            
+            SCOREP1 -1
     
     #Checks for collisions between player 2 and the screen
         SCOREP2 = 0
         if player2_ob.rect.left > 1920: 
             player2_ob.rect.left = 1920
-            self.speed *= -1
-            SCOREP2 -= 1
+            
+            SCOREP2 -1
         if player2_ob.rect.right < 0:
             player2_ob.rect.right = 0
-            self.speed *= -1
-            SCOREP2 -= 1
+            
+            SCOREP2 -1
         if player2_ob.rect.top > 1080:
             player2_ob.rect.top = 1080
-            self.speed *= -1
-            SCOREP2 -= 1
+            
+            SCOREP2 -1
         if player2_ob.rect.bottom < 0:
             player2_ob.rect.bottom = 0
-            self.speed *= -1
-            SCOREP2 -= 1    
+            
+            SCOREP2 -1    
     
     
     #checks for collisions between players. Destroys them if they collide
@@ -317,32 +322,34 @@ class Game:
     #checks for collisions between player 1 and asteroids. Destroys player and reduces score by 1 if they collide
         if pygame.sprite.groupcollide(self.player1, self.asteroids, True, False):
             print("Player 1 down, player 2 has won.")
-            SCOREP1 -= 1
+            SCOREP1 - 1
             
     #checks for collisions between player 2 and asteroids. Destroys player and reduces score by 1 if they collide
         if pygame.sprite.groupcollide(self.player2, self.asteroids, True, False):
             print("Player 2 down, player 1 has won.")
-            SCOREP2 -= 1
+            SCOREP2 - 1
             
     #checks for collision between player 1 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.p1_pos.xy = 30, 1000
-            FUEL = 50
+            self.player1_ob.pos.xy = 30, 1000
+            FUEL = 100
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.p2_pos.xy = 1850, 1000
-            FUEL = 50
+            self.player2_ob.pos.xy = 1850, 1000
+            FUEL = 100
             
     #checks for collisions between player 1 and player 2's missile. If they collide, player 1 loses a point and is destroyed
         if pygame.sprite.groupcollide(self.player1, self.missile2, True, True):
-            SCOREP1 -= 1
+            SCOREP1 -1
+            SCOREP2 + 1
             
     #checks for collisions between player 2 and player 1's missile. If they collide, player 2 loses a point and is destroyed        
         if pygame.sprite.groupcollide(self.player2, self.missile1, True, True):
-            SCOREP2 -= 1
+            SCOREP2 -1
+            SCOREP2 +1
     
     #Method for calling the methods that creates objects     
     def setup(self):
@@ -350,8 +357,8 @@ class Game:
         self.create_player2()
         #self.create_missile1()
         #self.create_missile2()
-        for i in range(3):
-            self.create_asteroids()
+        #for i in range(3):
+            #self.create_asteroids()
         self.create_platform1()
         self.create_platform2()
     
@@ -365,6 +372,10 @@ class Game:
     
     #text for fuel count   
     def score_fuel(self):
+        self.clock = pygame.time.Clock()
+        self.time = self.clock.tick(30) / 1000.0
+        while self.clock.tick() < 100000:
+            FUEL - 1
         self.font = pygame.font.Font(None, 60)
         self.fuel_count = "Fuel: "
         self.p1_fuel = self.font.render(str(FUEL), 1, WHITE)
@@ -411,47 +422,48 @@ class Game:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_a]:
                 #rotate object left
-                self.player2_ob.speed = pygame.Vector2.rotate(5) 
+                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(-3)
+                print(self.player2_ob.speed)
                 #self.rot_img = pygame.transform.rotate(self.image, 20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p2_pos)
                         
             if pressed[pygame.K_d]:
                 #rotate object right
-                self.player2_ob.speed = pygame.Vector2.rotate(-5) 
+                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(3)
                 #self.rot_img = pygame.transform.rotate(self.image, -20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p2_pos)
                         
             if pressed[pygame.K_LSHIFT]:
                 #fire weapon
-                self.create_missile2(self.p2_pos)
+                self.create_missile2()
                 self.missile2.add(self.missile2_ob)
                 self.all_sprites_list.add(self.missile2_ob)
                 self.missile2_ob.update()
                         
             if pressed[pygame.K_LEFT]:
                 #rotate object left
-                self.player2_ob.speed = pygame.Vector2.rotate(5)
+                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(-3)
                 #self.rot_img = pygame.transform.rotate(self.image, 20)
                 # draw the rotated image to the pygame app main window screen.
-                #self.rot_img.blit(self.screen, self.p1_pos)
+                #self.rot_img.blit(self.screen, self.p1_pos)w
                         
             if pressed[pygame.K_RIGHT]:
                 #rotate object right
-                self.player2_ob.speed = pygame.Vector2.rotate(-5)
+                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(3)
                 #self.rot_img = pygame.transform.rotate(self.image, -20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p1_pos)
                         
             if pressed[pygame.K_RSHIFT]:
                 #fire weapon
-                self.create_missile1(self.p1_pos)
+                self.create_missile1()
                 self.missile1.add(self.missile1_ob)
                 self.all_sprites_list.add(self.missile1_ob)
                 self.missile1_ob.update()
                         
-            elif event.type == pygame.KEYUP:
+            if event.type == pygame.KEYUP:
                 self.speed += GRAVITY
                     
                 pygame.time.set_timer(fuel_loss, 1000)
