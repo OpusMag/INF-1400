@@ -54,8 +54,9 @@ class Player(Moving_objects):
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
-    #updates the position of players
     def update(self):
+        """updates the position of players
+        """
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP]:
             self.rect.x += self.new_speed.x
@@ -91,6 +92,8 @@ class Player2(Moving_objects):
         if pressed[pygame.K_w]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
+            print(self.rect.x)
+            print(self.rect.y)
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
     
@@ -118,9 +121,9 @@ class Missile(Player):
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
     
-    #Method responsible for updating the missile's position
     def update(self):
-        
+        """Method responsible for updating the missile's position
+        """
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
         print(self.new_speed)
@@ -166,9 +169,9 @@ class Asteroids(Moving_objects):
         self.speed.y = 0
         self.pos = pos
         
-    #Method that ensures that when the asteroids leave the surface they reappear on the opposite side
     def screen_wrap(self):
-       #make asteroids wrap around to the opposite side of the screen when they leave it (borrowed from previous hand in boids.py) 
+        """Method that ensures that when the asteroids leave the surface they reappear on the opposite side
+        """
         if self.rect.left > 1920: 
             self.rect.right = 0
         if self.rect.right < 0:
@@ -178,8 +181,9 @@ class Asteroids(Moving_objects):
         if self.rect.bottom > 1080:
             self.rect.top = 0
     
-    #updates the position of the asteroids
     def update(self):
+        """updates the position of the asteroids
+        """
         self.screen_wrap()
         self.rect.x += self.speed.x
         self.rect.y += self.speed.y
@@ -217,8 +221,9 @@ class Game:
         self.fuel = 100
         
     
-    #creates player 1 object and adds it to its sprite group and the main sprite group for all the sprites
+    
     def create_player1(self):
+        """creates player 1 object and adds it to its sprite group and the main sprite group for all the sprites"""
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
         self.pos = Vector2(0, -0.2)
@@ -229,8 +234,9 @@ class Game:
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
     
-    #creates player 2 object and adds it to its sprite group and the main sprite group for all the sprites
     def create_player2(self):
+        """creates player 2 object and adds it to its sprite group and the main sprite group for all the sprites
+        """
         self.image = pygame.Surface((30, 30))
         self.speed = Vector2(0, 0)
         self.pos = Vector2(0, -0.2)
@@ -242,42 +248,50 @@ class Game:
         self.all_sprites_list.add(self.player2_ob)
         
     def create_missile1(self):
+        """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
+        """
         self.pos = self.player1_ob.pos
         self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.player1_ob.pos)
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
     def create_missile2(self):
+        """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
+        """
         self.pos = self.player2_ob.pos
         self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.player2_ob.pos)
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
         print(self.player2_ob.pos)
         
-    #creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
     def create_asteroids(self):
+        """creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
+        """
         self.speed = Vector2(1, 1)
         self.pos_a = (random.randint(0, 0), random.randint(100, 800))
         self.asteroids_ob = Asteroids(RED, 70, 70, self.speed, self.pos_a)
         self.asteroids.add(self.asteroids_ob)
         self.all_sprites_list.add(self.asteroids_ob)
     
-    #creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
     def create_platform1(self):
+        """creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
+        """
         self.pos_pf1 = (25, 1030)
         self.platform_ob1 = Platforms(GREY, 40, 50, self.speed, self.pos_pf1)
         self.platforms.add(self.platform_ob1)
         self.all_sprites_list.add(self.platform_ob1)
     
-    #creates second platform object and adds it to its sprite group and the main sprite group for all the sprites
     def create_platform2(self):
+        """creates second platform object and adds it to its sprite group and the main sprite group for all the sprites
+        """
         self.pos_pf2 = (1845, 1030)
         self.platform_ob2 = Platforms(GREY, 40, 50, self.speed, self.pos_pf2)
         self.platforms.add(self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob2)
     
     def collisions(self, player1_ob, player2_ob):
-        #check for collision between screen and player1
+        """check for collision between screen and player1
+        """
         
         if player1_ob.rect.left > 1920: 
             player1_ob.rect.left = 1920
@@ -347,9 +361,10 @@ class Game:
         if pygame.sprite.groupcollide(self.player2, self.missile1, False, True):
             self.score_pl2 -= 1
             self.score_pl1 += 1
-    
-    #Method for calling the methods that creates objects     
+         
     def setup(self):
+        """Method for calling the methods that creates objects
+        """
         self.create_player1()
         self.create_player2()
         #self.create_missile1()
@@ -359,16 +374,18 @@ class Game:
         self.create_platform1()
         self.create_platform2()
     
-    #text for displaying each player's score ingame
     def score_text(self):
+        """text for displaying each player's score ingame
+        """
         self.font = pygame.font.Font(None, 60)
         self.p1_score = self.font.render(str(self.score_pl1), 1, WHITE)
         self.screen.blit(self.p1_score, (900,10))
         self.p2_score = self.font.render(str(self.score_pl2), 1, WHITE)
         self.screen.blit(self.p2_score, (1420,10))
-    
-    #text for fuel count   
+     
     def score_fuel(self):
+        """text for fuel count  
+        """
         self.font = pygame.font.Font(None, 60)
         self.fuel_count = "Fuel: "
         self.p1_fuel = self.font.render(str(self.fuel), 1, WHITE)
@@ -376,8 +393,9 @@ class Game:
         self.p2_fuel = self.font.render(str(self.fuel), 1, WHITE)
         self.screen.blit(self.p2_fuel, (1220, 1040))
     
-    #text for displaying the winner of the game if they reach 50 points
     def winner_text(self):
+        """text for displaying the winner of the game if they reach 50 points
+        """
         self.font = pygame.font.Font(None, 200)
         self.p1w = "Player 1 has won the game"
         self.p2w = "Player 2 has won the game"
@@ -388,8 +406,9 @@ class Game:
             self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)
             self.screen.blit(self.p2_winner, (1220,10))
             
-    #updates the surface, sprites and draws the sprites
     def update_game(self):
+        """updates the surface, sprites and draws the sprites
+        """
         #Oppdaterer og tegner
         self.screen.fill(BLACK)
         self.all_sprites_list.update()
@@ -400,8 +419,9 @@ class Game:
         self.screen.blit(self.p2_fuel, (1220,1040))
         pygame.display.flip()
     
-    #game loop/event loop, where all the magic happens, in particular checking if the player's controls are used and updating positions etc if they are
     def game_loop(self):
+        """game loop/event loop, where all the magic happens, in particular checking if the player's controls are used and updating positions etc if they are
+        """
         pygame.init()
         pygame.display.set_caption('Mayhem')
         fuel_loss = pygame.USEREVENT + 1
@@ -478,7 +498,7 @@ class Game:
         pygame.quit()
         quit() 
 
-#for initiating the game
+"""for initiating the game"""
 if __name__ == '__main__':
     pygame.init()
     br = Game()
