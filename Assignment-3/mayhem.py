@@ -88,6 +88,9 @@ class Player2(Moving_objects):
             self.rect.y += self.new_speed.y
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
+    
+    def rotate(self):
+        self.player2_ob.new_speed.rotate_ip(5)
             
     
 #First missile class. Holds the variables for the first missile object
@@ -115,7 +118,7 @@ class Missile(Player):
         #self.pos.y += self.p1_pos.y
         #self.pos.x += self.p2_pos.x
         #self.pos.y += self.p2_pos.y
-
+        print(self.new_speed)
 #First missile class. Holds the variables for the first missile object
 class Missile2(Player):
     """Missile 1 class that holds the variables for the Missile 1 object.
@@ -323,13 +326,13 @@ class Game:
             
     #checks for collision between player 1 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
-            print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
+            #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
             self.p1_pos.xy = 30, 1000
             FUEL = 50
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
-            print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
+            #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
             self.p2_pos.xy = 1850, 1000
             FUEL = 50
             
@@ -399,53 +402,57 @@ class Game:
         pygame.display.set_caption('Mayhem')
         fuel_loss = pygame.USEREVENT + 1
         self.setup()
-        pressed = pygame.key.get_pressed()
+        
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                
-                    if pressed[pygame.K_a]:
-                        #rotate object left
-                        self.rot_img = pygame.transform.rotate(self.image, 20)
-                        # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p2_pos)
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_a]:
+                #rotate object left
+                self.player2_ob.speed = pygame.Vector2.rotate(5) 
+                #self.rot_img = pygame.transform.rotate(self.image, 20)
+                # draw the rotated image to the pygame app main window screen.
+                #self.rot_img.blit(self.screen, self.p2_pos)
                         
-                    if pressed[pygame.K_d]:
-                        #rotate object right
-                        self.rot_img = pygame.transform.rotate(self.image, -20)
-                        # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p2_pos)
+            if pressed[pygame.K_d]:
+                #rotate object right
+                self.player2_ob.speed = pygame.Vector2.rotate(-5) 
+                #self.rot_img = pygame.transform.rotate(self.image, -20)
+                # draw the rotated image to the pygame app main window screen.
+                #self.rot_img.blit(self.screen, self.p2_pos)
                         
-                    if pressed[pygame.K_LSHIFT]:
-                        #fire weapon
-                        self.create_missile2(self.p2_pos)
-                        self.missile2.add(self.missile2_ob)
-                        self.all_sprites_list.add(self.missile2_ob)
-                        self.missile2_ob.update()
+            if pressed[pygame.K_LSHIFT]:
+                #fire weapon
+                self.create_missile2(self.p2_pos)
+                self.missile2.add(self.missile2_ob)
+                self.all_sprites_list.add(self.missile2_ob)
+                self.missile2_ob.update()
                         
-                    if pressed[pygame.K_LEFT]:
-                        #rotate object left
-                        self.rot_img = pygame.transform.rotate(self.image, 20)
-                        # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p1_pos)
+            if pressed[pygame.K_LEFT]:
+                #rotate object left
+                self.player2_ob.speed = pygame.Vector2.rotate(5)
+                #self.rot_img = pygame.transform.rotate(self.image, 20)
+                # draw the rotated image to the pygame app main window screen.
+                #self.rot_img.blit(self.screen, self.p1_pos)
                         
-                    if pressed[pygame.K_RIGHT]:
-                        #rotate object right
-                        self.rot_img = pygame.transform.rotate(self.image, -20)
-                        # draw the rotated image to the pygame app main window screen.
-                        self.rot_img.blit(self.screen, self.p1_pos)
+            if pressed[pygame.K_RIGHT]:
+                #rotate object right
+                self.player2_ob.speed = pygame.Vector2.rotate(-5)
+                #self.rot_img = pygame.transform.rotate(self.image, -20)
+                # draw the rotated image to the pygame app main window screen.
+                #self.rot_img.blit(self.screen, self.p1_pos)
                         
-                    if pressed[pygame.K_RSHIFT]:
-                        #fire weapon
-                        self.create_missile1(self.p1_pos)
-                        self.missile1.add(self.missile1_ob)
-                        self.all_sprites_list.add(self.missile1_ob)
-                        self.missile1_ob.update()
+            if pressed[pygame.K_RSHIFT]:
+                #fire weapon
+                self.create_missile1(self.p1_pos)
+                self.missile1.add(self.missile1_ob)
+                self.all_sprites_list.add(self.missile1_ob)
+                self.missile1_ob.update()
                         
-                elif event.type == pygame.KEYUP:
-                    self.speed += GRAVITY
+            elif event.type == pygame.KEYUP:
+                self.speed += GRAVITY
                     
                 pygame.time.set_timer(fuel_loss, 1000)
                 if pygame.event == fuel_loss:
