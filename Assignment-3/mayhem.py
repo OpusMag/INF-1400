@@ -60,8 +60,6 @@ class Player(Moving_objects):
         if pressed[pygame.K_UP]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
-            print(self.pos[0])
-            print(self.pos[1])
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
         print(self.rect.x)
@@ -214,6 +212,10 @@ class Game:
         self.missile1 = pygame.sprite.Group()
         self.missile2 = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
+        self.score_pl1 = 0
+        self.score_pl2 = 0
+        self.fuel = 100
+        
     
     #creates player 1 object and adds it to its sprite group and the main sprite group for all the sprites
     def create_player1(self):
@@ -240,15 +242,14 @@ class Game:
         self.all_sprites_list.add(self.player2_ob)
         
     def create_missile1(self):
-        self.pos.x = Player.rect.x
-        self.pos.y = Player.rect.y
-        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, (self.pos.x, self.pos.y))
+        self.pos = self.player1_ob.pos
+        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.player1_ob.pos)
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
     def create_missile2(self):
         self.pos = self.player2_ob.pos
-        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.pos)
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.player2_ob.pos)
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
         print(self.player2_ob.pos)
@@ -277,42 +278,38 @@ class Game:
     
     def collisions(self, player1_ob, player2_ob):
         #check for collision between screen and player1
-        SCOREP1 = 0
+        
         if player1_ob.rect.left > 1920: 
             player1_ob.rect.left = 1920
+            self.score_pl1 -1
             
-            SCOREP1 -1
         if player1_ob.rect.right < 0:
             player1_ob.rect.right = 0
-            
-            SCOREP1 -1
+            self.score_pl1 -1
         if player1_ob.rect.top > 1080:
             player1_ob.rect.top = 1080
-            
-            SCOREP1 -1
+            self.score_pl1 -1
         if player1_ob.rect.bottom < 0:
             player1_ob.rect.bottom = 0
-            
-            SCOREP1 -1
+            self.score_pl1 -1
     
     #Checks for collisions between player 2 and the screen
-        SCOREP2 = 0
+        
         if player2_ob.rect.left > 1920: 
             player2_ob.rect.left = 1920
+            self.score_pl2 -1
             
-            SCOREP2 -1
         if player2_ob.rect.right < 0:
             player2_ob.rect.right = 0
+            self.score_pl2 -1
             
-            SCOREP2 -1
         if player2_ob.rect.top > 1080:
             player2_ob.rect.top = 1080
+            self.score_pl2 -1
             
-            SCOREP2 -1
         if player2_ob.rect.bottom < 0:
             player2_ob.rect.bottom = 0
-            
-            SCOREP2 -1    
+            self.score_pl2 -1    
     
     
     #checks for collisions between players. Destroys them if they collide
@@ -333,23 +330,23 @@ class Game:
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
             self.player1_ob.pos.xy = 30, 1000
-            FUEL = 100
+            self.fuel = 100
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
             self.player2_ob.pos.xy = 1850, 1000
-            FUEL = 100
+            self.fuel = 100
             
     #checks for collisions between player 1 and player 2's missile. If they collide, player 1 loses a point and is destroyed
-        if pygame.sprite.groupcollide(self.player1, self.missile2, True, True):
-            SCOREP1 -1
-            SCOREP2 + 1
+        if pygame.sprite.groupcollide(self.player1, self.missile2, False, True):
+            self.score_pl1 -= 1
+            self.score_pl2 += 1
             
     #checks for collisions between player 2 and player 1's missile. If they collide, player 2 loses a point and is destroyed        
-        if pygame.sprite.groupcollide(self.player2, self.missile1, True, True):
-            SCOREP2 -1
-            SCOREP2 +1
+        if pygame.sprite.groupcollide(self.player2, self.missile1, False, True):
+            self.score_pl2 -= 1
+            self.score_pl1 += 1
     
     #Method for calling the methods that creates objects     
     def setup(self):
@@ -365,22 +362,18 @@ class Game:
     #text for displaying each player's score ingame
     def score_text(self):
         self.font = pygame.font.Font(None, 60)
-        self.p1_score = self.font.render(str(SCOREP1), 1, WHITE)
+        self.p1_score = self.font.render(str(self.score_pl1), 1, WHITE)
         self.screen.blit(self.p1_score, (900,10))
-        self.p2_score = self.font.render(str(SCOREP2), 1, WHITE)
+        self.p2_score = self.font.render(str(self.score_pl2), 1, WHITE)
         self.screen.blit(self.p2_score, (1420,10))
     
     #text for fuel count   
     def score_fuel(self):
-        self.clock = pygame.time.Clock()
-        self.time = self.clock.tick(30) / 1000.0
-        while self.clock.tick() < 100000:
-            FUEL - 1
         self.font = pygame.font.Font(None, 60)
         self.fuel_count = "Fuel: "
-        self.p1_fuel = self.font.render(str(FUEL), 1, WHITE)
+        self.p1_fuel = self.font.render(str(self.fuel), 1, WHITE)
         self.screen.blit(self.p1_fuel, (700, 1040))
-        self.p2_fuel = self.font.render(str(FUEL), 1, WHITE)
+        self.p2_fuel = self.font.render(str(self.fuel), 1, WHITE)
         self.screen.blit(self.p2_fuel, (1220, 1040))
     
     #text for displaying the winner of the game if they reach 50 points
@@ -388,10 +381,10 @@ class Game:
         self.font = pygame.font.Font(None, 200)
         self.p1w = "Player 1 has won the game"
         self.p2w = "Player 2 has won the game"
-        if SCOREP1 >= 50:
+        if self.score_pl1 >= 50:
             self.p1_winner = self.font.render(str(self.p1w), 1, WHITE)
             self.screen.blit(self.p1_winner, (700,10))
-        if SCOREP2 >= 50:
+        if self.score_pl2 >= 50:
             self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)
             self.screen.blit(self.p2_winner, (1220,10))
             
@@ -466,12 +459,12 @@ class Game:
             if event.type == pygame.KEYUP:
                 self.speed += GRAVITY
                     
-                pygame.time.set_timer(fuel_loss, 1000)
-                if pygame.event == fuel_loss:
-                    FUEL - 5
-                    if FUEL == 0:
-                        pygame.sprite.Sprite.kill(self.player1_ob, self.player2_ob)
-                        print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
+            pygame.time.set_timer(fuel_loss, 1000)
+            if pygame.event == fuel_loss:
+                self.fuel - 5
+                if self.fuel == 0:
+                    pygame.sprite.Sprite.kill(self.player1_ob, self.player2_ob)
+                    print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
 
 
             #self.move()
