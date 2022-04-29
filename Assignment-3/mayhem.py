@@ -53,7 +53,7 @@ class Player(Moving_objects):
         self.thrust = Vector2(0, -3)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
-
+        
     def update(self):
         """updates the position of players
         """
@@ -63,7 +63,7 @@ class Player(Moving_objects):
             self.rect.y += self.new_speed.y
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
-        print(self.rect.x)
+        
             
     #def create_missile(self):
         #return Missile(GREEN, 5, 5, self.speed, self.pos)
@@ -81,6 +81,8 @@ class Player2(Moving_objects):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
         self.speed = Vector2(-1, -1)
         self.thrust = Vector2(0, -3)
         self.acceleration = self.thrust + GRAVITY
@@ -92,17 +94,13 @@ class Player2(Moving_objects):
         if pressed[pygame.K_w]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
-            print(self.rect.x)
             print(self.rect.y)
+            print(self.rect.x)
         elif pygame.KEYUP:
             self.rect.y += GRAVITY.y
     
     def rotate(self):
         self.player2_ob.new_speed.rotate_ip(5)
-    
-    #def create_missile2(self):
-        #return Missile2(BLUE, 5, 5, self.speed, self.pos)
-            
     
 #First missile class. Holds the variables for the first missile object
 class Missile(Player):
@@ -126,7 +124,7 @@ class Missile(Player):
         """
         self.rect.x += self.new_speed.x
         self.rect.y += self.new_speed.y
-        print(self.new_speed)
+        
 #First missile class. Holds the variables for the first missile object
 class Missile2(Player):
     """Missile 1 class that holds the variables for the Missile 1 object.
@@ -251,7 +249,7 @@ class Game:
         """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
         """
         self.pos = self.player1_ob.pos
-        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, self.player1_ob.pos)
+        self.missile1_ob = Missile(GREEN, 5, 5, self.player1_ob.new_speed, (self.player1_ob.rect.x, self.player1_ob.rect.y))
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
@@ -259,7 +257,7 @@ class Game:
         """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
         """
         self.pos = self.player2_ob.pos
-        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, self.player2_ob.pos)
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.player2_ob.new_speed, (self.player2_ob.rect.x, self.player2_ob.rect.y))
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
         print(self.player2_ob.pos)
@@ -367,10 +365,8 @@ class Game:
         """
         self.create_player1()
         self.create_player2()
-        #self.create_missile1()
-        #self.create_missile2()
-        #for i in range(3):
-            #self.create_asteroids()
+        for i in range(3):
+            self.create_asteroids()
         self.create_platform1()
         self.create_platform2()
     
