@@ -58,7 +58,7 @@ class Player(Moving_objects):
         """updates the position of players
         """
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_UP]:
+        if pressed[pygame.K_w]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
         elif pygame.KEYUP:
@@ -91,7 +91,7 @@ class Player2(Moving_objects):
     #updates the position of players
     def update(self):
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_w]:
+        if pressed[pygame.K_UP]:
             self.rect.x += self.new_speed.x
             self.rect.y += self.new_speed.y
             print(self.rect.y)
@@ -114,7 +114,7 @@ class Missile(Player):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(6, 0)
         self.thrust = Vector2(0, -5)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
@@ -137,7 +137,7 @@ class Missile2(Player):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
-        self.speed = Vector2(0, 0)
+        self.speed = Vector2(-6, 0)
         self.thrust = Vector2(0, -5)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
@@ -202,6 +202,16 @@ class Platforms(Moving_objects):
         #self.rect.y = self.pos[1]
         #self.pos = pos
         
+class Floor(Moving_objects):
+    """Floor class that keeps players from falling below the screen.
+
+    Args:
+        Moving_objects (Parent): Moving objects is the parent class for this class and this class inherits from it.
+    """
+    def __init__(self, color, width, height, speed, pos):
+        super().__init__(color, width, height, speed, pos)
+        
+        
 #Game class. Responsible for the game loop, most of the collision detection and creating most of the objects apart from the missiles.    
 class Game:
     """Game class that's responsible for creating most of the objects, doing most of the collision checks and running the game loop."""
@@ -213,12 +223,12 @@ class Game:
         self.platforms = pygame.sprite.Group()
         self.missile1 = pygame.sprite.Group()
         self.missile2 = pygame.sprite.Group()
+        self.floor = pygame.sprite.Group()
         self.all_sprites_list = pygame.sprite.Group()
         self.score_pl1 = 0
         self.score_pl2 = 0
-        self.fuel = 100
-        
-    
+        self.currp1_fuel = 100
+        self.currp2_fuel = 100
     
     def create_player1(self):
         """creates player 1 object and adds it to its sprite group and the main sprite group for all the sprites"""
@@ -249,7 +259,7 @@ class Game:
         """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
         """
         self.pos = self.player1_ob.pos
-        self.missile1_ob = Missile(GREEN, 5, 5, self.player1_ob.new_speed, (self.player1_ob.rect.x, self.player1_ob.rect.y))
+        self.missile1_ob = Missile(GREEN, 5, 5, self.speed, (self.player1_ob.rect.x, self.player1_ob.rect.y))
         self.missile1.add(self.missile1_ob)
         self.all_sprites_list.add(self.missile1_ob)
         
@@ -257,7 +267,7 @@ class Game:
         """creates missile 1 object and adds it to its sprite group and the main sprite group for all the sprites
         """
         self.pos = self.player2_ob.pos
-        self.missile2_ob = Missile2(BLUE, 5, 5, self.player2_ob.new_speed, (self.player2_ob.rect.x, self.player2_ob.rect.y))
+        self.missile2_ob = Missile2(BLUE, 5, 5, self.speed, (self.player2_ob.rect.x, self.player2_ob.rect.y))
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
         print(self.player2_ob.pos)
@@ -287,42 +297,72 @@ class Game:
         self.platforms.add(self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob2)
     
+    def create_floor(self):
+        """creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
+        """
+        self.pos = (1, 1075)
+        self.speed = Vector2(0, 0)
+        self.floor_ob = Floor(BLACK, 1920, 10, self.speed, self.pos)
+        self.floor.add(self.floor_ob)
+        self.all_sprites_list.add(self.floor_ob)
+    
     def collisions(self, player1_ob, player2_ob):
         """check for collision between screen and player1
         """
         
         if player1_ob.rect.left > 1920: 
             player1_ob.rect.left = 1920
-            self.score_pl1 -1
+            
+        if player1_ob.rect.left < 0:
+            player1_ob.rect.left = 0
+        
+        if player1_ob.rect.right > 1920: 
+            player1_ob.rect.right = 1920
             
         if player1_ob.rect.right < 0:
             player1_ob.rect.right = 0
-            self.score_pl1 -1
-        if player1_ob.rect.top > 1080:
-            player1_ob.rect.top = 1080
-            self.score_pl1 -1
+        
+        if player1_ob.rect.top > 1920: 
+            player1_ob.rect.top = 1920
+        
+        if player1_ob.rect.top < 0:
+            player1_ob.rect.top = 0
+        
+        if player1_ob.rect.bottom > 1920: 
+            player1_ob.rect.bottom = 1920
+            
         if player1_ob.rect.bottom < 0:
             player1_ob.rect.bottom = 0
-            self.score_pl1 -1
-    
+            
     #Checks for collisions between player 2 and the screen
         
         if player2_ob.rect.left > 1920: 
             player2_ob.rect.left = 1920
-            self.score_pl2 -1
+            
+        if player2_ob.rect.left < 0:
+            player2_ob.rect.left = 0
+        
+        if player2_ob.rect.right > 1920: 
+            player2_ob.rect.right = 1920
             
         if player2_ob.rect.right < 0:
             player2_ob.rect.right = 0
-            self.score_pl2 -1
-            
-        if player2_ob.rect.top > 1080:
-            player2_ob.rect.top = 1080
-            self.score_pl2 -1
+        
+        if player2_ob.rect.top > 1920: 
+            player2_ob.rect.top = 1920
+        
+        if player2_ob.rect.top < 0:
+            player2_ob.rect.top = 0
+        
+        if player2_ob.rect.bottom > 1920: 
+            player2_ob.rect.bottom = 1920
             
         if player2_ob.rect.bottom < 0:
             player2_ob.rect.bottom = 0
-            self.score_pl2 -1    
-    
+            
+        if player2_ob.rect.y > 1080:
+            player2_ob.rect.y = 1080
+            
     
     #checks for collisions between players. Destroys them if they collide
         if pygame.sprite.groupcollide(self.player1, self.player2, True, True):
@@ -331,24 +371,33 @@ class Game:
     #checks for collisions between player 1 and asteroids. Destroys player and reduces score by 1 if they collide
         if pygame.sprite.groupcollide(self.player1, self.asteroids, True, False):
             print("Player 1 down, player 2 has won.")
-            SCOREP1 - 1
             
     #checks for collisions between player 2 and asteroids. Destroys player and reduces score by 1 if they collide
         if pygame.sprite.groupcollide(self.player2, self.asteroids, True, False):
             print("Player 2 down, player 1 has won.")
-            SCOREP2 - 1
             
     #checks for collision between player 1 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.player1_ob.pos.xy = 30, 1000
-            self.fuel = 100
+            self.player1_ob.rect.x = 29
+            self.player1_ob.rect.y = 999
+            self.currp1_fuel = 100
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.player2_ob.pos.xy = 1850, 1000
-            self.fuel = 100
+            self.player2_ob.rect.x = 1849
+            self.player2_ob.rect.y = 999
+            self.currp2_fuel = 100
+            
+        #checks for collision between player 1 and floor. 
+        if pygame.sprite.groupcollide(self.player1, self.floor, False, False):
+            self.player1_ob.rect.y = 1045
+            
+            
+    #checks for collisions between player 2 and floor. 
+        if pygame.sprite.groupcollide(self.player2, self.floor, False, False):
+            self.player2_ob.rect.y = 1045
             
     #checks for collisions between player 1 and player 2's missile. If they collide, player 1 loses a point and is destroyed
         if pygame.sprite.groupcollide(self.player1, self.missile2, False, True):
@@ -369,6 +418,7 @@ class Game:
             self.create_asteroids()
         self.create_platform1()
         self.create_platform2()
+        self.create_floor()
     
     def score_text(self):
         """text for displaying each player's score ingame
@@ -384,23 +434,10 @@ class Game:
         """
         self.font = pygame.font.Font(None, 60)
         self.fuel_count = "Fuel: "
-        self.p1_fuel = self.font.render(str(self.fuel), 1, WHITE)
-        self.screen.blit(self.p1_fuel, (700, 1040))
-        self.p2_fuel = self.font.render(str(self.fuel), 1, WHITE)
-        self.screen.blit(self.p2_fuel, (1220, 1040))
-    
-    def winner_text(self):
-        """text for displaying the winner of the game if they reach 50 points
-        """
-        self.font = pygame.font.Font(None, 200)
-        self.p1w = "Player 1 has won the game"
-        self.p2w = "Player 2 has won the game"
-        if self.score_pl1 >= 50:
-            self.p1_winner = self.font.render(str(self.p1w), 1, WHITE)
-            self.screen.blit(self.p1_winner, (700,10))
-        if self.score_pl2 >= 50:
-            self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)
-            self.screen.blit(self.p2_winner, (1220,10))
+        self.p1_fuel = self.font.render(str(self.currp1_fuel), 1, WHITE)
+        self.screen.blit(self.p1_fuel, (400, 1040))
+        self.p2_fuel = self.font.render(str(self.currp2_fuel), 1, WHITE)
+        self.screen.blit(self.p2_fuel, (1120, 1040))            
             
     def update_game(self):
         """updates the surface, sprites and draws the sprites
@@ -421,73 +458,89 @@ class Game:
         pygame.init()
         pygame.display.set_caption('Mayhem')
         fuel_loss = pygame.USEREVENT + 1
+        pygame.time.set_timer(fuel_loss, 1000)
+        self.font = pygame.font.Font(None, 200)
+        self.p1w = "Player 1 has won the game"
+        self.p2w = "Player 2 has won the game"
         self.setup()
+        
         
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == fuel_loss and self.player1_ob.rect.x != 30 and self.player1_ob.rect.y != 1000:
+                    self.currp1_fuel -= 2
+                    
+                if event.type == fuel_loss and self.player2_ob.rect.x != 1850 and self.player2_ob.rect.y != 1000:
+                    self.currp2_fuel -= 2
+                    
+                            
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_a]:
                 #rotate object left
-                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(-3)
-                print(self.player2_ob.speed)
+                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(-3)
+                print(self.player1_ob.speed)
                 #self.rot_img = pygame.transform.rotate(self.image, 20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p2_pos)
                         
             if pressed[pygame.K_d]:
                 #rotate object right
-                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(3)
+                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(3)
                 #self.rot_img = pygame.transform.rotate(self.image, -20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p2_pos)
                         
             if pressed[pygame.K_LSHIFT]:
                 #fire weapon
-                self.create_missile2()
-                self.missile2.add(self.missile2_ob)
-                self.all_sprites_list.add(self.missile2_ob)
-                self.missile2_ob.update()
+                self.create_missile1()
+                self.missile1.add(self.missile1_ob)
+                self.all_sprites_list.add(self.missile1_ob)
+                self.missile1_ob.update()
                         
             if pressed[pygame.K_LEFT]:
                 #rotate object left
-                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(-3)
+                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(-3)
                 #self.rot_img = pygame.transform.rotate(self.image, 20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p1_pos)w
                         
             if pressed[pygame.K_RIGHT]:
                 #rotate object right
-                self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(3)
+                self.player2_ob.new_speed = self.player2_ob.new_speed.rotate(3)
                 #self.rot_img = pygame.transform.rotate(self.image, -20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p1_pos)
                         
             if pressed[pygame.K_RSHIFT]:
                 #fire weapon
-                self.create_missile1()
-                self.missile1.add(self.missile1_ob)
-                self.all_sprites_list.add(self.missile1_ob)
-                self.missile1_ob.update()
+                self.create_missile2()
+                self.missile2.add(self.missile2_ob)
+                self.all_sprites_list.add(self.missile2_ob)
+                self.missile2_ob.update()
                         
             if event.type == pygame.KEYUP:
                 self.speed += GRAVITY
-                    
-            pygame.time.set_timer(fuel_loss, 1000)
-            if pygame.event == fuel_loss:
-                self.fuel - 5
-                if self.fuel == 0:
-                    pygame.sprite.Sprite.kill(self.player1_ob, self.player2_ob)
-                    print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
-
+            
+            if self.currp1_fuel == 0:
+                self.player1_ob.rect.y -= -2
+                print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
+            if self.currp2_fuel == 0:
+                self.player2_ob.rect.y -= -2
+                print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
+                
+            if self.score_pl1 == 50:
+                self.p1_winner = self.font.render(str(self.p1w), 1, WHITE)
+                self.screen.blit(self.p1_winner, (700,10))
+            if self.score_pl2 == 50:
+                self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)
+                self.screen.blit(self.p2_winner, (1220,10))
 
             #self.move()
-            
             self.score_text()
             self.score_fuel()
-            self.winner_text()
             self.collisions(self.player1_ob, self.player2_ob)
             self.update_game()
             
