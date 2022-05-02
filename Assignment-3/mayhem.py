@@ -437,7 +437,21 @@ class Game:
         self.p1_fuel = self.font.render(str(self.currp1_fuel), 1, WHITE)
         self.screen.blit(self.p1_fuel, (400, 1040))
         self.p2_fuel = self.font.render(str(self.currp2_fuel), 1, WHITE)
-        self.screen.blit(self.p2_fuel, (1120, 1040))            
+        self.screen.blit(self.p2_fuel, (1120, 1040))
+    
+    """def winner_text(self):
+        text for displaying the winner of the game if they reach 50 points
+        
+        self.font = pygame.font.Font(None, 50)
+        self.p1w = "Player 1 has won the game"
+        self.p2w = "Player 2 has won the game"
+        if self.score_pl1 == 50:
+            self.p1_winner = self.font.render(str(self.p1w), 1, WHITE)
+            
+        if self.score_pl2 == 50:
+            self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)"""
+            
+            
             
     def update_game(self):
         """updates the surface, sprites and draws the sprites
@@ -448,8 +462,10 @@ class Game:
         self.all_sprites_list.draw(self.screen)
         self.screen.blit(self.p1_score, (700,10))
         self.screen.blit(self.p2_score, (1220,10))
-        self.screen.blit(self.p1_fuel, (700,1040))
-        self.screen.blit(self.p2_fuel, (1220,1040))
+        self.screen.blit(self.p1_fuel, (680,1040))
+        self.screen.blit(self.p2_fuel, (1200,1040))
+        #self.screen.blit(self.p1_winner, (700,10))
+        #self.screen.blit(self.p2_winner, (1220,10))
         pygame.display.flip()
     
     def game_loop(self):
@@ -459,9 +475,6 @@ class Game:
         pygame.display.set_caption('Mayhem')
         fuel_loss = pygame.USEREVENT + 1
         pygame.time.set_timer(fuel_loss, 1000)
-        self.font = pygame.font.Font(None, 200)
-        self.p1w = "Player 1 has won the game"
-        self.p2w = "Player 2 has won the game"
         self.setup()
         
         
@@ -524,23 +537,17 @@ class Game:
             if event.type == pygame.KEYUP:
                 self.speed += GRAVITY
             
-            if self.currp1_fuel == 0:
-                self.player1_ob.rect.y -= -2
+            if self.currp1_fuel <= 0:
+                self.player1_ob.rect.y -= -3
                 print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
-            if self.currp2_fuel == 0:
-                self.player2_ob.rect.y -= -2
+            if self.currp2_fuel <= 0:
+                self.player2_ob.rect.y -= -3
                 print("You have run out of fuel and are now floating aimlessly into space. Look for a tesla, maybe it has some fuel")
-                
-            if self.score_pl1 == 50:
-                self.p1_winner = self.font.render(str(self.p1w), 1, WHITE)
-                self.screen.blit(self.p1_winner, (700,10))
-            if self.score_pl2 == 50:
-                self.p2_winner = self.font.render(str(self.p2w), 1, WHITE)
-                self.screen.blit(self.p2_winner, (1220,10))
 
             #self.move()
             self.score_text()
             self.score_fuel()
+            #self.winner_text()
             self.collisions(self.player1_ob, self.player2_ob)
             self.update_game()
             
