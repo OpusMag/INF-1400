@@ -51,7 +51,7 @@ class Player(Moving_objects):
         self.clock = pygame.time.Clock()
         self.time = self.clock.tick(30) / 1000.0
         self.speed = Vector2(-1, -1)
-        self.thrust = Vector2(0, -3)
+        self.thrust = Vector2(0, -6)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
         
@@ -85,7 +85,7 @@ class Player2(Moving_objects):
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
         self.speed = Vector2(-1, -1)
-        self.thrust = Vector2(0, -3)
+        self.thrust = Vector2(0, -6)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
 
@@ -115,7 +115,7 @@ class Missile(Player):
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
         self.speed = Vector2(6, 0)
-        self.thrust = Vector2(0, -5)
+        self.thrust = Vector2(0, -8)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
     
@@ -138,7 +138,7 @@ class Missile2(Player):
         self.time = self.clock.tick(30) / 1000.0
         self.pos = pos
         self.speed = Vector2(-6, 0)
-        self.thrust = Vector2(0, -5)
+        self.thrust = Vector2(0, -8)
         self.acceleration = self.thrust + GRAVITY
         self.new_speed = self.speed + self.acceleration * self.time
     
@@ -234,23 +234,23 @@ class Game:
         self.image = (self.p1_img, pygame.SRCALPHA)
         self.speed = Vector2(0, 0)
         self.pos = Vector2(0, -0.2)
-        self.pos.xy = 30, 1000
+        self.pos.xy = 25, 950
         self.dir = Vector2(0, 5)
         self.dir = Vector2(0, 5)
-        self.player1_ob = Player(BLUE, self.p1_img, 40, 40, self.speed, self.pos)
+        self.player1_ob = Player(BLUE, self.p1_img, 50, 50, self.speed, self.pos)
         self.player1.add(self.player1_ob)
         self.all_sprites_list.add(self.player1_ob)
     
     def create_player2(self):
         """creates player 2 object and adds it to its sprite group and the main sprite group for all the sprites
         """
-        self.image = self.p2_img
+        self.image = (self.p2_img, pygame.SRCALPHA)
         self.speed = Vector2(0, 0)
         self.pos = Vector2(0, -0.2)
-        self.pos.xy = 1850, 1000
+        self.pos.xy = 1700, 950
         self.dir = Vector2(0, 5)
         self.n_dir = Vector2(0, -5)
-        self.player2_ob = Player2(GREEN, self.p2_img, 40, 40, self.speed, self.pos)
+        self.player2_ob = Player2(GREEN, self.p2_img, 70, 70, self.speed, self.pos)
         self.player2.add(self.player2_ob)
         self.all_sprites_list.add(self.player2_ob)
         
@@ -269,7 +269,7 @@ class Game:
         self.missile2_ob = Missile2(GREEN, self.missile2_img, 15, 15, self.speed, (self.player2_ob.rect.x, self.player2_ob.rect.y))
         self.missile2.add(self.missile2_ob)
         self.all_sprites_list.add(self.missile2_ob)
-        print(self.player2_ob.pos)
+        
         
     def create_asteroids(self):
         """creates asteroids object and adds it to its sprite group and the main sprite group for all the sprites
@@ -283,25 +283,25 @@ class Game:
     def create_platform1(self):
         """creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
         """
-        self.pos_pf1 = (25, 1030)
-        self.platform_ob1 = Platforms(GREY, self.platform_img, 70, 50, self.speed, self.pos_pf1)
+        self.pos_pf1 = (25, 1020)
+        self.platform_ob1 = Platforms(GREY, self.platform_img, 150, 100, self.speed, self.pos_pf1)
         self.platforms.add(self.platform_ob1)
         self.all_sprites_list.add(self.platform_ob1)
     
     def create_platform2(self):
         """creates second platform object and adds it to its sprite group and the main sprite group for all the sprites
         """
-        self.pos_pf2 = (1845, 1030)
-        self.platform_ob2 = Platforms(GREY, self.platform_img, 70, 50, self.speed, self.pos_pf2)
+        self.pos_pf2 = (1700, 1020)
+        self.platform_ob2 = Platforms(GREY, self.platform_img, 150, 100, self.speed, self.pos_pf2)
         self.platforms.add(self.platform_ob2)
         self.all_sprites_list.add(self.platform_ob2)
     
     def create_floor(self):
         """creates first platform object and adds it to its sprite group and the main sprite group for all the sprites 
         """
-        self.pos = (1, 1075)
+        self.pos = (0, 1060)
         self.speed = Vector2(0, 0)
-        self.floor_ob = Floor(BLACK, self.image, 1920, 10, self.speed, self.pos)
+        self.floor_ob = Floor(BLACK, self.image, 1920, 5, self.speed, self.pos)
         self.floor.add(self.floor_ob)
         self.all_sprites_list.add(self.floor_ob)
     
@@ -378,25 +378,25 @@ class Game:
     #checks for collision between player 1 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player1, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.player1_ob.rect.x = 29
-            self.player1_ob.rect.y = 989
+            self.player1_ob.rect.x = 50
+            self.player1_ob.rect.y = 969
             self.currp1_fuel = 100
             
     #checks for collisions between player 2 and platforms. Resets fuel if they collide
         if pygame.sprite.groupcollide(self.player2, self.platforms, False, False):
             #print("You're all fueled up") #refill fuel, maybe reset the event loop timer somehow?
-            self.player2_ob.rect.x = 1849
-            self.player2_ob.rect.y = 989
+            self.player2_ob.rect.x = 1730
+            self.player2_ob.rect.y = 950
             self.currp2_fuel = 100
             
         #checks for collision between player 1 and floor. 
         if pygame.sprite.groupcollide(self.player1, self.floor, False, False):
-            self.player1_ob.rect.y = 1045
+            self.player1_ob.rect.y = 1010
             
             
     #checks for collisions between player 2 and floor. 
         if pygame.sprite.groupcollide(self.player2, self.floor, False, False):
-            self.player2_ob.rect.y = 1045
+            self.player2_ob.rect.y = 990
             
     #checks for collisions between player 1 and player 2's missile. If they collide, player 1 loses a point and is destroyed
         if pygame.sprite.groupcollide(self.player1, self.missile2, False, True):
@@ -484,13 +484,13 @@ class Game:
         """
         pygame.init()
         pygame.display.set_caption('Mayhem')
-        self.p1_img = pygame.image.load(os.path.join("Assignment-3", 'enterprise.jpeg')).convert_alpha()
-        self.p2_img = pygame.image.load(os.path.join("Assignment-3", 'borgcube.jpeg')).convert_alpha()
+        self.p1_img = pygame.image.load(os.path.join("Assignment-3", 'enterprise.png')).convert_alpha()
+        self.p2_img = pygame.image.load(os.path.join("Assignment-3", 'borg.png')).convert_alpha()
         self.platform_img = pygame.image.load(os.path.join("Assignment-3", 'platform.png')).convert_alpha()
         self.bg_img = pygame.image.load(os.path.join("Assignment-3", 'spacebg.jpeg'))
-        self.asteroids_img = pygame.image.load(os.path.join("Assignment-3", 'asteroids.jpeg')).convert_alpha()
-        self.missile1_img = pygame.image.load(os.path.join("Assignment-3", 'missile1.jpg')).convert_alpha()
-        self.missile2_img = pygame.image.load(os.path.join("Assignment-3", 'missile2.jpg')).convert_alpha()
+        self.asteroids_img = pygame.image.load(os.path.join("Assignment-3", 'asteroids.png')).convert_alpha()
+        self.missile1_img = pygame.image.load(os.path.join("Assignment-3", 'missile1.png')).convert_alpha()
+        self.missile2_img = pygame.image.load(os.path.join("Assignment-3", 'missile2.png')).convert_alpha()
         fuel_loss = pygame.USEREVENT + 1
         pygame.time.set_timer(fuel_loss, 1000)
         pygame.mixer.music.load(os.path.join("Assignment-3", "trololo.mp3"))
@@ -514,7 +514,7 @@ class Game:
             if pressed[pygame.K_a]:
                 #rotate object left
                 self.player1_ob.new_speed = self.player1_ob.new_speed.rotate(-3)
-                print(self.player1_ob.speed)
+                
                 #self.rot_img = pygame.transform.rotate(self.image, 20)
                 # draw the rotated image to the pygame app main window screen.
                 #self.rot_img.blit(self.screen, self.p2_pos)
